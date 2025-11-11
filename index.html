@@ -42,7 +42,7 @@ tr:hover { background: #e9e9e9; cursor: pointer; }
 tr.menor { background: #c6f6d5; font-weight: 600; }
 .loader { text-align: center; margin-top: 50px; }
 
-/* ===== MODAL ===== */
+/* MODAL */
 .modal {
   display: none;
   position: fixed;
@@ -78,20 +78,13 @@ tr.menor { background: #c6f6d5; font-weight: 600; }
   font-weight: bold;
 }
 .close-btn:hover { background: #ff3333; }
-
-/* Destaque da primeira palavra */
-.keyword {
-  color: #d4af37; /* dourado */
-  font-weight: 600;
-}
-
 thead tr th { position: sticky; top: 0; z-index: 10; }
 </style>
 </head>
 <body>
 
 <h1>💰 Comparador de Preços por Fornecedor</h1>
-<input id="busca" type="text" placeholder="🔍 Buscar produto..." onkeyup="filtrarTabela()">
+<input id="busca" type="text" placeholder="🔍 Buscar produto, fornecedor ou loja..." onkeyup="filtrarTabela()">
 <div id="tabela"></div>
 
 <!-- MODAL -->
@@ -106,14 +99,9 @@ thead tr th { position: sticky; top: 0; z-index: 10; }
 </div>
 
 <script>
-// =====================================
-// 🔗 CONFIGURAÇÃO DO ENDPOINT DO GAS
-// =====================================
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbxcWPqMUMWUYaXhLtBe2K8ordQGq1SlzagRGHhvWMrA70VlQDbAdxddK-VC_eBy0ObU2Q/exec?action=comparar";
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbwun_h02jk5JwEAygXjJubZ7Z8k8_OTnYdtV2d9cPvJvu5Vf-KwIzUEFxco4bbEkLF0kA/exec?action=comparar";
 
-// =====================================
-// 🔄 CARREGAMENTO DE DADOS DO GAS
-// =====================================
+// === Carrega dados ===
 async function carregar() {
   const div = document.getElementById('tabela');
   div.innerHTML = '<div class="loader">⏳ Carregando dados...</div>';
@@ -121,12 +109,10 @@ async function carregar() {
   try {
     const res = await fetch(ENDPOINT);
     const data = await res.json();
-
     if (!Array.isArray(data) || data.length === 0) {
       div.innerHTML = '<p>Nenhum dado retornado.</p>';
       return;
     }
-
     renderTabela(data);
     window.todosDados = data;
   } catch (err) {
@@ -134,17 +120,16 @@ async function carregar() {
   }
 }
 
-// =====================================
-// 🧾 RENDERIZA TABELA PRINCIPAL
-// =====================================
+// === Renderiza tabela ===
 function renderTabela(data) {
   const div = document.getElementById('tabela');
   let html = `<table id="tabelaPrincipal">
     <thead>
       <tr>
-        <th>Descrição do Produto</th>
+        <th>Produto (1ª palavra)</th>
         <th>Unidade</th>
         <th>Quantidade</th>
+        <th>Loja</th>
         <th>Fornecedor Mais Barato</th>
         <th>Valor Unitário</th>
       </tr>
@@ -152,16 +137,11 @@ function renderTabela(data) {
     <tbody>`;
 
   data.forEach((item, i) => {
-    // destaca a primeira palavra na descrição
-    const palavras = item.descricaoCompleta ? item.descricaoCompleta.split(' ') : item.produto.split(' ');
-    const primeira = palavras.shift() || '';
-    const resto = palavras.join(' ');
-    const descricaoFormatada = `<span class="keyword">${primeira}</span> ${resto}`;
-
     html += `<tr class="${item.fornecedor_mais_barato !== 'N/D' ? 'menor' : ''}" onclick="abrirModal(${i})">
-      <td>${descricaoFormatada}</td>
+      <td>${item.produto}</td>
       <td>${item.unidade || '-'}</td>
       <td>${item.quantidade || 0}</td>
+      <td>${item.loja || '-'}</td>
       <td>${item.fornecedor_mais_barato}</td>
       <td>R$ ${(item.valor_unitario || 0).toFixed(2)}</td>
     </tr>`;
@@ -171,9 +151,7 @@ function renderTabela(data) {
   div.innerHTML = html;
 }
 
-// =====================================
-// 🔍 FILTRO DE BUSCA
-// =====================================
+// === Filtro de busca ===
 function filtrarTabela() {
   const termo = document.getElementById('busca').value.toLowerCase();
   const linhas = document.querySelectorAll('#tabelaPrincipal tbody tr');
@@ -183,17 +161,12 @@ function filtrarTabela() {
   });
 }
 
-// =====================================
-// 📦 MODAL DETALHADO COM TODOS FORNECEDORES
-// =====================================
+// === Modal ===
 function abrirModal(index) {
   const item = window.todosDados[index];
   const modal = document.getElementById('modal');
   const conteudo = document.getElementById('modalConteudo');
-
-  document.getElementById('modalTitulo').textContent = item.descricaoCompleta
-    ? item.descricaoCompleta.toUpperCase()
-    : item.produto.toUpperCase();
+  document.getElementById('modalTitulo').textContent = item.produto.toUpperCase();
 
   if (!item.fornecedores || item.fornecedores.length === 0) {
     conteudo.innerHTML = `<p>Nenhum fornecedor encontrado para esse item.</p>`;
@@ -201,6 +174,7 @@ function abrirModal(index) {
     let tabela = `<table style="width:100%; border-collapse:collapse;">
       <thead>
         <tr style="background:#222; color:#fff;">
+          <th style="padding:6px;">Loja</th>
           <th style="padding:6px;">Fornecedor</th>
           <th style="padding:6px;">Descrição</th>
           <th style="padding:6px;">Valor Unitário</th>
@@ -209,12 +183,11 @@ function abrirModal(index) {
       </thead>
       <tbody>`;
 
-    // Ordena fornecedores por valor (menor → maior)
     item.fornecedores.sort((a, b) => a.valorUnit - b.valorUnit);
-
     item.fornecedores.forEach(f => {
       const destaque = f.fornecedor === item.fornecedor_mais_barato;
       tabela += `<tr style="background:${destaque ? '#c6f6d5' : 'transparent'}; font-weight:${destaque ? '600' : '400'};">
+        <td style="padding:6px;">${f.loja}</td>
         <td style="padding:6px;">${f.fornecedor}</td>
         <td style="padding:6px;">${f.descricaoItem}</td>
         <td style="padding:6px;">R$ ${(f.valorUnit || 0).toFixed(2)}</td>
@@ -228,16 +201,11 @@ function abrirModal(index) {
 
   modal.style.display = 'flex';
 }
-
 function fecharModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
-// =====================================
-// 🚀 INICIALIZAÇÃO
-// =====================================
 carregar();
 </script>
-
 </body>
 </html>
