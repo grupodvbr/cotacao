@@ -68,6 +68,13 @@ tr.menor { background: #c6f6d5; font-weight: 600; }
   font-weight: bold;
 }
 .close-btn:hover { background: #ff3333; }
+
+/* Cabeçalho fixo */
+thead tr th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 </style>
 </head>
 <body>
@@ -87,14 +94,14 @@ tr.menor { background: #c6f6d5; font-weight: 600; }
 </div>
 
 <script>
-// =============================
-// 🔗 CONFIGURAÇÃO DO ENDPOINT
-// =============================
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbxheJUgFnkX3KruV3WZnTkNv8Fs4KHpDnU-K7kiekjlFW2kUjn3eLvqaMObromom3s1GA/exec?action=comparar";
+// =====================================
+// 🔗 CONFIGURAÇÃO DO ENDPOINT DO GAS
+// =====================================
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbzy7EgCJ22YRBrrasjkiB6eKbCzzEtz19q_SktOplHI9aba_bxbwNooUgHHBMJVK-PVFA/exec?action=comparar";
 
-// =============================
-// 🔄 CARREGA OS DADOS DO GAS
-// =============================
+// =====================================
+// 🔄 CARREGAMENTO DE DADOS DO GAS
+// =====================================
 async function carregar() {
   const div = document.getElementById('tabela');
   div.innerHTML = '<div class="loader">⏳ Carregando dados...</div>';
@@ -133,7 +140,7 @@ async function carregar() {
     html += '</tbody></table>';
     div.innerHTML = html;
 
-    // Guarda os dados globalmente
+    // Guarda os dados para o modal
     window.todosDados = data;
 
   } catch (err) {
@@ -141,9 +148,9 @@ async function carregar() {
   }
 }
 
-// =============================
-// 📦 MODAL DETALHADO POR ITEM
-// =============================
+// =====================================
+// 📦 MODAL DETALHADO COM TODOS FORNECEDORES
+// =====================================
 function abrirModal(index) {
   const item = window.todosDados[index];
   const modal = document.getElementById('modal');
@@ -163,6 +170,9 @@ function abrirModal(index) {
         </tr>
       </thead>
       <tbody>`;
+
+    // Ordena fornecedores por valor (menor → maior)
+    item.fornecedores.sort((a, b) => a.valorUnit - b.valorUnit);
 
     item.fornecedores.forEach(f => {
       const destaque = f.fornecedor === item.fornecedor_mais_barato;
@@ -185,9 +195,9 @@ function fecharModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
-// =============================
+// =====================================
 // 🚀 INICIALIZAÇÃO
-// =============================
+// =====================================
 carregar();
 </script>
 
