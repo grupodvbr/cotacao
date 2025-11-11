@@ -120,28 +120,40 @@ function renderComparativo(data) {
   window.todosDados = data;
 }
 
-// ================ BUSCA GLOBAL ================
+// ================ BUSCA GLOBAL (FIXA + ORDENADA) ================
+let ultimaPesquisa = ''; // salva o último termo pesquisado
+
 async function buscarGlobal() {
-  const termo = document.getElementById('busca').value.trim().toLowerCase();
+  const campo = document.getElementById('busca');
+  const termo = campo.value.trim().toLowerCase();
   const div = document.getElementById('tabela');
   const btn = document.getElementById('btnVoltar');
 
-  if (termo.length < 2) {
+  // Só volta ao comparativo se o campo estiver totalmente vazio
+  if (termo === '') {
+    ultimaPesquisa = '';
     carregarComparativo();
     return;
   }
+
+  // Evita refazer a mesma busca repetidamente
+  if (termo === ultimaPesquisa) return;
+  ultimaPesquisa = termo;
 
   div.innerHTML = '<div class="loader">🔎 Buscando produtos na planilha...</div>';
   btn.style.display = "inline-block";
 
   try {
     const res = await fetch(`${BASE_URL}?buscar=${encodeURIComponent(termo)}`);
-    const data = await res.json();
+    let data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
       div.innerHTML = `<p>Nenhum produto encontrado contendo "<strong>${termo}</strong>".</p>`;
       return;
     }
+
+    // 🔽 Ordena do mais barato para o mais caro
+    data.sort((a, b) => (a.valor_unitario || 0) - (b.valor_unitario || 0));
 
     let html = `<table><thead><tr>
       <th>Loja</th>
@@ -169,6 +181,7 @@ async function buscarGlobal() {
 // ================ VOLTAR AO COMPARATIVO ================
 function voltarComparativo() {
   document.getElementById('busca').value = '';
+  ultimaPesquisa = '';
   carregarComparativo();
 }
 
