@@ -15,10 +15,20 @@ h1 {
   text-align: center;
   color: #222;
 }
+#busca {
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  margin: 10px auto 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 th, td {
   border: 1px solid #ddd;
@@ -68,18 +78,13 @@ tr.menor { background: #c6f6d5; font-weight: 600; }
   font-weight: bold;
 }
 .close-btn:hover { background: #ff3333; }
-
-/* Cabeçalho fixo */
-thead tr th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+thead tr th { position: sticky; top: 0; z-index: 10; }
 </style>
 </head>
 <body>
 
 <h1>💰 Comparador de Preços por Fornecedor</h1>
+<input id="busca" type="text" placeholder="🔍 Buscar produto..." onkeyup="filtrarTabela()">
 <div id="tabela"></div>
 
 <!-- MODAL -->
@@ -97,7 +102,7 @@ thead tr th {
 // =====================================
 // 🔗 CONFIGURAÇÃO DO ENDPOINT DO GAS
 // =====================================
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbzy7EgCJ22YRBrrasjkiB6eKbCzzEtz19q_SktOplHI9aba_bxbwNooUgHHBMJVK-PVFA/exec?action=comparar";
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbycgd2r2TS9wXfvhOLYllJBxzpdiUgIDbZngkOZGuu0LuBo6Y3O12QEDpzEL-BmNhxEsw/exec?action=comparar";
 
 // =====================================
 // 🔄 CARREGAMENTO DE DADOS DO GAS
@@ -115,37 +120,54 @@ async function carregar() {
       return;
     }
 
-    let html = `<table>
-      <thead>
-        <tr>
-          <th>Produto (3 primeiras palavras)</th>
-          <th>Unidade</th>
-          <th>Quantidade</th>
-          <th>Fornecedor Mais Barato</th>
-          <th>Valor Unitário</th>
-        </tr>
-      </thead>
-      <tbody>`;
-
-    data.forEach((item, i) => {
-      html += `<tr class="${item.fornecedor_mais_barato !== 'N/D' ? 'menor' : ''}" onclick="abrirModal(${i})">
-        <td>${item.produto}</td>
-        <td>${item.unidade || '-'}</td>
-        <td>${item.quantidade || 0}</td>
-        <td>${item.fornecedor_mais_barato}</td>
-        <td>R$ ${(item.valor_unitario || 0).toFixed(2)}</td>
-      </tr>`;
-    });
-
-    html += '</tbody></table>';
-    div.innerHTML = html;
-
-    // Guarda os dados para o modal
+    renderTabela(data);
     window.todosDados = data;
-
   } catch (err) {
     div.innerHTML = `<p>Erro ao carregar: ${err.message}</p>`;
   }
+}
+
+// =====================================
+// 🧾 RENDERIZA TABELA PRINCIPAL
+// =====================================
+function renderTabela(data) {
+  const div = document.getElementById('tabela');
+  let html = `<table id="tabelaPrincipal">
+    <thead>
+      <tr>
+        <th>Produto (1ª palavra da cotação)</th>
+        <th>Unidade</th>
+        <th>Quantidade</th>
+        <th>Fornecedor Mais Barato</th>
+        <th>Valor Unitário</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  data.forEach((item, i) => {
+    html += `<tr class="${item.fornecedor_mais_barato !== 'N/D' ? 'menor' : ''}" onclick="abrirModal(${i})">
+      <td>${item.produto}</td>
+      <td>${item.unidade || '-'}</td>
+      <td>${item.quantidade || 0}</td>
+      <td>${item.fornecedor_mais_barato}</td>
+      <td>R$ ${(item.valor_unitario || 0).toFixed(2)}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  div.innerHTML = html;
+}
+
+// =====================================
+// 🔍 FILTRO DE BUSCA
+// =====================================
+function filtrarTabela() {
+  const termo = document.getElementById('busca').value.toLowerCase();
+  const linhas = document.querySelectorAll('#tabelaPrincipal tbody tr');
+  linhas.forEach(linha => {
+    const texto = linha.innerText.toLowerCase();
+    linha.style.display = texto.includes(termo) ? '' : 'none';
+  });
 }
 
 // =====================================
@@ -171,7 +193,7 @@ function abrirModal(index) {
       </thead>
       <tbody>`;
 
-    // Ordena fornecedores por valor (menor → maior)
+    // Ordena fornecedores do menor para o maior
     item.fornecedores.sort((a, b) => a.valorUnit - b.valorUnit);
 
     item.fornecedores.forEach(f => {
