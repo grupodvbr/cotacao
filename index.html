@@ -24,6 +24,7 @@ th, td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  font-size: 14px;
 }
 th { background: #222; color: #fff; }
 tr:nth-child(even) { background: #f1f1f1; }
@@ -39,30 +40,34 @@ tr.menor { background: #c6f6d5; font-weight: 600; }
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.5);
   justify-content: center; align-items: center;
+  z-index: 100;
 }
 .modal-content {
   background: #fff;
   padding: 20px;
   border-radius: 10px;
   width: 90%;
-  max-width: 700px;
+  max-width: 750px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.3);
   overflow-y: auto;
-  max-height: 80vh;
+  max-height: 85vh;
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
 }
 .close-btn {
   background: #ff5555;
   color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
 }
+.close-btn:hover { background: #ff3333; }
 </style>
 </head>
 <body>
@@ -82,8 +87,14 @@ tr.menor { background: #c6f6d5; font-weight: 600; }
 </div>
 
 <script>
+// =============================
+// 🔗 CONFIGURAÇÃO DO ENDPOINT
+// =============================
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbxheJUgFnkX3KruV3WZnTkNv8Fs4KHpDnU-K7kiekjlFW2kUjn3eLvqaMObromom3s1GA/exec?action=comparar";
 
+// =============================
+// 🔄 CARREGA OS DADOS DO GAS
+// =============================
 async function carregar() {
   const div = document.getElementById('tabela');
   div.innerHTML = '<div class="loader">⏳ Carregando dados...</div>';
@@ -92,10 +103,15 @@ async function carregar() {
     const res = await fetch(ENDPOINT);
     const data = await res.json();
 
+    if (!Array.isArray(data) || data.length === 0) {
+      div.innerHTML = '<p>Nenhum dado retornado.</p>';
+      return;
+    }
+
     let html = `<table>
       <thead>
         <tr>
-          <th>Produto</th>
+          <th>Produto (3 primeiras palavras)</th>
           <th>Unidade</th>
           <th>Quantidade</th>
           <th>Fornecedor Mais Barato</th>
@@ -107,16 +123,17 @@ async function carregar() {
     data.forEach((item, i) => {
       html += `<tr class="${item.fornecedor_mais_barato !== 'N/D' ? 'menor' : ''}" onclick="abrirModal(${i})">
         <td>${item.produto}</td>
-        <td>${item.unidade}</td>
-        <td>${item.quantidade}</td>
+        <td>${item.unidade || '-'}</td>
+        <td>${item.quantidade || 0}</td>
         <td>${item.fornecedor_mais_barato}</td>
-        <td>R$ ${item.valor_unitario.toFixed(2)}</td>
+        <td>R$ ${(item.valor_unitario || 0).toFixed(2)}</td>
       </tr>`;
     });
 
     html += '</tbody></table>';
     div.innerHTML = html;
 
+    // Guarda os dados globalmente
     window.todosDados = data;
 
   } catch (err) {
@@ -124,25 +141,36 @@ async function carregar() {
   }
 }
 
+// =============================
+// 📦 MODAL DETALHADO POR ITEM
+// =============================
 function abrirModal(index) {
   const item = window.todosDados[index];
   const modal = document.getElementById('modal');
   const conteudo = document.getElementById('modalConteudo');
   document.getElementById('modalTitulo').textContent = item.produto.toUpperCase();
 
-  if (item.fornecedores.length === 0) {
-    conteudo.innerHTML = `<p>Nenhum fornecedor encontrado.</p>`;
+  if (!item.fornecedores || item.fornecedores.length === 0) {
+    conteudo.innerHTML = `<p>Nenhum fornecedor encontrado para esse item.</p>`;
   } else {
-    let tabela = `<table><thead><tr>
-      <th>Fornecedor</th><th>Descrição</th><th>Valor Unitário</th><th>Valor Total</th>
-    </tr></thead><tbody>`;
+    let tabela = `<table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#222; color:#fff;">
+          <th style="padding:6px;">Fornecedor</th>
+          <th style="padding:6px;">Descrição</th>
+          <th style="padding:6px;">Valor Unitário</th>
+          <th style="padding:6px;">Valor Total</th>
+        </tr>
+      </thead>
+      <tbody>`;
 
     item.fornecedores.forEach(f => {
-      tabela += `<tr ${f.fornecedor === item.fornecedor_mais_barato ? 'style="background:#c6f6d5;font-weight:600;"' : ''}>
-        <td>${f.fornecedor}</td>
-        <td>${f.descricaoItem}</td>
-        <td>R$ ${f.valorUnit.toFixed(2)}</td>
-        <td>R$ ${f.valorTotal.toFixed(2)}</td>
+      const destaque = f.fornecedor === item.fornecedor_mais_barato;
+      tabela += `<tr style="background:${destaque ? '#c6f6d5' : 'transparent'}; font-weight:${destaque ? '600' : '400'};">
+        <td style="padding:6px;">${f.fornecedor}</td>
+        <td style="padding:6px;">${f.descricaoItem}</td>
+        <td style="padding:6px;">R$ ${(f.valorUnit || 0).toFixed(2)}</td>
+        <td style="padding:6px;">R$ ${(f.valorTotal || 0).toFixed(2)}</td>
       </tr>`;
     });
 
@@ -157,6 +185,9 @@ function fecharModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
+// =============================
+// 🚀 INICIALIZAÇÃO
+// =============================
 carregar();
 </script>
 
