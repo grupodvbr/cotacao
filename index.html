@@ -55,182 +55,149 @@ tr:hover { background: #e9e9e9; cursor: pointer; }
 tr.menor { background: #c6f6d5; font-weight: 600; }
 .loader { text-align: center; margin-top: 50px; }
 thead tr th { position: sticky; top: 0; z-index: 10; }
+
+/* ===== MODAL ===== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
+.close-btn {
+  background: #ff5555;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.close-btn:hover { background: #ff3333; }
 </style>
 </head>
 <body>
 
-<h1>💰 Comparador de Preços e Busca Global</h1>
+<h1>💰 Comparador de Preços por Similaridade</h1>
 <input id="busca" type="text" placeholder="🔍 Buscar produto na planilha de itens..." onkeyup="buscarGlobal()">
 <button id="btnVoltar" onclick="voltarComparativo()">⬅ Voltar ao Comparativo</button>
 <div id="tabela"></div>
 
-<script>
-// URL do Apps Script
-const BASE_URL = "https://script.google.com/macros/s/AKfycbyw20TIKL9TpSdxZweHj2itsKbGXFyQdUADp1zzNBV4G6TTgVktUMfGMdVIUWEeHQqVcA/exec";
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalBox">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 id="modalTitulo"></h2>
+      <button class="close-btn" onclick="fecharModal()">Fechar</button>
+    </div>
+    <div id="modalConteudo"></div>
+  </div>
+</div>
 
-// ================ COMPARATIVO PADRÃO ================
+<script>
+const BASE_URL = "https://script.google.com/macros/s/AKfycby6oLwifQd9bxlINHLEy2QmxFWNVN8lVP6TxmlVZiP09nRDNNTZAOjTMzjKp_2FEuadPg/exec";
+
 async function carregarComparativo() {
-  const div = document.getElementById('tabela');
-  const btn = document.getElementById('btnVoltar');
-  btn.style.display = "none";
-  div.innerHTML = '<div class="loader">⏳ Carregando comparativo...</div>';
+  document.getElementById('tabela').innerHTML = '<div class="loader">⏳ Carregando comparativo...</div>';
+  const btn = document.getElementById('btnVoltar'); btn.style.display = "none";
 
   try {
     const res = await fetch(`${BASE_URL}?action=comparar`);
     const data = await res.json();
     renderComparativo(data);
   } catch (err) {
-    div.innerHTML = `<p>Erro ao carregar: ${err.message}</p>`;
+    document.getElementById('tabela').innerHTML = `<p>Erro: ${err.message}</p>`;
   }
 }
 
-// ================ RENDERIZA COMPARATIVO ================
 function renderComparativo(data) {
   const div = document.getElementById('tabela');
-  if (!data || data.length === 0) {
-    div.innerHTML = '<p>Nenhum dado disponível.</p>';
-    return;
-  }
+  if (!data.length) return div.innerHTML = "<p>Nenhum resultado encontrado.</p>";
 
-  let html = `<table id="tabelaPrincipal">
-    <thead>
-      <tr>
-        <th>Produto</th>
-        <th>Unidade</th>
-        <th>Quantidade</th>
-        <th>Loja</th>
-        <th>Fornecedor Mais Barato</th>
-        <th>Valor Unitário</th>
-      </tr>
-    </thead><tbody>`;
+  let html = `<table><thead><tr>
+    <th>Produto</th><th>Unidade</th><th>Qtd</th><th>Loja</th><th>Fornecedor Mais Barato</th><th>Valor Unitário</th>
+  </tr></thead><tbody>`;
 
   data.forEach((item, i) => {
-    html += `<tr class="${item.fornecedor_mais_barato !== 'N/D' ? 'menor' : ''}" onclick="abrirModal(${i})">
-      <td>${item.produto}</td>
-      <td>${item.unidade || '-'}</td>
-      <td>${item.quantidade || 0}</td>
-      <td>${item.loja || '-'}</td>
-      <td>${item.fornecedor_mais_barato}</td>
-      <td>R$ ${(item.valor_unitario || 0).toFixed(2)}</td>
+    html += `<tr class="menor" onclick="abrirModal(${i})">
+      <td>${item.produto}</td><td>${item.unidade}</td><td>${item.quantidade}</td>
+      <td>${item.loja}</td><td>${item.fornecedor_mais_barato}</td>
+      <td>R$ ${(item.valor_unitario||0).toFixed(2)}</td>
     </tr>`;
   });
 
-  html += '</tbody></table>';
+  html += "</tbody></table>";
   div.innerHTML = html;
   window.todosDados = data;
 }
 
-// ================ BUSCA GLOBAL (FIXA + ORDENADA) ================
-let ultimaPesquisa = ''; // salva o último termo pesquisado
-
+let ultimaPesquisa = "";
 async function buscarGlobal() {
   const campo = document.getElementById('busca');
   const termo = campo.value.trim().toLowerCase();
-  const div = document.getElementById('tabela');
-  const btn = document.getElementById('btnVoltar');
-
-  // Só volta ao comparativo se o campo estiver totalmente vazio
-  if (termo === '') {
-    ultimaPesquisa = '';
-    carregarComparativo();
-    return;
-  }
-
-  // Evita refazer a mesma busca repetidamente
+  if (termo === "") return carregarComparativo();
   if (termo === ultimaPesquisa) return;
   ultimaPesquisa = termo;
 
-  div.innerHTML = '<div class="loader">🔎 Buscando produtos na planilha...</div>';
-  btn.style.display = "inline-block";
+  document.getElementById('tabela').innerHTML = '<div class="loader">🔎 Buscando...</div>';
+  document.getElementById('btnVoltar').style.display = "inline-block";
 
   try {
     const res = await fetch(`${BASE_URL}?buscar=${encodeURIComponent(termo)}`);
     let data = await res.json();
-
-    if (!Array.isArray(data) || data.length === 0) {
-      div.innerHTML = `<p>Nenhum produto encontrado contendo "<strong>${termo}</strong>".</p>`;
-      return;
-    }
-
-    // 🔽 Ordena do mais barato para o mais caro
-    data.sort((a, b) => (a.valor_unitario || 0) - (b.valor_unitario || 0));
-
+    data.sort((a,b)=>(a.valor_unitario||0)-(b.valor_unitario||0));
     let html = `<table><thead><tr>
-      <th>Loja</th>
-      <th>Fornecedor</th>
-      <th>Descrição</th>
-      <th>Valor Unitário</th>
-    </tr></thead><tbody>`;
-
-    data.forEach(i => {
-      html += `<tr>
-        <td>${i.loja}</td>
-        <td>${i.fornecedor}</td>
-        <td>${i.descricao}</td>
-        <td>R$ ${(i.valor_unitario || 0).toFixed(2)}</td>
-      </tr>`;
+      <th>Loja</th><th>Fornecedor</th><th>Descrição</th><th>Valor Unitário</th></tr></thead><tbody>`;
+    data.forEach(i=>{
+      html+=`<tr><td>${i.loja}</td><td>${i.fornecedor}</td><td>${i.descricao}</td><td>R$ ${(i.valor_unitario||0).toFixed(2)}</td></tr>`;
     });
-
     html += '</tbody></table>';
-    div.innerHTML = html;
-  } catch (err) {
-    div.innerHTML = `<p>Erro: ${err.message}</p>`;
+    document.getElementById('tabela').innerHTML = html;
+  } catch(e){
+    document.getElementById('tabela').innerHTML = `<p>Erro: ${e.message}</p>`;
   }
 }
 
-// ================ VOLTAR AO COMPARATIVO ================
-function voltarComparativo() {
+function voltarComparativo(){
   document.getElementById('busca').value = '';
   ultimaPesquisa = '';
   carregarComparativo();
 }
 
-// ================ MODAL DETALHADO ================
-function abrirModal(index) {
+function abrirModal(index){
   const item = window.todosDados[index];
-  if (!item || !item.fornecedores) return;
-
-  let modalHTML = `<div class="modal" id="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>${item.produto.toUpperCase()}</h2>
-        <button class="close-btn" onclick="fecharModal()">Fechar</button>
-      </div>
-      <div id="modalConteudo">`;
-
-  if (item.fornecedores.length === 0) {
-    modalHTML += `<p>Nenhum fornecedor encontrado para esse item.</p>`;
-  } else {
-    modalHTML += `<table style="width:100%; border-collapse:collapse;">
-      <thead><tr style="background:#222; color:#fff;">
-        <th>Loja</th><th>Fornecedor</th><th>Descrição</th><th>Valor Unitário</th><th>Valor Total</th>
-      </tr></thead><tbody>`;
-
-    item.fornecedores.sort((a, b) => a.valorUnit - b.valorUnit);
-    item.fornecedores.forEach(f => {
-      const destaque = f.fornecedor === item.fornecedor_mais_barato;
-      modalHTML += `<tr style="background:${destaque ? '#c6f6d5' : 'transparent'};font-weight:${destaque ? '600' : '400'};">
-        <td>${f.loja}</td>
-        <td>${f.fornecedor}</td>
-        <td>${f.descricaoItem}</td>
-        <td>R$ ${(f.valorUnit || 0).toFixed(2)}</td>
-        <td>R$ ${(f.valorTotal || 0).toFixed(2)}</td>
-      </tr>`;
-    });
-
-    modalHTML += '</tbody></table>';
-  }
-
-  modalHTML += '</div></div></div>';
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-  document.getElementById('modal').style.display = 'flex';
-}
-function fecharModal() {
+  if(!item) return;
   const modal = document.getElementById('modal');
-  if (modal) modal.remove();
-}
+  const conteudo = document.getElementById('modalConteudo');
+  document.getElementById('modalTitulo').textContent = item.produto.toUpperCase();
 
-// Inicializa
+  let tabela = `<table style="width:100%;border-collapse:collapse;margin-top:10px;">
+  <thead><tr style="background:#222;color:#fff;"><th>Loja</th><th>Fornecedor</th><th>Descrição</th><th>Valor Unitário</th><th>Valor Total</th></tr></thead><tbody>`;
+  item.fornecedores.forEach(f=>{
+    tabela += `<tr><td>${f.loja}</td><td>${f.fornecedor}</td><td>${f.descricaoItem}</td>
+    <td>R$ ${(f.valorUnit||0).toFixed(2)}</td><td>R$ ${(f.valorTotal||0).toFixed(2)}</td></tr>`;
+  });
+  tabela += '</tbody></table>';
+  conteudo.innerHTML = tabela;
+  modal.style.display = 'flex';
+}
+function fecharModal(){ document.getElementById('modal').style.display='none'; }
+
 carregarComparativo();
 </script>
 </body>
