@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerenciador de Documentos</title>
+<title>Documentos • Sistema de Licitações</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 
 /* =========================
-   BASE
+   BASE GERAL — APPLE FINDER
 ========================= */
+
 body{
   font-family:'Inter',sans-serif;
   margin:0;
@@ -86,9 +87,12 @@ body{
 .btn-upload{ background:#6d28d9; }
 .btn-voltar{ background:#5f6368; }
 
+input[type="file"]{ display:none; }
+
 /* =========================
-   GRID
+   GRID DE ITENS — CLEAN
 ========================= */
+
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
@@ -96,7 +100,6 @@ body{
 }
 
 .item{
-  position:relative;
   text-align:center;
   padding:18px 10px;
   border-radius:14px;
@@ -111,64 +114,82 @@ body{
   border-color:#007aff;
 }
 
+.item svg{
+  width:55px;
+  height:48px;
+}
+
 .itemNome{
   margin-top:10px;
   font-size:14px;
   font-weight:500;
+  color:#333;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-/* ícone de arquivo */
-.arquivoIcon{
-  font-size:45px;
-}
-
-/* =========================
-   MENU 3 PONTOS
-========================= */
-.menuBtn{
+/* menu de opções minimalista */
+.itemMenu{
   position:absolute;
   top:8px;
   right:8px;
-  background:none;
-  border:none;
-  cursor:pointer;
-  font-size:20px;
-}
-
-.menuOpc{
   display:none;
-  position:absolute;
-  top:32px;
-  right:8px;
   background:white;
-  border-radius:10px;
+  border-radius:8px;
+  padding:6px 10px;
   border:1px solid #ddd;
-  padding:8px 0;
-  width:140px;
-  z-index:50;
+  gap:8px;
+  font-size:13px;
+}
+.item:hover .itemMenu{ display:flex; }
+
+/* =========================
+   POPUP CRIAR PASTA
+========================= */
+#popupCriar{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.40);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
 
-.menuOpc button{
-  width:100%;
-  padding:10px;
-  background:none;
-  border:none;
-  text-align:left;
-  font-size:14px;
+#popupBox{
+  background:white;
+  padding:25px;
+  width:90%;
+  max-width:420px;
+  border-radius:14px;
+  border:1px solid #ddd;
+}
+
+.colorRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.colorSelect{
+  width:30px;
+  height:30px;
+  border-radius:50%;
   cursor:pointer;
+  border:2px solid transparent;
 }
 
-.menuOpc button:hover{
-  background:#f2f2f2;
+.colorSelect.active{
+  border-color:#000;
 }
 
 /* =========================
-   POPUPS
+   UPLOAD POPUP
 ========================= */
-.popupFundo{
+#popupUpload{
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
@@ -179,13 +200,27 @@ body{
   z-index:99999;
 }
 
-.popupBox{
+#uploadBox{
   background:white;
-  padding:25px;
+  padding:30px;
   width:90%;
-  max-width:420px;
+  max-width:480px;
   border-radius:14px;
   border:1px solid #ddd;
+}
+
+#dropArea{
+  border:2px dashed #b5b5b5;
+  padding:30px;
+  text-align:center;
+  border-radius:12px;
+  margin-top:15px;
+  background:#fafafa;
+}
+
+#dropArea.dragover{
+  border-color:#007aff;
+  background:#eef5ff;
 }
 
 /* =========================
@@ -229,6 +264,7 @@ body{
   <h1 id="titulo">GERENCIADOR DE DOCUMENTOS</h1>
 
   <input id="busca" placeholder="Pesquisar..." onkeyup="pesquisar()">
+
   <div id="breadcrumbs">📁 Raiz</div>
 
   <div class="toolbar">
@@ -241,257 +277,289 @@ body{
 
 </div>
 
-<!-- ================= POPUPS ================ -->
 
-<!-- CRIAR PASTA -->
-<div id="popupCriar" class="popupFundo">
-  <div class="popupBox">
-    <h3>Criar pasta</h3>
-    <input id="nomePasta" placeholder="Nome da pasta" style="width:100%;padding:10px;">
+<!-- =========================================================
+     POPUP CRIAR PASTA
+========================================================= -->
+<div id="popupCriar">
+  <div id="popupBox">
+    <h3>Criar nova pasta</h3>
+    <label>Nome:</label>
+    <input id="nomePasta" style="width:100%;padding:10px;margin-top:6px;" type="text">
+
     <p>Cor:</p>
-    <div id="corGrid"></div>
-    <br>
-    <button class="btn btn-nova" style="width:100%;" onclick="criarPasta()">Criar</button>
-    <button onclick="fecharPopupCriar()" style="margin-top:10px;width:100%;padding:10px;border:none;background:#ddd;border-radius:10px;">Cancelar</button>
-  </div>
-</div>
-
-<!-- UPLOAD -->
-<div id="popupUpload" class="popupFundo">
-  <div class="popupBox">
-    <h3>Upload</h3>
-    <select id="uploadDestino" style="width:100%;padding:10px;border-radius:10px;margin-bottom:10px;"></select>
-    <div id="dropArea" style="border:2px dashed #bbb;padding:30px;text-align:center;border-radius:12px;">
-      Arraste aqui
+    <div class="colorRow">
+      <div class="colorSelect" style="background:#2563eb" data-cor="azul"></div>
+      <div class="colorSelect" style="background:#4caf50" data-cor="verde"></div>
+      <div class="colorSelect" style="background:#facc15" data-cor="amarelo"></div>
+      <div class="colorSelect" style="background:#fb923c" data-cor="laranja"></div>
+      <div class="colorSelect" style="background:#ef4444" data-cor="vermelho"></div>
+      <div class="colorSelect" style="background:#a855f7" data-cor="roxo"></div>
+      <div class="colorSelect" style="background:#737373" data-cor="cinza"></div>
+      <div class="colorSelect" style="background:#000000" data-cor="preto"></div>
+      <div class="colorSelect" style="background:#ec4899" data-cor="rosa"></div>
+      <div class="colorSelect" style="background:#8b5e3c" data-cor="marrom"></div>
     </div>
+
+    <br>
+    <button onclick="criarPasta()" class="btn btn-nova" style="width:100%;">Criar</button>
+    <button onclick="fecharPopupCriar()" style="margin-top:10px;border:none;background:#ddd;padding:10px;width:100%;border-radius:10px;">Cancelar</button>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     POPUP UPLOAD (drag & drop)
+========================================================= -->
+<div id="popupUpload">
+  <div id="uploadBox">
+
+    <h3>Enviar arquivo</h3>
+
+    <label>Selecione a pasta de destino:</label>
+    <select id="uploadDestino" style="width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #ccc;"></select>
+
+    <div id="dropArea">Arraste arquivos aqui ou clique para selecionar</div>
+
     <input id="uploadInput" type="file" multiple style="display:none">
-    <button class="btn btn-upload" style="width:100%;margin-top:15px;" onclick="enviarUpload()">Enviar</button>
-    <button onclick="fecharUpload()" style="margin-top:10px;width:100%;padding:10px;border:none;background:#ddd;border-radius:10px;">Cancelar</button>
+
+    <button onclick="enviarUpload()" class="btn btn-upload" style="width:100%;margin-top:15px;">Enviar</button>
+    <button onclick="fecharUpload()" style="margin-top:10px;border:none;background:#ddd;padding:10px;width:100%;border-radius:10px;">Cancelar</button>
+
   </div>
 </div>
 
-<!-- RENOMEAR -->
-<div id="popupRenomear" class="popupFundo">
-  <div class="popupBox">
-    <h3>Renomear</h3>
-    <input id="novoNome" style="width:100%;padding:10px;">
-    <button class="btn btn-nova" style="width:100%;margin-top:10px;" onclick="renomearItem()">Salvar</button>
-    <button onclick="fecharRenomear()" style="margin-top:10px;width:100%;padding:10px;border:none;background:#ddd;border-radius:10px;">Cancelar</button>
-  </div>
-</div>
 
-<!-- MOVER -->
-<div id="popupMover" class="popupFundo">
-  <div class="popupBox">
-    <h3>Mover item</h3>
-    <select id="moverDestino" style="width:100%;padding:10px;border-radius:10px;"></select>
-    <button class="btn btn-nova" style="width:100%;margin-top:10px;" onclick="moverItem()">Mover</button>
-    <button onclick="fecharMover()" style="margin-top:10px;width:100%;padding:10px;border:none;background:#ddd;border-radius:10px;">Cancelar</button>
-  </div>
-</div>
-
-<!-- PREVIEW -->
+<!-- =========================================================
+     MODAL PREVIEW
+========================================================= -->
 <div id="modal">
   <div id="modalBox">
     <button class="btn btn-voltar" onclick="fecharModal()" style="float:right;">Fechar</button>
     <h2 id="modalTitulo"></h2>
     <iframe id="modalPreview"></iframe>
+    <br>
+    <button onclick="window.open(linkAtual)" class="btn btn-upload">⬇ Download</button>
+    <button onclick="navigator.clipboard.writeText(linkAtual)" class="btn btn-nova">🔗 Copiar Link</button>
   </div>
 </div>
 
 <script>
 
-/* -----------------------------
-   CONFIG
------------------------------ */
+/* CONFIG */
 const API = "https://script.google.com/macros/s/AKfycbxjN6NomQdDyCluvGgO0N9vWRB9c-8ysCaE2e0vIA3jeZti4hj70U9kH8grObJQx8CwXw/exec";
 let usuario = localStorage.getItem("usuarioLogado") || "desconhecido";
+
 let dados = [];
 let pastaAtual = "10G18r0S5jDXnrOh96pQybqvfB8OH9Gxp";
-let historicoPastas = [pastaAtual];
+let historicoPastas = ["10G18r0S5jDXnrOh96pQybqvfB8OH9Gxp"];
 let corEscolhida = null;
-let idSelecionado = null;
+let linkAtual = "";
 
-/* -----------------------------
-   LISTAR
------------------------------ */
+/* =====================================================
+   CARREGAR LISTA
+===================================================== */
 async function carregar(){
   document.getElementById("lista").innerHTML = "Carregando...";
+
   const req = await fetch(API+"?action=listar");
   dados = await req.json();
+
   preencherDestinoUpload();
   mostrarPasta(pastaAtual);
 }
 
-/* -----------------------------
+/* =====================================================
    MOSTRAR PASTA
------------------------------ */
+===================================================== */
 function mostrarPasta(id){
   pastaAtual = id;
+
   const nome = dados.find(p=>p.id===id)?.nome || "Raiz";
   document.getElementById("breadcrumbs").innerText = "📁 " + nome;
 
   const itens = dados.filter(p=>p.pai===id);
+
   let html = "";
 
   itens.forEach(item => {
-    html += `
-    <div class="item">
-      <button class="menuBtn" onclick="abrirMenu(event,'${item.id}','${item.tipo}')">⋮</button>
-      <div class="menuOpc" id="menu-${item.id}">
-        <button onclick="abrirRenomear('${item.id}')">Renomear</button>
-        <button onclick="abrirMover('${item.id}')">Mover</button>
-        <button onclick="excluir('${item.id}','${item.nome}')">Excluir</button>
-      </div>
-
-      ${
-        item.tipo==="pasta"
-        ? svgCor(item.capa)
-        : `<span class='arquivoIcon'>📄</span>`
-      }
-      <div class="itemNome">${item.nome}</div>
-      <div onclick="${ item.tipo==="pasta"
-        ? `entrarPasta('${item.id}')`
-        : `abrirArquivo('${item.nome}','${item.url}')`
-      }" style="position:absolute;top:0;left:0;width:100%;height:100%;"></div>
-    </div>`;
+    if(item.tipo==="pasta"){
+      html += `
+      <div class="item" onclick="entrarPasta('${item.id}')">
+        ${svgCor(item.capa)}
+        <div class="itemNome">${item.nome}</div>
+      </div>`;
+    } else {
+      html += `
+      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
+        📄
+        <div class="itemNome">${item.nome}</div>
+      </div>`;
+    }
   });
 
   document.getElementById("lista").innerHTML = html || "Vazio.";
 }
 
-/* -----------------------------
-   MENU 3 PONTOS
------------------------------ */
-function abrirMenu(ev,id){
-  ev.stopPropagation();
-  fecharMenus();
-  document.getElementById("menu-"+id).style.display="block";
+/* =====================================================
+   SVG DE PASTA — CLEAN
+===================================================== */
+function svgCor(cor){
+  const cores = {
+    azul:"#4F8CF1", verde:"#60D364", amarelo:"#F8D441",
+    laranja:"#F7A654", vermelho:"#F55D5D", roxo:"#BF6AF7",
+    cinza:"#A5A5A5", preto:"#000", rosa:"#E76BAF", marrom:"#A67C52"
+  };
+
+  return `
+  <svg width="52" height="45" viewBox="0 0 24 24">
+    <path fill="${cores[cor]||'#4F8CF1'}" d="M10 4l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5z"/>
+  </svg>`;
 }
 
-function fecharMenus(){
-  document.querySelectorAll(".menuOpc").forEach(m => m.style.display="none");
+/* =====================================================
+   ENTRAR PASTA / VOLTAR
+===================================================== */
+function entrarPasta(id){
+  historicoPastas.push(id);
+  mostrarPasta(id);
 }
 
-document.body.onclick = () => fecharMenus();
-
-/* -----------------------------
-   RENOMEAR
------------------------------ */
-function abrirRenomear(id){
-  idSelecionado = id;
-  const item = dados.find(x=>x.id===id);
-  document.getElementById("novoNome").value = item.nome;
-  document.getElementById("popupRenomear").style.display="flex";
+function voltarPasta(){
+  if(historicoPastas.length>1){
+    historicoPastas.pop();
+    mostrarPasta(historicoPastas[historicoPastas.length-1]);
+  }
 }
 
-function fecharRenomear(){
-  document.getElementById("popupRenomear").style.display="none";
+/* =====================================================
+   PESQUISAR
+===================================================== */
+function pesquisar(){
+  const q = document.getElementById("busca").value.toLowerCase();
+
+  const itens = dados.filter(p =>
+    p.pai===pastaAtual &&
+    p.nome.toLowerCase().includes(q)
+  );
+
+  let html = "";
+
+  itens.forEach(item=>{
+    if(item.tipo==="pasta"){
+      html += `
+      <div class="item" onclick="entrarPasta('${item.id}')">
+        ${svgCor(item.capa)}
+        <div class="itemNome">${item.nome}</div>
+      </div>`;
+    } else {
+      html += `
+      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
+        📄 <div class="itemNome">${item.nome}</div>
+      </div>`;
+    }
+  });
+
+  document.getElementById("lista").innerHTML = html || "Nada encontrado.";
 }
 
-function renomearItem(){
+/* =====================================================
+   POPUP CRIAR PASTA
+===================================================== */
+document.querySelectorAll(".colorSelect").forEach(c=>{
+  c.onclick = ()=>{
+    document.querySelectorAll(".colorSelect")
+      .forEach(el=>el.classList.remove("active"));
+    c.classList.add("active");
+    corEscolhida = c.dataset.cor;
+  };
+});
+
+function abrirPopupCriar(){
+  document.getElementById("popupCriar").style.display="flex";
+}
+
+function fecharPopupCriar(){
+  document.getElementById("popupCriar").style.display="none";
+  document.getElementById("nomePasta").value="";
+  corEscolhida=null;
+}
+
+function criarPasta(){
+  const nome = document.getElementById("nomePasta").value.trim();
+  if(!nome) return alert("Digite o nome.");
+  if(!corEscolhida) return alert("Escolha a cor.");
+
   fetch(API,{
     method:"POST",
     body:JSON.stringify({
-      action:"renomear",
-      id:idSelecionado,
-      novoNome:document.getElementById("novoNome").value,
-      usuario:usuario
-    })
-  }).then(()=>{ fecharRenomear(); carregar(); });
-}
-
-/* -----------------------------
-   MOVER
------------------------------ */
-function abrirMover(id){
-  idSelecionado = id;
-  const sel = document.getElementById("moverDestino");
-  sel.innerHTML = "";
-
-  dados.filter(p=>p.tipo==="pasta")
-      .forEach(p=>{
-        sel.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
-      });
-
-  document.getElementById("popupMover").style.display="flex";
-}
-
-function fecharMover(){
-  document.getElementById("popupMover").style.display="none";
-}
-
-function moverItem(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"mover",
-      id:idSelecionado,
-      novoPai:document.getElementById("moverDestino").value,
-      usuario:usuario
-    })
-  }).then(()=>{ fecharMover(); carregar(); });
-}
-
-/* -----------------------------
-   EXCLUIR
------------------------------ */
-function excluir(id,nome){
-  if(!confirm("Excluir "+nome+"?")) return;
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"excluir",
-      id:id,
+      action:"criarPasta",
+      nome:nome,
+      cor:corEscolhida,
       usuario:usuario,
-      nome:nome
+      pai:pastaAtual
     })
-  }).then(()=>carregar());
+  }).then(()=>{
+    fecharPopupCriar();
+    carregar();
+  });
 }
 
-/* -----------------------------
-   UPLOAD
------------------------------ */
-function abrirUpload(){ document.getElementById("popupUpload").style.display="flex"; }
-function fecharUpload(){ document.getElementById("popupUpload").style.display="none"; }
+/* =====================================================
+   POPUP UPLOAD — DRAG & DROP
+===================================================== */
+function abrirUpload(){
+  document.getElementById("popupUpload").style.display="flex";
+}
+
+function fecharUpload(){
+  document.getElementById("popupUpload").style.display="none";
+}
 
 function preencherDestinoUpload(){
-  const sel = document.getElementById("uploadDestino");
-  sel.innerHTML="";
+  const select = document.getElementById("uploadDestino");
+  select.innerHTML="";
+
   dados.filter(p=>p.tipo==="pasta")
-      .forEach(p=>{
-        sel.innerHTML+=`<option value="${p.id}">${p.nome}</option>`;
-      });
+       .forEach(p=>{
+         select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+       });
 }
 
+/* drag */
 const drop = document.getElementById("dropArea");
+
 drop.onclick = ()=> document.getElementById("uploadInput").click();
-drop.ondragover = e=>{ e.preventDefault(); drop.style.background="#e6f0ff"; };
-drop.ondragleave = ()=> drop.style.background="";
+drop.ondragover = e=>{
+  e.preventDefault();
+  drop.classList.add("dragover");
+};
+drop.ondragleave = ()=> drop.classList.remove("dragover");
 drop.ondrop = e=>{
   e.preventDefault();
+  drop.classList.remove("dragover");
   enviarArquivos(e.dataTransfer.files);
 };
 
 function enviarUpload(){
-  enviarArquivos(document.getElementById("uploadInput").files);
+  const input = document.getElementById("uploadInput");
+  enviarArquivos(input.files);
 }
 
 function enviarArquivos(files){
-
   const destino = document.getElementById("uploadDestino").value;
 
   [...files].forEach(file=>{
     const reader = new FileReader();
 
     reader.onload = ()=>{
+      const base64 = reader.result.split(",")[1];
 
       fetch(API,{
         method:"POST",
         body:JSON.stringify({
           action:"upload",
-          base64:reader.result.split(",")[1],
+          base64:base64,
           mime:file.type,
           nome:file.name,
           usuario:usuario,
@@ -506,12 +574,14 @@ function enviarArquivos(files){
   fecharUpload();
 }
 
-/* -----------------------------
+/* =====================================================
    PREVIEW
------------------------------ */
+===================================================== */
 function abrirArquivo(nome,url){
-  document.getElementById("modalPreview").src=url;
-  document.getElementById("modalTitulo").innerText=nome;
+  document.getElementById("modalTitulo").innerText = nome;
+  document.getElementById("modalPreview").src = url;
+  linkAtual = url;
+
   document.getElementById("modal").style.display="flex";
 }
 
@@ -519,46 +589,10 @@ function fecharModal(){
   document.getElementById("modal").style.display="none";
 }
 
-/* -----------------------------
-   POPUP CRIAR PASTA
------------------------------ */
-function abrirPopupCriar(){ document.getElementById("popupCriar").style.display="flex"; }
-function fecharPopupCriar(){ document.getElementById("popupCriar").style.display="none"; }
 
-function criarPasta(){
-  const nome = document.getElementById("nomePasta").value.trim();
-  if(!nome) return alert("Digite o nome.");
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"criarPasta",
-      nome:nome,
-      cor:"azul",
-      usuario:usuario,
-      pai:pastaAtual
-    })
-  }).then(()=>{ fecharPopupCriar(); carregar(); });
-}
-
-/* -----------------------------
-   NAVEGAÇÃO
------------------------------ */
-function entrarPasta(id){
-  historicoPastas.push(id);
-  mostrarPasta(id);
-}
-
-function voltarPasta(){
-  if(historicoPastas.length>1){
-    historicoPastas.pop();
-    mostrarPasta(historicoPastas.at(-1));
-  }
-}
-
-/* -----------------------------
+/* =====================================================
    INICIAR
------------------------------ */
+===================================================== */
 carregar();
 
 </script>
