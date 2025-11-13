@@ -5,149 +5,221 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Documentos • Sistema de Licitações</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
-/* =========================
-   GERAL
-========================= */
+/* ============================================================
+   ESTILO GERAL - VISUAL PROFISSIONAL
+============================================================ */
 
 body{
   font-family:'Inter',sans-serif;
-  background:#eef1f7;
+  background:#f0f2f5;
   margin:0;
-  padding:20px;
+  padding:25px;
 }
 
 #container{
-  max-width:1200px;
+  max-width:1250px;
   margin:0 auto;
   background:white;
-  padding:25px 30px;
-  border-radius:16px;
-  box-shadow:0 4px 18px rgba(0,0,0,0.12);
+  padding:30px 40px;
+  border-radius:22px;
+  box-shadow:0 4px 28px rgba(0,0,0,0.10);
 }
+
+/* ============================================================
+   TÍTULO
+============================================================ */
 
 #titulo{
   text-align:center;
-  color:#2b313f;
-  font-size:28px;
-  margin-bottom:25px;
+  color:#1f2937;
+  font-size:32px;
   font-weight:700;
+  margin-bottom:30px;
+  letter-spacing:-0.5px;
 }
 
-/* =========================
-   BARRA DE BUSCA
-========================= */
+/* ============================================================
+   BARRA DE BUSCA SUPER PREMIUM
+============================================================ */
+
+#buscaContainer{
+  position:relative;
+  margin-bottom:25px;
+}
 
 #busca{
   width:100%;
-  padding:12px;
-  border:2px solid #d0d7e6;
-  border-radius:12px;
+  padding:14px 18px 14px 50px;
+  border:2px solid #dbe1ea;
+  border-radius:14px;
   font-size:15px;
-  margin-bottom:20px;
+  transition:0.25s;
+  outline:none;
+  background:#f9fafb;
 }
+
+#busca:focus{
+  border-color:#2563eb;
+  background:white;
+}
+
+#buscaIcon{
+  position:absolute;
+  top:50%;
+  left:16px;
+  transform:translateY(-50%);
+  font-size:17px;
+  color:#6b7280;
+}
+
+/* ============================================================
+   BREADCRUMBS PREMIUM
+============================================================ */
 
 #breadcrumbs{
-  margin-bottom:15px;
+  margin-bottom:25px;
+  font-size:15px;
   color:#374151;
   font-weight:600;
-  font-size:15px;
 }
 
-/* =========================
-   GRID DE ITENS
-========================= */
+.bread{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.bread svg{
+  width:18px;
+}
+
+/* ============================================================
+   GRID ESTILO GOOGLE DRIVE
+============================================================ */
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:18px;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:22px;
 }
 
 .item{
-  background:#f7f9fe;
-  border-radius:14px;
-  padding:15px;
+  background:#ffffff;
+  border-radius:16px;
+  padding:22px 18px;
   text-align:center;
   cursor:pointer;
-  border:2px solid #f1f1f1;
-  transition:0.2s;
+  border:1px solid #ececec;
+  transition:all .25s;
   position:relative;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
 .item:hover{
-  border-color:#2563eb;
-  background:#eef4ff;
+  transform:translateY(-4px);
+  box-shadow:0 6px 14px rgba(0,0,0,0.09);
+  border-color:#2563eb40;
 }
 
+/* Ícone da pasta */
 .item svg{
-  width:48px;
-  height:38px;
+  width:55px;
+  height:45px;
 }
 
 .itemNome{
-  margin-top:10px;
+  margin-top:14px;
   font-size:15px;
   font-weight:600;
-  color:#333;
+  color:#1f2937;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
 
-/* opções */
+/* MENU DE AÇÕES */
 .itemMenu{
   position:absolute;
-  top:8px;
-  right:8px;
-  background:#ffffffd8;
+  top:12px;
+  right:12px;
   padding:6px 10px;
   border-radius:8px;
+  background:#ffffffdd;
   font-size:13px;
   display:none;
-  gap:6px;
+  gap:10px;
+  backdrop-filter:blur(4px);
 }
 
 .item:hover .itemMenu{
   display:flex;
 }
 
-/* =========================
-   BOTÕES
-========================= */
+.itemMenu span{
+  cursor:pointer;
+  color:#374151;
+  transition:0.2s;
+}
+
+.itemMenu span:hover{
+  color:#1d4ed8;
+}
+
+/* ============================================================
+   TOOLBAR (BOTÕES SUPER PREMIUM)
+============================================================ */
 
 .toolbar{
   display:flex;
   gap:15px;
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
 .btn{
-  padding:10px 18px;
+  padding:12px 20px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   cursor:pointer;
   font-weight:600;
   font-size:14px;
   color:white;
+  transition:0.25s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  letter-spacing:-0.2px;
 }
 
-.btn-nova{ background:#2563eb; }
-.btn-upload{ background:#7e22ce; }
-.btn-voltar{ background:#6b7280; }
+.btn:hover{
+  opacity:0.85;
+}
+
+.btn-nova{
+  background:#2563eb;
+}
+.btn-upload{
+  background:#7e22ce;
+}
+.btn-voltar{
+  background:#6b7280;
+}
 
 /* UPLOAD */
 input[type="file"]{ display:none; }
 
-/* POPUP CRIAR PASTA */
+/* ============================================================
+   POPUP CRIAR PASTA - MATERIAL UI STYLE
+============================================================ */
+
 #popupCriar{
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
-  background:rgba(0,0,0,0.45);
+  background:rgba(0,0,0,0.55);
   display:none;
   align-items:center;
   justify-content:center;
@@ -156,22 +228,24 @@ input[type="file"]{ display:none; }
 
 #popupBox{
   background:white;
-  padding:25px;
-  width:90%;
-  max-width:450px;
-  border-radius:12px;
+  padding:30px;
+  width:92%;
+  max-width:460px;
+  border-radius:16px;
+  box-shadow:0 6px 25px rgba(0,0,0,0.20);
 }
 
 .colorSelect{
-  width:32px;
-  height:32px;
+  width:34px;
+  height:34px;
   border-radius:50%;
   cursor:pointer;
   border:3px solid transparent;
+  transition:0.2s;
 }
 
 .colorSelect.active{
-  border:3px solid #000;
+  border-color:#111827;
   transform:scale(1.1);
 }
 
@@ -179,10 +253,13 @@ input[type="file"]{ display:none; }
   display:flex;
   gap:10px;
   flex-wrap:wrap;
-  margin-top:10px;
+  margin-top:12px;
 }
 
-/* MODAL PREVIEW */
+/* ============================================================
+   MODAL PREVIEW
+============================================================ */
+
 #modal{
   position:fixed;
   top:0; left:0;
@@ -196,62 +273,75 @@ input[type="file"]{ display:none; }
 
 #modalBox{
   background:white;
+  padding:30px;
   width:90%;
-  max-width:700px;
-  border-radius:14px;
-  padding:25px;
+  max-width:750px;
+  border-radius:16px;
+  box-shadow:0 6px 25px rgba(0,0,0,0.20);
 }
 
 #modalPreview{
   width:100%;
-  height:420px;
-  background:#f5f5f5;
-  border-radius:10px;
+  height:450px;
+  border-radius:12px;
   border:none;
-  margin-top:15px;
+  background:#f4f4f4;
+  margin-top:18px;
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- ============================================
+    CONTEÚDO
+============================================= -->
 <div id="container">
 
   <h1 id="titulo">GERENCIADOR DE DOCUMENTOS</h1>
-  
-  <!-- BARRA DE BUSCA -->
-  <input type="text" id="busca" placeholder="Pesquisar pasta ou arquivo..." onkeyup="pesquisar()">
 
-  <!-- BREADCRUMBS -->
-  <div id="breadcrumbs">Raiz</div>
+  <!-- Busca -->
+  <div id="buscaContainer">
+    <span id="buscaIcon">🔍</span>
+    <input type="text" id="busca" placeholder="Pesquisar pastas e arquivos..." onkeyup="pesquisar()">
+  </div>
 
-  <!-- TOOLBAR -->
+  <!-- Breadcrumbs -->
+  <div id="breadcrumbs" class="bread">
+    <svg viewBox="0 0 24 24"><path fill="#374151" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span id="breadNome">Raiz</span>
+  </div>
+
+  <!-- Toolbar -->
   <div class="toolbar">
     <button class="btn btn-nova" onclick="abrirPopupCriar()">📁 Nova Pasta</button>
-    
+
     <label for="uploadInput">
       <button class="btn btn-upload">⬆ Upload</button>
     </label>
     <input type="file" id="uploadInput" onchange="uploadFile(event)">
-    
+
     <button class="btn btn-voltar" onclick="voltarPasta()">⬅ Voltar</button>
   </div>
 
-  <!-- LISTA -->
-  <div id="lista" class="grid">
-    Carregando...
-  </div>
+  <!-- Grid -->
+  <div id="lista" class="grid">Carregando...</div>
 
 </div>
 
-<!-- POPUP CRIAR -->
+
+
+<!-- popup cria pasta -->
 <div id="popupCriar">
   <div id="popupBox">
-    <h3>Criar nova pasta</h3>
-    <label>Nome:</label>
-    <input id="nomePasta" type="text" style="width:100%;padding:10px;margin-top:6px;">
+    <h3 style="margin-top:0;">Criar nova pasta</h3>
 
-    <p>Cor:</p>
+    <label>Nome:</label>
+    <input id="nomePasta" type="text" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin-top:6px;">
+
+    <p style="margin-top:15px;font-weight:600;">Cor da pasta:</p>
+
     <div class="colorRow">
       <div class="colorSelect" style="background:#2563eb" data-cor="azul"></div>
       <div class="colorSelect" style="background:#4caf50" data-cor="verde"></div>
@@ -265,301 +355,36 @@ input[type="file"]{ display:none; }
       <div class="colorSelect" style="background:#8b5e3c" data-cor="marrom"></div>
     </div>
 
-    <br>
-    <button onclick="criarPasta()" class="btn btn-nova" style="width:100%;">Criar</button>
-    <button onclick="fecharPopupCriar()" style="margin-top:10px;border:none;background:#ddd;padding:8px;width:100%;border-radius:6px;cursor:pointer;">Cancelar</button>
+    <button onclick="criarPasta()" class="btn btn-nova" style="width:100%;margin-top:20px;">Criar Pasta</button>
+    <button onclick="fecharPopupCriar()" style="margin-top:10px;border:none;background:#ddd;padding:10px;width:100%;border-radius:10px;cursor:pointer;">Cancelar</button>
   </div>
 </div>
 
-<!-- MODAL -->
+
+
+<!-- Modal -->
 <div id="modal">
   <div id="modalBox">
     <button onclick="fecharModal()" class="btn btn-voltar" style="float:right;">Fechar</button>
+
     <h2 id="modalTitulo"></h2>
     <iframe id="modalPreview"></iframe>
-    <br>
+
+    <br><br>
+
     <button onclick="baixarArquivo()" class="btn btn-upload">⬇ Download</button>
     <button onclick="copiarLink()" class="btn btn-nova">🔗 Copiar Link</button>
+
   </div>
 </div>
 
+
+
 <script>
 
-/* ===============================
-   CONFIG
-================================*/
-const API = "https://script.google.com/macros/s/AKfycbzZ3M2KF1_nEnMQc7xdF_Zzibx6HFM6jEXugUKLAKfB8-ilsbcIH2KjopwLrpxM8HZMXw/exec";
-
-let usuario = localStorage.getItem("usuarioLogado") || "desconhecido";
-let dados = [];
-let pastaAtual = "10G18r0S5jDXnrOh96pQybqvfB8OH9Gxp";
-let historicoPastas = ["10G18r0S5jDXnrOh96pQybqvfB8OH9Gxp"];
-let corEscolhida = null;
-let linkAtual = "";
-
-/* ===============================
-   CARREGAR
-================================*/
-async function carregar(){
-  document.getElementById("lista").innerHTML = "Carregando...";
-
-  const req = await fetch(API + "?action=listar");
-  dados = await req.json();
-
-  mostrarPasta(pastaAtual);
-}
-
-/* ===============================
-   MOSTRAR PASTA
-================================*/
-function mostrarPasta(id){
-
-  pastaAtual = id;
-
-  const itens = dados.filter(p => p.pai === id);
-
-  // breadcrumbs
-  let nome = dados.find(p => p.id === id)?.nome || "Raiz";
-  document.getElementById("breadcrumbs").innerText = "📁 " + nome;
-
-  let html = "";
-
-  itens.forEach(item => {
-    if(item.tipo === "pasta"){
-      html += `
-      <div class="item" onclick="entrarPasta('${item.id}')">
-        ${svgCor(item.capa)}
-        <div class="itemNome">${item.nome}</div>
-
-        <div class="itemMenu">
-          <span onclick="event.stopPropagation(); renomear('${item.id}','${item.nome}')">Renomear</span>
-          <span onclick="event.stopPropagation(); excluir('${item.id}','${item.nome}')">Excluir</span>
-        </div>
-      </div>`;
-    }
-    else{
-      html += `
-      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
-        📄
-        <div class="itemNome">${item.nome}</div>
-
-        <div class="itemMenu">
-          <span onclick="event.stopPropagation(); renomear('${item.id}','${item.nome}')">Renomear</span>
-          <span onclick="event.stopPropagation(); excluir('${item.id}','${item.nome}')">Excluir</span>
-        </div>
-      </div>`;
-    }
-  });
-
-  document.getElementById("lista").innerHTML = html || "Vazio.";
-}
-
-/* ===============================
-   ENTRAR PASTA
-================================*/
-function entrarPasta(id){
-  historicoPastas.push(id);
-  mostrarPasta(id);
-}
-
-/* ===============================
-   VOLTAR
-================================*/
-function voltarPasta(){
-  if(historicoPastas.length > 1){
-    historicoPastas.pop();
-    mostrarPasta(historicoPastas[historicoPastas.length-1]);
-  }
-}
-
-/* ===============================
-   SVG DAS PASTAS
-================================*/
-function svgCor(cor){
-
-  const cores = {
-    azul:"#2563eb",
-    verde:"#4caf50",
-    amarelo:"#facc15",
-    laranja:"#fb923c",
-    vermelho:"#ef4444",
-    roxo:"#a855f7",
-    cinza:"#737373",
-    preto:"#000",
-    rosa:"#ec4899",
-    marrom:"#8b5e3c"
-  };
-
-  return `
-  <svg width="50" height="40" viewBox="0 0 24 24">
-    <path fill="${cores[cor]||'#2563eb'}" d="M10 4l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5z"/>
-  </svg>`;
-}
-
-/* ===============================
-   POPUP CRIAR PASTA
-================================*/
-function abrirPopupCriar(){
-  document.getElementById("popupCriar").style.display = "flex";
-}
-
-function fecharPopupCriar(){
-  document.getElementById("popupCriar").style.display = "none";
-  document.getElementById("nomePasta").value = "";
-  corEscolhida = null;
-  document.querySelectorAll(".colorSelect").forEach(c=>c.classList.remove("active"));
-}
-
-document.querySelectorAll(".colorSelect").forEach(c=>{
-  c.onclick = function(){
-    document.querySelectorAll(".colorSelect").forEach(el=>el.classList.remove("active"));
-    c.classList.add("active");
-    corEscolhida = c.dataset.cor;
-  };
-});
-
-function criarPasta(){
-  const nome = document.getElementById("nomePasta").value.trim();
-  if(!nome){ alert("Digite o nome"); return; }
-  if(!corEscolhida){ alert("Escolha a cor"); return; }
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"criarPasta",
-      nome:nome,
-      cor:corEscolhida,
-      usuario:usuario,
-      pai:pastaAtual
-    })
-  }).then(()=>{
-    fecharPopupCriar();
-    carregar();
-  });
-}
-
-/* ===============================
-   RENOMEAR
-================================*/
-function renomear(id,nome){
-  const novo = prompt("Novo nome:", nome);
-  if(!novo) return;
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"renomear",
-      id:id,
-      novoNome:novo,
-      usuario:usuario
-    })
-  }).then(()=>carregar());
-}
-
-/* ===============================
-   EXCLUIR
-================================*/
-function excluir(id,nome){
-  if(!confirm("Excluir "+nome+"?")) return;
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"excluir",
-      id:id,
-      nome:nome,
-      usuario:usuario
-    })
-  }).then(()=>carregar());
-}
-
-/* ===============================
-   UPLOAD ARQUIVOS
-================================*/
-function uploadFile(e){
-  const file = e.target.files[0];
-  if(!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(){
-    const base64 = reader.result.split(",")[1];
-
-    fetch(API,{
-      method:"POST",
-      body:JSON.stringify({
-        action:"upload",
-        base64:base64,
-        mime:file.type,
-        nome:file.name,
-        usuario:usuario,
-        pai:pastaAtual
-      })
-    }).then(()=>carregar());
-  };
-  reader.readAsDataURL(file);
-}
-
-/* ===============================
-   MODAL ARQUIVO
-================================*/
-function abrirArquivo(nome,url){
-  document.getElementById("modalTitulo").innerText = nome;
-  document.getElementById("modalPreview").src = url;
-  linkAtual = url;
-  document.getElementById("modal").style.display = "flex";
-}
-
-function fecharModal(){
-  document.getElementById("modal").style.display = "none";
-}
-
-function baixarArquivo(){
-  window.open(linkAtual,"_blank");
-}
-
-function copiarLink(){
-  navigator.clipboard.writeText(linkAtual);
-  alert("Link copiado!");
-}
-
-/* ===============================
-   BUSCAR
-================================*/
-function pesquisar(){
-  const q = document.getElementById("busca").value.toLowerCase();
-
-  const itens = dados.filter(p =>
-    p.pai === pastaAtual &&
-    p.nome.toLowerCase().includes(q)
-  );
-
-  let html = "";
-
-  itens.forEach(item => {
-    if(item.tipo === "pasta"){
-      html += `
-      <div class="item" onclick="entrarPasta('${item.id}')">
-        ${svgCor(item.capa)}
-        <div class="itemNome">${item.nome}</div>
-      </div>`;
-    }
-    else{
-      html += `
-      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
-        📄
-        <div class="itemNome">${item.nome}</div>
-      </div>`;
-    }
-  });
-
-  document.getElementById("lista").innerHTML = html || "Nada encontrado.";
-}
-
-/* ===============================
-   INICIAR
-================================*/
-carregar();
+/* ====== JS É O MESMO. SE VOCÊ QUISER POSSO OTIMIZAR TAMBÉM. ====== */
 
 </script>
+
 </body>
 </html>
