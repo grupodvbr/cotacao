@@ -21,7 +21,7 @@ body{
 }
 
 #container{
-  max-width:1100px;
+  max-width:1200px;
   margin:0 auto;
   background:white;
   padding:25px 30px;
@@ -54,6 +54,7 @@ body{
   margin-bottom:15px;
   color:#374151;
   font-weight:600;
+  font-size:15px;
 }
 
 /* =========================
@@ -74,6 +75,7 @@ body{
   cursor:pointer;
   border:2px solid #f1f1f1;
   transition:0.2s;
+  position:relative;
 }
 
 .item:hover{
@@ -94,6 +96,23 @@ body{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+}
+
+/* opções */
+.itemMenu{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:#ffffffd8;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:13px;
+  display:none;
+  gap:6px;
+}
+
+.item:hover .itemMenu{
+  display:flex;
 }
 
 /* =========================
@@ -163,7 +182,7 @@ input[type="file"]{ display:none; }
   margin-top:10px;
 }
 
-/* MODAL DE ARQUIVO */
+/* MODAL PREVIEW */
 #modal{
   position:fixed;
   top:0; left:0;
@@ -224,3 +243,323 @@ input[type="file"]{ display:none; }
   </div>
 
 </div>
+
+<!-- POPUP CRIAR -->
+<div id="popupCriar">
+  <div id="popupBox">
+    <h3>Criar nova pasta</h3>
+    <label>Nome:</label>
+    <input id="nomePasta" type="text" style="width:100%;padding:10px;margin-top:6px;">
+
+    <p>Cor:</p>
+    <div class="colorRow">
+      <div class="colorSelect" style="background:#2563eb" data-cor="azul"></div>
+      <div class="colorSelect" style="background:#4caf50" data-cor="verde"></div>
+      <div class="colorSelect" style="background:#facc15" data-cor="amarelo"></div>
+      <div class="colorSelect" style="background:#fb923c" data-cor="laranja"></div>
+      <div class="colorSelect" style="background:#ef4444" data-cor="vermelho"></div>
+      <div class="colorSelect" style="background:#a855f7" data-cor="roxo"></div>
+      <div class="colorSelect" style="background:#737373" data-cor="cinza"></div>
+      <div class="colorSelect" style="background:#000000" data-cor="preto"></div>
+      <div class="colorSelect" style="background:#ec4899" data-cor="rosa"></div>
+      <div class="colorSelect" style="background:#8b5e3c" data-cor="marrom"></div>
+    </div>
+
+    <br>
+    <button onclick="criarPasta()" class="btn btn-nova" style="width:100%;">Criar</button>
+    <button onclick="fecharPopupCriar()" style="margin-top:10px;border:none;background:#ddd;padding:8px;width:100%;border-radius:6px;cursor:pointer;">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div id="modalBox">
+    <button onclick="fecharModal()" class="btn btn-voltar" style="float:right;">Fechar</button>
+    <h2 id="modalTitulo"></h2>
+    <iframe id="modalPreview"></iframe>
+    <br>
+    <button onclick="baixarArquivo()" class="btn btn-upload">⬇ Download</button>
+    <button onclick="copiarLink()" class="btn btn-nova">🔗 Copiar Link</button>
+  </div>
+</div>
+
+<script>
+
+/* ===============================
+   CONFIG
+================================*/
+const API = "https://script.google.com/macros/s/AKfycbyufyQuT4p-ifUvwSCfqROCpdNCiyk92OUrRRfLSmtghJRXyxEcyVDa_648lBtcRorb0w/exec";
+
+let usuario = localStorage.getItem("usuarioLogado") || "desconhecido";
+let dados = [];
+let pastaAtual = "10G18r0S5jDXnrOh96pQybqvfB8OH9Gxp";
+let historicoPastas = ["10G18r0S5jDXnrOh96pQybqvfB8OH9Gxp"];
+let corEscolhida = null;
+let linkAtual = "";
+
+/* ===============================
+   CARREGAR
+================================*/
+async function carregar(){
+  document.getElementById("lista").innerHTML = "Carregando...";
+
+  const req = await fetch(API + "?action=listar");
+  dados = await req.json();
+
+  mostrarPasta(pastaAtual);
+}
+
+/* ===============================
+   MOSTRAR PASTA
+================================*/
+function mostrarPasta(id){
+
+  pastaAtual = id;
+
+  const itens = dados.filter(p => p.pai === id);
+
+  // breadcrumbs
+  let nome = dados.find(p => p.id === id)?.nome || "Raiz";
+  document.getElementById("breadcrumbs").innerText = "📁 " + nome;
+
+  let html = "";
+
+  itens.forEach(item => {
+    if(item.tipo === "pasta"){
+      html += `
+      <div class="item" onclick="entrarPasta('${item.id}')">
+        ${svgCor(item.capa)}
+        <div class="itemNome">${item.nome}</div>
+
+        <div class="itemMenu">
+          <span onclick="event.stopPropagation(); renomear('${item.id}','${item.nome}')">Renomear</span>
+          <span onclick="event.stopPropagation(); excluir('${item.id}','${item.nome}')">Excluir</span>
+        </div>
+      </div>`;
+    }
+    else{
+      html += `
+      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
+        📄
+        <div class="itemNome">${item.nome}</div>
+
+        <div class="itemMenu">
+          <span onclick="event.stopPropagation(); renomear('${item.id}','${item.nome}')">Renomear</span>
+          <span onclick="event.stopPropagation(); excluir('${item.id}','${item.nome}')">Excluir</span>
+        </div>
+      </div>`;
+    }
+  });
+
+  document.getElementById("lista").innerHTML = html || "Vazio.";
+}
+
+/* ===============================
+   ENTRAR PASTA
+================================*/
+function entrarPasta(id){
+  historicoPastas.push(id);
+  mostrarPasta(id);
+}
+
+/* ===============================
+   VOLTAR
+================================*/
+function voltarPasta(){
+  if(historicoPastas.length > 1){
+    historicoPastas.pop();
+    mostrarPasta(historicoPastas[historicoPastas.length-1]);
+  }
+}
+
+/* ===============================
+   SVG DAS PASTAS
+================================*/
+function svgCor(cor){
+
+  const cores = {
+    azul:"#2563eb",
+    verde:"#4caf50",
+    amarelo:"#facc15",
+    laranja:"#fb923c",
+    vermelho:"#ef4444",
+    roxo:"#a855f7",
+    cinza:"#737373",
+    preto:"#000",
+    rosa:"#ec4899",
+    marrom:"#8b5e3c"
+  };
+
+  return `
+  <svg width="50" height="40" viewBox="0 0 24 24">
+    <path fill="${cores[cor]||'#2563eb'}" d="M10 4l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5z"/>
+  </svg>`;
+}
+
+/* ===============================
+   POPUP CRIAR PASTA
+================================*/
+function abrirPopupCriar(){
+  document.getElementById("popupCriar").style.display = "flex";
+}
+
+function fecharPopupCriar(){
+  document.getElementById("popupCriar").style.display = "none";
+  document.getElementById("nomePasta").value = "";
+  corEscolhida = null;
+  document.querySelectorAll(".colorSelect").forEach(c=>c.classList.remove("active"));
+}
+
+document.querySelectorAll(".colorSelect").forEach(c=>{
+  c.onclick = function(){
+    document.querySelectorAll(".colorSelect").forEach(el=>el.classList.remove("active"));
+    c.classList.add("active");
+    corEscolhida = c.dataset.cor;
+  };
+});
+
+function criarPasta(){
+  const nome = document.getElementById("nomePasta").value.trim();
+  if(!nome){ alert("Digite o nome"); return; }
+  if(!corEscolhida){ alert("Escolha a cor"); return; }
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"criarPasta",
+      nome:nome,
+      cor:corEscolhida,
+      usuario:usuario,
+      pai:pastaAtual
+    })
+  }).then(()=>{
+    fecharPopupCriar();
+    carregar();
+  });
+}
+
+/* ===============================
+   RENOMEAR
+================================*/
+function renomear(id,nome){
+  const novo = prompt("Novo nome:", nome);
+  if(!novo) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"renomear",
+      id:id,
+      novoNome:novo,
+      usuario:usuario
+    })
+  }).then(()=>carregar());
+}
+
+/* ===============================
+   EXCLUIR
+================================*/
+function excluir(id,nome){
+  if(!confirm("Excluir "+nome+"?")) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"excluir",
+      id:id,
+      nome:nome,
+      usuario:usuario
+    })
+  }).then(()=>carregar());
+}
+
+/* ===============================
+   UPLOAD ARQUIVOS
+================================*/
+function uploadFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(){
+    const base64 = reader.result.split(",")[1];
+
+    fetch(API,{
+      method:"POST",
+      body:JSON.stringify({
+        action:"upload",
+        base64:base64,
+        mime:file.type,
+        nome:file.name,
+        usuario:usuario,
+        pai:pastaAtual
+      })
+    }).then(()=>carregar());
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ===============================
+   MODAL ARQUIVO
+================================*/
+function abrirArquivo(nome,url){
+  document.getElementById("modalTitulo").innerText = nome;
+  document.getElementById("modalPreview").src = url;
+  linkAtual = url;
+  document.getElementById("modal").style.display = "flex";
+}
+
+function fecharModal(){
+  document.getElementById("modal").style.display = "none";
+}
+
+function baixarArquivo(){
+  window.open(linkAtual,"_blank");
+}
+
+function copiarLink(){
+  navigator.clipboard.writeText(linkAtual);
+  alert("Link copiado!");
+}
+
+/* ===============================
+   BUSCAR
+================================*/
+function pesquisar(){
+  const q = document.getElementById("busca").value.toLowerCase();
+
+  const itens = dados.filter(p =>
+    p.pai === pastaAtual &&
+    p.nome.toLowerCase().includes(q)
+  );
+
+  let html = "";
+
+  itens.forEach(item => {
+    if(item.tipo === "pasta"){
+      html += `
+      <div class="item" onclick="entrarPasta('${item.id}')">
+        ${svgCor(item.capa)}
+        <div class="itemNome">${item.nome}</div>
+      </div>`;
+    }
+    else{
+      html += `
+      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
+        📄
+        <div class="itemNome">${item.nome}</div>
+      </div>`;
+    }
+  });
+
+  document.getElementById("lista").innerHTML = html || "Nada encontrado.";
+}
+
+/* ===============================
+   INICIAR
+================================*/
+carregar();
+
+</script>
+</body>
+</html>
