@@ -339,7 +339,7 @@ input[type="file"]{ display:none; }
     <h2 id="modalTitulo"></h2>
     <iframe id="modalPreview"></iframe>
     <br>
-    <button onclick="window.open(linkAtual)" class="btn btn-upload">⬇ Download</button>
+    <button onclick="baixarArquivo()" class="btn btn-upload">⬇ Download</button>
     <button onclick="navigator.clipboard.writeText(linkAtual)" class="btn btn-nova">🔗 Copiar Link</button>
   </div>
 </div>
@@ -588,6 +588,15 @@ function abrirArquivo(nome,url){
 function fecharModal(){
   document.getElementById("modal").style.display="none";
 }
+   function baixarArquivo(){
+  const a = document.createElement("a");
+  a.href = linkAtual;
+  a.download = linkAtual.split("/").pop(); // nome automático
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 
 
 /* =====================================================
