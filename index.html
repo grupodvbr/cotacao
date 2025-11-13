@@ -3,245 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LICITAR</title>
+<title>SISTEMA DE LICITAÇÕES</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-/* ====================
-   RESET
-==================== */
-* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
 
-/* ====================
-   SPLASH SCREEN
-==================== */
-#splash {
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: linear-gradient(135deg, #002244, #004488);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+/* ===========================
+   LOGIN MODERNO
+=========================== */
+#loginPage{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#0a0f15;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;color:white;
   z-index:9999;
-  animation: fadeOut 1.8s forwards;
-  animation-delay: 1.5s;
 }
-
-#splash h1 {
-  color:#fff;
-  font-size:3.2rem;
-  letter-spacing:4px;
-  animation: glow 1.5s infinite alternate;
-}
-
-@keyframes glow {
-  from { text-shadow:0 0 15px #fff; }
-  to { text-shadow:0 0 25px #aaccff; }
-}
-
-@keyframes fadeOut {
-  to { opacity:0; visibility:hidden; }
-}
-
-/* ====================
-   LAYOUT GERAL
-==================== */
-body {
-  background:#f1f3f7;
-  display:flex;
-  height:100vh;
-  overflow:hidden;
-}
-
-/* ====================
-   MENU LATERAL
-==================== */
-#sidebar {
-  width:230px;
-  background:#1a1f2e;
-  color:white;
-  padding:20px 10px;
-  transition:0.3s;
-}
-
-#sidebar.minimized {
-  width:70px;
-}
-
-#sidebar h2 {
-  font-size:20px;
-  margin-bottom:20px;
+#loginBox{
+  background:#111822;
+  padding:40px;
+  width:90%;max-width:380px;
+  border-radius:18px;
+  box-shadow:0 0 25px rgba(0,0,0,0.4);
   text-align:center;
 }
+#loginBox h1{
+  margin-bottom:25px;font-size:28px;letter-spacing:2px;
+}
+.campo{
+  width:100%;padding:12px;margin-bottom:15px;
+  border:none;border-radius:8px;font-size:15px;
+}
+#btnLogin{
+  width:100%;padding:12px;
+  background:#1a73e8;border:none;color:white;
+  border-radius:8px;font-weight:600;cursor:pointer;
+}
+#btnLogin:hover{background:#135ec7;}
+#loginErro{color:#ff6b6b;margin-top:10px;height:20px;}
 
-#toggleBtn {
-  background:none;
-  border:none;
-  color:white;
-  font-size:26px;
-  cursor:pointer;
-  width:100%;
-  margin-bottom:20px;
+/* ===========================
+   PAINEL NORMAL (APÓS LOGIN)
+=========================== */
+body{background:#f2f4f8;padding:20px;}
+h1{text-align:center;margin-bottom:20px;}
+button{
+  padding:10px 18px;border:none;border-radius:8px;
+  cursor:pointer;font-weight:600;
+}
+#btnDocs{
+  background:#222;color:white;margin:0 auto 20px;display:block;
 }
 
-.nav-item {
-  padding:12px 10px;
-  background:#2b3248;
-  margin-bottom:10px;
-  border-radius:8px;
-  cursor:pointer;
-  transition:0.2s;
+/* MODAL DOCUMENTOS */
+.modal{
+  display:none;position:fixed;top:0;left:0;
+  width:100%;height:100%;background:rgba(0,0,0,0.6);
+  justify-content:center;align-items:center;z-index:5000;
 }
-
-.nav-item:hover {
-  background:#3c4565;
+.modal-content{
+  background:white;padding:20px;border-radius:12px;
+  width:90%;max-width:850px;max-height:80vh;overflow-y:auto;
 }
-
-/* Esconde texto quando minimiza */
-#sidebar.minimized .nav-text {
-  display:none;
+.close-btn{
+  background:#d9534f;color:white;padding:8px 14px;border:none;
+  border-radius:8px;font-weight:700;cursor:pointer;
 }
-
-/* ====================
-   ÁREA DE CONTEÚDO
-==================== */
-#content {
-  flex:1;
-  padding:25px;
-  overflow:auto;
-}
-
-/* ====================
-   CARDS
-==================== */
-.cards {
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.card {
-  width:150px;
-  background:white;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
-  padding:10px;
-  cursor:pointer;
-  text-align:center;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform:scale(1.05);
-}
-
-.card img {
-  width:100%;
-  height:100px;
-  object-fit:cover;
-  border-radius:8px;
-}
-
-.card p {
-  margin-top:8px;
-  font-size:14px;
-  font-weight:bold;
-}
+.folder{margin:15px 0;font-weight:600;}
+.file,.subfile{margin-left:25px;margin-bottom:6px;}
+a{text-decoration:none;color:#1a73e8;}
 </style>
 </head>
+
 <body>
 
-<!-- ====================
-     SPLASH
-==================== -->
-<div id="splash">
-  <h1>LICITAR</h1>
-</div>
+<!-- =======================
+     LOGIN PAGE
+======================= -->
+<div id="loginPage">
+  <div id="loginBox">
+    <h1>LICITAR</h1>
 
-<!-- ====================
-     MENU LATERAL
-==================== -->
-<div id="sidebar">
-  <button id="toggleBtn">☰</button>
+    <input type="text" id="user" class="campo" placeholder="Usuário">
+    <input type="password" id="pass" class="campo" placeholder="Senha">
 
-  <div class="nav-item" onclick="loadPage('home')">
-    <span class="nav-text">Página Inicial</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('comparacao.html')">
-    <span class="nav-text">Itens</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('pagina2.html')">
-    <span class="nav-text">Documentação</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('pagina3.html')">
-    <span class="nav-text">Relatórios</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('pagina4.html')">
-    <span class="nav-text">Configurações</span>
+    <button id="btnLogin" onclick="fazerLogin()">Entrar</button>
+
+    <div id="loginErro"></div>
   </div>
 </div>
 
-<!-- ====================
-     CONTEÚDO PRINCIPAL
-==================== -->
-<div id="content">
-  <!-- Home padrão -->
-  <div id="homeSection">
-    <h1 style="margin-bottom:20px;">Sistemas de licitações</h1>
+<!-- =======================
+     PAINEL
+======================= -->
+<h1>SISTEMA DE LICITAÇÕES</h1>
 
-    <div class="cards">
-      <div class="card" onclick="window.open('https://www.gov.br/compras/pt-br', '_blank')">
-        <img src="https://github.com/grupodvbr/cotacao/blob/main/paste/Design%20sem%20nome%20(28).png?raw=true">
-        <p>Compras.gov</p>
-      </div>
+<button id="btnDocs" onclick="abrirDocumentos()">📁 DOCUMENTOS</button>
 
-      <div class="card" onclick="window.open('https://minha.effecti.com.br/#/', '_blank')">
-        <img src="https://github.com/grupodvbr/cotacao/blob/main/paste/Design%20sem%20nome%20(29).png?raw=true">
-        <p>Effecti</p>
-      </div>
+<div id="tabela">
+  <p style="text-align:center;color:#777;">Painel carregado. Escolha DOCUMENTOS.</p>
+</div>
 
-      <div class="card" onclick="window.open('https://www.gov.br', '_blank')">
-        <img src="https://picsum.photos/200/200?3">
-        <p>Gov BR</p>
-      </div>
-
-      <div class="card" onclick="window.open('https://brasil.io', '_blank')">
-        <img src="https://picsum.photos/200/200?4">
-        <p>Brasil.io</p>
-      </div>
-
-      <div class="card" onclick="window.open('https://openai.com', '_blank')">
-        <img src="https://picsum.photos/200/200?5">
-        <p>OpenAI</p>
-      </div>
+<!-- =======================
+    MODAL DOCUMENTOS
+======================= -->
+<div class="modal" id="modalDocs">
+  <div class="modal-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h2 id="tituloDocs">DOCUMENTOS</h2>
+      <button class="close-btn" onclick="fecharModal()">Fechar</button>
     </div>
+    <div id="conteudoDocs"></div>
   </div>
-
-  <!-- Iframe para carregar páginas -->
-  <iframe id="iframePage" style="display:none; width:100%; height:90vh; border:none;"></iframe>
 </div>
 
 <script>
-// Toggle da barra lateral
-document.getElementById("toggleBtn").onclick = () => {
-  document.getElementById("sidebar").classList.toggle("minimized");
+/* ============================================
+   VARIÁVEIS DO SISTEMA
+============================================ */
+const API = "https://script.google.com/macros/s/AKfycbzqG0pLLdYrDPKhXxVvqhaxPFDc1U_nQgYXyN1m2FLctzBEwHd2PwIJ9bX9jVmGB-GRWg/exec";
+
+const usuariosTeste = {
+  admin: "1234",
+  joao: "1111",
+  ana: "2222"
 };
 
-// Carregar página interna via iframe
-function loadIframe(url) {
-  document.getElementById("homeSection").style.display = "none";
-  const iframe = document.getElementById("iframePage");
-  iframe.style.display = "block";
-  iframe.src = url;
+/* ============================================
+   LOGIN
+============================================ */
+function fazerLogin(){
+  const u = document.getElementById("user").value.trim().toLowerCase();
+  const p = document.getElementById("pass").value.trim();
+
+  if(usuariosTeste[u] && usuariosTeste[u] === p){
+    localStorage.setItem("usuarioLogado", u);
+
+    registrarAcao("LOGIN", "-", "-", "Painel");
+
+    document.getElementById("loginPage").style.display = "none";
+  } else {
+    document.getElementById("loginErro").innerText = "Usuário ou senha incorretos.";
+  }
 }
 
-// Voltar para Home
-function loadPage(page) {
-  if (page === "home") {
-    document.getElementById("homeSection").style.display = "block";
-    document.getElementById("iframePage").style.display = "none";
+/* Impede entrar sem login */
+window.onload = () => {
+  if(localStorage.getItem("usuarioLogado")){
+    document.getElementById("loginPage").style.display = "none";
   }
+};
+
+/* ============================================
+   REGISTRAR AÇÕES NO GAS
+============================================ */
+function registrarAcao(acao, arquivo, id, pasta){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      usuario: localStorage.getItem("usuarioLogado"),
+      acao: acao,
+      arquivo: arquivo,
+      id: id,
+      pasta: pasta,
+      origem: "Painel"
+    })
+  });
+}
+
+/* ============================================
+   DOCUMENTOS – LISTAR PASTAS E ARQUIVOS
+============================================ */
+async function abrirDocumentos(){
+  registrarAcao("ABRIU GERENCIADOR DE DOCUMENTOS", "-", "-", "DOCUMENTOS");
+
+  document.getElementById("modalDocs").style.display = "flex";
+  document.getElementById("conteudoDocs").innerHTML = `<p>Carregando documentos...</p>`;
+
+  const res = await fetch(API + "?action=listarDrive");
+  const dados = await res.json();
+
+  let html = "";
+
+  dados.forEach(p =>{
+    html += `<div class="folder">📁 <strong>${p.nome}</strong></div>`;
+
+    p.arquivos.forEach(a =>{
+      html += `<div class="file">📄 <a href="${a.url}" target="_blank"
+              onclick="registrarAcao('ABRIU ARQUIVO','${a.nome}','${a.id}','${p.nome}')">
+              ${a.nome}</a></div>`;
+    });
+
+    p.subpastas.forEach(sp =>{
+      html += `<div class="file" style="margin-left:15px;">📂 <strong>${sp.nome}</strong></div>`;
+
+      sp.arquivos.forEach(a2 =>{
+        html += `<div class="subfile">📄 
+                 <a href="${a2.url}" target="_blank"
+                 onclick="registrarAcao('ABRIU ARQUIVO','${a2.nome}','${a2.id}','${sp.nome}')">
+                 ${a2.nome}</a></div>`;
+      });
+    });
+
+    html += "<hr>";
+  });
+
+  document.getElementById("conteudoDocs").innerHTML = html;
+}
+
+function fecharModal(){
+  document.getElementById("modalDocs").style.display = "none";
 }
 </script>
 
 </body>
-</html>compr
+</html>
