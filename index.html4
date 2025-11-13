@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LICITAR</title>
+
+<style>
+/* ====================
+   RESET
+==================== */
+* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+
+/* ====================
+   SPLASH SCREEN
+==================== */
+#splash {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: linear-gradient(135deg, #002244, #004488);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  animation: fadeOut 1.8s forwards;
+  animation-delay: 1.5s;
+}
+
+#splash h1 {
+  color:#fff;
+  font-size:3.2rem;
+  letter-spacing:4px;
+  animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow:0 0 15px #fff; }
+  to { text-shadow:0 0 25px #aaccff; }
+}
+
+@keyframes fadeOut {
+  to { opacity:0; visibility:hidden; }
+}
+
+/* ====================
+   LAYOUT GERAL
+==================== */
+body {
+  background:#f1f3f7;
+  display:flex;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ====================
+   MENU LATERAL
+==================== */
+#sidebar {
+  width:230px;
+  background:#1a1f2e;
+  color:white;
+  padding:20px 10px;
+  transition:0.3s;
+}
+
+#sidebar.minimized {
+  width:70px;
+}
+
+#sidebar h2 {
+  font-size:20px;
+  margin-bottom:20px;
+  text-align:center;
+}
+
+#toggleBtn {
+  background:none;
+  border:none;
+  color:white;
+  font-size:26px;
+  cursor:pointer;
+  width:100%;
+  margin-bottom:20px;
+}
+
+.nav-item {
+  padding:12px 10px;
+  background:#2b3248;
+  margin-bottom:10px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.nav-item:hover {
+  background:#3c4565;
+}
+
+/* Esconde texto quando minimiza */
+#sidebar.minimized .nav-text {
+  display:none;
+}
+
+/* ====================
+   ÁREA DE CONTEÚDO
+==================== */
+#content {
+  flex:1;
+  padding:25px;
+  overflow:auto;
+}
+
+/* ====================
+   CARDS
+==================== */
+.cards {
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.card {
+  width:150px;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  padding:10px;
+  cursor:pointer;
+  text-align:center;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform:scale(1.05);
+}
+
+.card img {
+  width:100%;
+  height:100px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+.card p {
+  margin-top:8px;
+  font-size:14px;
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<!-- ====================
+     SPLASH
+==================== -->
+<div id="splash">
+  <h1>LICITAR</h1>
+</div>
+
+<!-- ====================
+     MENU LATERAL
+==================== -->
+<div id="sidebar">
+  <button id="toggleBtn">☰</button>
+
+  <div class="nav-item" onclick="loadPage('home')">
+    <span class="nav-text">Página Inicial</span>
+  </div>
+  <div class="nav-item" onclick="loadIframe('comparacao.html')">
+    <span class="nav-text">Painel 1</span>
+  </div>
+  <div class="nav-item" onclick="loadIframe('pagina2.html')">
+    <span class="nav-text">Painel 2</span>
+  </div>
+  <div class="nav-item" onclick="loadIframe('pagina3.html')">
+    <span class="nav-text">Relatórios</span>
+  </div>
+  <div class="nav-item" onclick="loadIframe('pagina4.html')">
+    <span class="nav-text">Configurações</span>
+  </div>
+</div>
+
+<!-- ====================
+     CONTEÚDO PRINCIPAL
+==================== -->
+<div id="content">
+  <!-- Home padrão -->
+  <div id="homeSection">
+    <h1 style="margin-bottom:20px;">Painel LICITAR</h1>
+
+    <div class="cards">
+      <div class="card" onclick="window.open('https://google.com', '_blank')">
+        <img src="https://picsum.photos/200/200?1">
+        <p>Google</p>
+      </div>
+
+      <div class="card" onclick="window.open('https://github.com', '_blank')">
+        <img src="https://picsum.photos/200/200?2">
+        <p>GitHub</p>
+      </div>
+
+      <div class="card" onclick="window.open('https://www.gov.br', '_blank')">
+        <img src="https://picsum.photos/200/200?3">
+        <p>Gov BR</p>
+      </div>
+
+      <div class="card" onclick="window.open('https://brasil.io', '_blank')">
+        <img src="https://picsum.photos/200/200?4">
+        <p>Brasil.io</p>
+      </div>
+
+      <div class="card" onclick="window.open('https://openai.com', '_blank')">
+        <img src="https://picsum.photos/200/200?5">
+        <p>OpenAI</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Iframe para carregar páginas -->
+  <iframe id="iframePage" style="display:none; width:100%; height:90vh; border:none;"></iframe>
+</div>
+
+<script>
+// Toggle da barra lateral
+document.getElementById("toggleBtn").onclick = () => {
+  document.getElementById("sidebar").classList.toggle("minimized");
+};
+
+// Carregar página interna via iframe
+function loadIframe(url) {
+  document.getElementById("homeSection").style.display = "none";
+  const iframe = document.getElementById("iframePage");
+  iframe.style.display = "block";
+  iframe.src = url;
+}
+
+// Voltar para Home
+function loadPage(page) {
+  if (page === "home") {
+    document.getElementById("homeSection").style.display = "block";
+    document.getElementById("iframePage").style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>
