@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentos • Sistema de Licitações</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:'Inter',sans-serif;
+  background:#f5f6fa;
+  margin:0;padding:20px;
+}
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+#container{
+  max-width:900px;
+  margin:0 auto;
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+.folder{
+  font-weight:600;
+  margin-top:18px;
+  background:#eef2ff;
+  padding:10px;
+  border-radius:8px;
+}
+.subfolder{
+  margin-left:20px;
+  font-weight:600;
+  margin-top:8px;
+  background:#f0f4ff;
+  padding:7px;
+  border-radius:8px;
+}
+.file{
+  margin-left:35px;
+  padding:6px;
+}
+
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#btnNovaPasta{background:#1a73e8;color:white;}
+#btnUpload{background:#673ab7;color:white;margin-left:8px;}
+
+.opcoes{
+  float:right;
+  margin-right:10px;
+}
+
+.acaoBtn{
+  background:#eee;
+  padding:3px 8px;
+  border-radius:6px;
+  margin-left:5px;
+  cursor:pointer;
+  font-size:12px;
+}
+
+input[type="file"]{
+  display:none;
+}
+
+.divisor{
+  margin:15px 0;height:1px;background:#ddd;
+}
+</style>
+</head>
+
+<body>
+
+<h1>GERENCIADOR DE DOCUMENTOS</h1>
+
+<div id="container">
+
+  <!-- BOTÕES -->
+  <div style="margin-bottom:15px;">
+    <button id="btnNovaPasta" onclick="novaPasta()">📁 Nova Pasta</button>
+    <label for="uploadInput">
+      <button id="btnUpload">⬆ Upload</button>
+    </label>
+    <input type="file" id="uploadInput" onchange="fazerUpload(event)">
+  </div>
+
+  <!-- LISTAGEM -->
+  <div id="lista">Carregando documentos...</div>
+
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxbLVAWpCFmC5afmvmt8r3Q7ssbyEbadSsU1r5zib9jaHDKv9XRs3QyiMFdXjsbOwzkpQ/exec";
+const usuario = localStorage.getItem("usuarioLogado") || "desconhecido";
+
+/* =============================================
+   FUNÇÃO → REGISTRAR AÇÕES
+============================================= */
+function registrar(acao, arquivo, id, pasta){
+  fetch(API, {
+    method:"POST",
+    body:JSON.stringify({
+      action:"registro",
+      usuario:usuario,
+      acao:acao,
+      arquivo:arquivo,
+      id:id,
+      pasta:pasta,
+      origem:"Documentos.html"
+    })
+  });
+}
+
+/* =============================================
+   LISTAR DOCUMENTOS
+============================================= */
+async function carregar(){
+  document.getElementById("lista").innerHTML="Carregando documentos...";
+
+  const req = await fetch(API+"?action=listar");
+  const dados = await req.json();
+
+  let html="";
+
+  dados.forEach(p => {
+
+    html+=`
+      <div class="folder">
+        📁 <b>${p.nome}</b>
+        <span class="opcoes">
+          <span class="acaoBtn" onclick="renomear('${p.id}','${p.nome}','pasta')">Renomear</span>
+          <span class="acaoBtn" onclick="deletar('${p.id}','${p.nome}','${p.nome}')">Excluir</span>
+        </span>
+      </div>
+    `;
+
+    // ARQUIVOS DIRETOS DA PASTA
+    p.arquivos.forEach(a=>{
+      html+=`
+        <div class="file">
+          📄 <a href="${a.url}" target="_blank" onclick="registrar('ABRIU ARQUIVO','${a.nome}','${a.id}','${p.nome}')">${a.nome}</a>
+          <span class="acaoBtn" onclick="renomear('${a.id}','${a.nome}','arquivo')">Renomear</span>
+          <span class="acaoBtn" onclick="deletar('${a.id}','${a.nome}','${p.nome}')">Excluir</span>
+        </div>
+      `;
+    });
+
+    // SUBPASTAS
+    p.subpastas.forEach(sp=>{
+      html+=`
+        <div class="subfolder">📂 ${sp.nome}
+          <span class="opcoes">
+            <span class="acaoBtn" onclick="renomear('${sp.id}','${sp.nome}','pasta')">Renomear</span>
+            <span class="acaoBtn" onclick="deletar('${sp.id}','${sp.nome}','${p.nome}')">Excluir</span>
+          </span>
+        </div>
+      `;
+
+      sp.arquivos.forEach(a2=>{
+        html+=`
+          <div class="file">
+            📄 <a href="${a2.url}" target="_blank" onclick="registrar('ABRIU ARQUIVO','${a2.nome}','${a2.id}','${sp.nome}')">${a2.nome}</a>
+            <span class="acaoBtn" onclick="renomear('${a2.id}','${a2.nome}','arquivo')">Renomear</span>
+            <span class="acaoBtn" onclick="deletar('${a2.id}','${a2.nome}','${sp.nome}')">Excluir</span>
+          </div>
+        `;
+      });
+
+    });
+
+    html+=`<div class="divisor"></div>`;
+
+  });
+
+  document.getElementById("lista").innerHTML = html;
+  registrar("ABRIU GERENCIADOR", "-", "-", "-");
+}
+
+carregar();
+
+/* =============================================
+   NOVA PASTA
+============================================= */
+function novaPasta(){
+  let nome = prompt("Nome da nova pasta:");
+  if(!nome) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"criarPasta",
+      nome:nome,
+      usuario:usuario,
+      folderId:null
+    })
+  }).then(()=>{ registrar("CRIAR PASTA",nome,"-","-"); carregar(); });
+}
+
+/* =============================================
+   RENOMEAR
+============================================= */
+function renomear(id,nome,tipo){
+
+  let novo = prompt("Novo nome para "+nome+":", nome);
+  if(!novo) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"renomear",
+      id:id,
+      novoNome:novo,
+      usuario:usuario,
+      pasta:"-"
+    })
+  }).then(()=>{
+    registrar("RENOMEAR", nome+" → "+novo, id, "-");
+    carregar();
+  });
+}
+
+/* =============================================
+   DELETE
+============================================= */
+function deletar(id,nome,pasta){
+  if(!confirm("Excluir "+nome+"?")) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"deletar",
+      id:id,
+      nome:nome,
+      usuario:usuario,
+      pasta:pasta
+    })
+  }).then(()=>{
+    registrar("DELETAR",nome,id,pasta);
+    carregar();
+  });
+}
+
+/* =============================================
+   UPLOAD
+============================================= */
+function fazerUpload(e){
+  let file = e.target.files[0];
+  if(!file) return;
+
+  let reader = new FileReader();
+  reader.onload = function(){
+    let base64 = reader.result.split(",")[1];
+
+    fetch(API,{
+      method:"POST",
+      body:JSON.stringify({
+        action:"upload",
+        base64:base64,
+        mime:file.type,
+        nome:file.name,
+        usuario:usuario,
+        folderId:null
+      })
+    }).then(()=>{
+      registrar("UPLOAD",file.name,"-","-");
+      carregar();
+    });
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+
+</body>
+</html>
