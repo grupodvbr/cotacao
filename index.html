@@ -21,7 +21,7 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:99999;
+  z-index:999999;
 }
 #loginBox {
   background:#111822;
@@ -54,6 +54,13 @@
   color:#ff6b6b;
   height:18px;
 }
+#lembrarBox {
+  margin-bottom:12px;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
 
 /* ====================
    SPLASH SCREEN
@@ -68,6 +75,7 @@
   z-index:9999;
   animation: fadeOut 1.8s forwards;
   animation-delay: 1.5s;
+  visibility:hidden;
 }
 
 #splash h1 {
@@ -94,6 +102,7 @@ body {
   display:flex;
   height:100vh;
   overflow:hidden;
+  visibility:hidden;    /* 🔒 EVITA ACESSO SEM LOGIN */
 }
 
 /* ====================
@@ -111,22 +120,6 @@ body {
   width:70px;
 }
 
-#sidebar h2 {
-  font-size:20px;
-  margin-bottom:20px;
-  text-align:center;
-}
-
-#toggleBtn {
-  background:none;
-  border:none;
-  color:white;
-  font-size:26px;
-  cursor:pointer;
-  width:100%;
-  margin-bottom:20px;
-}
-
 .nav-item {
   padding:12px 10px;
   background:#2b3248;
@@ -135,18 +128,12 @@ body {
   cursor:pointer;
   transition:0.2s;
 }
+.nav-item:hover { background:#3c4565; }
 
-.nav-item:hover {
-  background:#3c4565;
-}
-
-/* Esconde texto quando minimiza */
-#sidebar.minimized .nav-text {
-  display:none;
-}
+#sidebar.minimized .nav-text { display:none; }
 
 /* ====================
-   ÁREA DE CONTEÚDO
+   CONTEÚDO PRINCIPAL
 ==================== */
 #content {
   flex:1;
@@ -162,7 +149,6 @@ body {
   gap:20px;
   flex-wrap:wrap;
 }
-
 .card {
   width:150px;
   background:white;
@@ -173,18 +159,13 @@ body {
   text-align:center;
   transition: transform 0.2s;
 }
-
-.card:hover {
-  transform:scale(1.05);
-}
-
+.card:hover { transform:scale(1.05); }
 .card img {
   width:100%;
   height:100px;
   object-fit:cover;
   border-radius:8px;
 }
-
 .card p {
   margin-top:8px;
   font-size:14px;
@@ -200,8 +181,15 @@ body {
 <div id="loginTela">
   <div id="loginBox">
     <h2>LICITAR</h2>
+
     <input id="loginUser" class="loginCampo" type="text" placeholder="Usuário">
     <input id="loginPass" class="loginCampo" type="password" placeholder="Senha">
+
+    <div id="lembrarBox">
+      <input type="checkbox" id="lembrar">
+      <label for="lembrar">Lembrar de mim</label>
+    </div>
+
     <button id="btnLogin" onclick="fazerLogin()">Entrar</button>
     <div id="loginErro"></div>
   </div>
@@ -220,21 +208,11 @@ body {
 <div id="sidebar">
   <button id="toggleBtn">☰</button>
 
-  <div class="nav-item" onclick="loadPage('home')">
-    <span class="nav-text">Página Inicial</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('comparacao.html')">
-    <span class="nav-text">Itens</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('documentos.html')">
-    <span class="nav-text">Documentação</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('pagina3.html')">
-    <span class="nav-text">Relatórios</span>
-  </div>
-  <div class="nav-item" onclick="loadIframe('pagina4.html')">
-    <span class="nav-text">Configurações</span>
-  </div>
+  <div class="nav-item" onclick="loadPage('home')"><span class="nav-text">Página Inicial</span></div>
+  <div class="nav-item" onclick="loadIframe('comparacao.html')"><span class="nav-text">Itens</span></div>
+  <div class="nav-item" onclick="loadIframe('documentos.html')"><span class="nav-text">Documentação</span></div>
+  <div class="nav-item" onclick="loadIframe('pagina3.html')"><span class="nav-text">Relatórios</span></div>
+  <div class="nav-item" onclick="loadIframe('pagina4.html')"><span class="nav-text">Configurações</span></div>
 </div>
 
 <!-- ====================
@@ -278,7 +256,7 @@ body {
 
 <script>
 /* =========================================
-   LOGIN SIMPLES (SEM MUDAR O SISTEMA)
+   LOGIN COM LEMBRAR DE MIM
 ========================================= */
 const usuarios = {
   adm: "1234",
@@ -289,19 +267,38 @@ const usuarios = {
 function fazerLogin(){
   const u = document.getElementById("loginUser").value.trim().toLowerCase();
   const p = document.getElementById("loginPass").value.trim();
+  const lembrar = document.getElementById("lembrar").checked;
 
   if(usuarios[u] && usuarios[u] === p){
-    localStorage.setItem("usuarioLogado", u);
-    document.getElementById("loginTela").style.display = "none";
+
+    if(lembrar){
+      localStorage.setItem("usuarioLogado", u);
+    } else {
+      sessionStorage.setItem("usuarioLogado", u);
+    }
+
+    autenticar();
   } else {
     document.getElementById("loginErro").innerText = "Usuário ou senha incorretos.";
   }
 }
 
-/* Se já está logado → entra direto */
+function autenticar(){
+  document.body.style.visibility = "visible";
+  document.getElementById("splash").style.visibility = "visible";
+  document.getElementById("loginTela").style.display = "none";
+}
+
+/* BLOQUEIA TUDO ATÉ LOGAR */
 window.onload = () => {
-  if(localStorage.getItem("usuarioLogado")){
-    document.getElementById("loginTela").style.display = "none";
+  const userLocal = localStorage.getItem("usuarioLogado");
+  const userSess = sessionStorage.getItem("usuarioLogado");
+
+  if(userLocal || userSess){
+    autenticar();
+  } else {
+    document.getElementById("loginTela").style.display = "flex";
+    document.body.style.visibility = "hidden";
   }
 };
 
