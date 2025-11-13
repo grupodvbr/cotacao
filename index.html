@@ -6,23 +6,20 @@
 <title>LICITAR</title>
 
 <style>
-/* ====================
-   RESET
-==================== */
 * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
 
-/* ====================
-   LOGIN
-==================== */
-#loginTela {
+/* TELA DE BLOQUEIO */
+#lockScreen {
   position: fixed;
   top:0; left:0; width:100%; height:100%;
   background:#0a0f15;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:999999;
+  z-index:99999;
 }
+
+/* LOGIN */
 #loginBox {
   background:#111822;
   padding:35px;
@@ -30,10 +27,6 @@
   border-radius:14px;
   text-align:center;
   color:white;
-}
-#loginBox h2 {
-  margin-bottom:15px;
-  letter-spacing:2px;
 }
 .loginCampo {
   width:100%; padding:10px;
@@ -48,61 +41,22 @@
   border-radius:6px;
   cursor:pointer;
 }
-#btnLogin:hover { background:#0f5acc; }
-#loginErro {
-  margin-top:10px;
-  color:#ff6b6b;
-  height:18px;
-}
+#loginErro { margin-top:10px; color:#ff6b6b; height:18px; }
+
 #lembrarBox {
-  margin-bottom:12px;
-  font-size:14px;
-  display:flex;
-  align-items:center;
-  gap:6px;
+  margin-bottom:12px; font-size:14px;
+  display:flex; gap:6px; align-items:center;
 }
 
-/* ====================
-   SPLASH SCREEN
-==================== */
-#splash {
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: linear-gradient(135deg, #002244, #004488);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-  opacity:0;
-  visibility:hidden;
-}
-
-#splash h1 {
-  color:#fff;
-  font-size:3.2rem;
-  letter-spacing:4px;
-  animation: glow 1.5s infinite alternate;
-}
-
-@keyframes glow {
-  from { text-shadow:0 0 15px #fff; }
-  to { text-shadow:0 0 25px #aaccff; }
-}
-
-/* ====================
-   LAYOUT GERAL
-==================== */
+/* LAYOUT */
 body {
   background:#f1f3f7;
   display:flex;
   height:100vh;
   overflow:hidden;
-  visibility:hidden;  /* 🔒 EVITA ACESSO ANTES DE LOGAR */
 }
 
-/* ====================
-   MENU LATERAL
-==================== */
+/* MENU */
 #sidebar {
   width:230px;
   background:#1a1f2e;
@@ -110,71 +64,43 @@ body {
   padding:20px 10px;
   transition:0.3s;
 }
-
-#sidebar.minimized {
-  width:70px;
-}
-
 .nav-item {
   padding:12px 10px;
   background:#2b3248;
   margin-bottom:10px;
   border-radius:8px;
   cursor:pointer;
-  transition:0.2s;
 }
 .nav-item:hover { background:#3c4565; }
 
-#sidebar.minimized .nav-text { display:none; }
+/* CONTEÚDO */
+#content { flex:1; padding:25px; overflow:auto; }
 
-/* ====================
-   CONTEÚDO PRINCIPAL
-==================== */
-#content {
-  flex:1;
-  padding:25px;
-  overflow:auto;
-}
-
-/* ====================
-   CARDS
-==================== */
 .cards {
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
+  display:flex; gap:20px; flex-wrap:wrap;
 }
 .card {
-  width:150px;
-  background:white;
+  width:150px; background:white;
   border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
   padding:10px;
-  cursor:pointer;
   text-align:center;
-  transition: transform 0.2s;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
-.card:hover { transform:scale(1.05); }
+.card:hover { transform: scale(1.05); }
 .card img {
-  width:100%;
-  height:100px;
-  object-fit:cover;
-  border-radius:8px;
-}
-.card p {
-  margin-top:8px;
-  font-size:14px;
-  font-weight:bold;
+  width:100%; height:100px;
+  object-fit:cover; border-radius:8px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ====================
-     LOGIN
-==================== -->
-<div id="loginTela">
+<!-- ======================
+     BLOQUEIO + LOGIN
+====================== -->
+<div id="lockScreen">
   <div id="loginBox">
     <h2>LICITAR</h2>
 
@@ -191,19 +117,8 @@ body {
   </div>
 </div>
 
-<!-- ====================
-     SPLASH
-==================== -->
-<div id="splash">
-  <h1>LICITAR</h1>
-</div>
-
-<!-- ====================
-     MENU
-==================== -->
+<!-- MENU -->
 <div id="sidebar">
-  <button id="toggleBtn">☰</button>
-
   <div class="nav-item" onclick="loadPage('home')"><span class="nav-text">Página Inicial</span></div>
   <div class="nav-item" onclick="loadIframe('comparacao.html')"><span class="nav-text">Itens</span></div>
   <div class="nav-item" onclick="loadIframe('documentos.html')"><span class="nav-text">Documentação</span></div>
@@ -211,11 +126,8 @@ body {
   <div class="nav-item" onclick="loadIframe('pagina4.html')"><span class="nav-text">Configurações</span></div>
 </div>
 
-<!-- ====================
-     CONTENT
-==================== -->
+<!-- CONTEÚDO -->
 <div id="content">
-
   <div id="homeSection">
     <h1 style="margin-bottom:20px;">Sistemas de licitações</h1>
 
@@ -229,21 +141,6 @@ body {
         <img src="https://github.com/grupodvbr/cotacao/blob/main/paste/Design%20sem%20nome%20(29).png?raw=true">
         <p>Effecti</p>
       </div>
-
-      <div class="card" onclick="window.open('https://www.gov.br', '_blank')">
-        <img src="https://picsum.photos/200/200?3">
-        <p>Gov BR</p>
-      </div>
-
-      <div class="card" onclick="window.open('https://brasil.io', '_blank')">
-        <img src="https://picsum.photos/200/200?4">
-        <p>Brasil.io</p>
-      </div>
-
-      <div class="card" onclick="window.open('https://openai.com', '_blank')">
-        <img src="https://picsum.photos/200/200?5">
-        <p>OpenAI</p>
-      </div>
     </div>
   </div>
 
@@ -251,78 +148,65 @@ body {
 </div>
 
 <script>
-/* =========================================
-   LOGIN COM LEMBRAR-ME
-========================================= */
+/* USUÁRIOS */
 const usuarios = {
   adm: "1234",
   joao: "1111",
   ana: "2222"
 };
 
+/* LOGIN */
 function fazerLogin(){
   const u = loginUser.value.trim().toLowerCase();
   const p = loginPass.value.trim();
 
   if(usuarios[u] && usuarios[u] === p){
 
+    const token = btoa(u + "|" + p);
+
     if(lembrar.checked){
-      localStorage.setItem("usuarioLogado", u);
+      localStorage.setItem("token", token);
     } else {
-      sessionStorage.setItem("usuarioLogado", u);
+      sessionStorage.setItem("token", token);
     }
 
-    autenticar();
+    liberarAcesso();
   } else {
     loginErro.innerText = "Usuário ou senha incorretos.";
   }
 }
 
-function autenticar(){
-  loginTela.style.display = "none";
-  document.body.style.visibility = "visible";
+/* VALIDA TOKEN */
+function validarLogin(){
+  let token = localStorage.getItem("token") || sessionStorage.getItem("token");
+  if(!token) return false;
 
-  splash.style.visibility = "visible";
-  splash.style.opacity = "1";
+  const [u,p] = atob(token).split("|");
 
-  setTimeout(()=>{
-    splash.style.transition = "0.8s";
-    splash.style.opacity = "0";
-    setTimeout(()=> splash.style.visibility = "hidden", 800);
-  }, 800);
+  return usuarios[u] === p;
 }
 
-/* BLOQUEIO TOTAL ATÉ LOGAR */
-window.onload = () => {
-  const userLocal = localStorage.getItem("usuarioLogado");
-  const userSess  = sessionStorage.getItem("usuarioLogado");
+/* LIBERAR O SISTEMA */
+function liberarAcesso(){
+  lockScreen.style.display = "none";
+}
 
-  if(userLocal || userSess){
-    autenticar();
-  } else {
-    document.body.style.visibility = "hidden";
-    loginTela.style.display = "flex";
+/* VERIFICAR AO ABRIR */
+window.onload = () => {
+  if(validarLogin()){
+    liberarAcesso();
   }
 };
 
-/* =========================================
-   SEU CÓDIGO ORIGINAL
-========================================= */
-toggleBtn.onclick = () => {
-  sidebar.classList.toggle("minimized");
-};
-
-function loadIframe(url) {
-  homeSection.style.display = "none";
-  iframePage.style.display = "block";
+/* CARREGAR PÁGINAS */
+function loadIframe(url){
+  homeSection.style.display="none";
+  iframePage.style.display="block";
   iframePage.src = url;
 }
-
-function loadPage(page) {
-  if (page === "home") {
-    homeSection.style.display = "block";
-    iframePage.style.display = "none";
-  }
+function loadPage(){
+  homeSection.style.display="block";
+  iframePage.style.display="none";
 }
 </script>
 
