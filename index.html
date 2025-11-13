@@ -73,8 +73,7 @@
   justify-content:center;
   align-items:center;
   z-index:9999;
-  animation: fadeOut 1.8s forwards;
-  animation-delay: 1.5s;
+  opacity:0;
   visibility:hidden;
 }
 
@@ -90,10 +89,6 @@
   to { text-shadow:0 0 25px #aaccff; }
 }
 
-@keyframes fadeOut {
-  to { opacity:0; visibility:hidden; }
-}
-
 /* ====================
    LAYOUT GERAL
 ==================== */
@@ -102,7 +97,7 @@ body {
   display:flex;
   height:100vh;
   overflow:hidden;
-  visibility:hidden;    /* 🔒 EVITA ACESSO SEM LOGIN */
+  visibility:hidden;  /* 🔒 EVITA ACESSO ANTES DE LOGAR */
 }
 
 /* ====================
@@ -173,10 +168,11 @@ body {
 }
 </style>
 </head>
+
 <body>
 
 <!-- ====================
-     LOGIN TELA
+     LOGIN
 ==================== -->
 <div id="loginTela">
   <div id="loginBox">
@@ -203,7 +199,7 @@ body {
 </div>
 
 <!-- ====================
-     MENU LATERAL
+     MENU
 ==================== -->
 <div id="sidebar">
   <button id="toggleBtn">☰</button>
@@ -216,7 +212,7 @@ body {
 </div>
 
 <!-- ====================
-     CONTEÚDO PRINCIPAL
+     CONTENT
 ==================== -->
 <div id="content">
 
@@ -256,7 +252,7 @@ body {
 
 <script>
 /* =========================================
-   LOGIN COM LEMBRAR DE MIM
+   LOGIN COM LEMBRAR-ME
 ========================================= */
 const usuarios = {
   adm: "1234",
@@ -265,13 +261,12 @@ const usuarios = {
 };
 
 function fazerLogin(){
-  const u = document.getElementById("loginUser").value.trim().toLowerCase();
-  const p = document.getElementById("loginPass").value.trim();
-  const lembrar = document.getElementById("lembrar").checked;
+  const u = loginUser.value.trim().toLowerCase();
+  const p = loginPass.value.trim();
 
   if(usuarios[u] && usuarios[u] === p){
 
-    if(lembrar){
+    if(lembrar.checked){
       localStorage.setItem("usuarioLogado", u);
     } else {
       sessionStorage.setItem("usuarioLogado", u);
@@ -279,47 +274,54 @@ function fazerLogin(){
 
     autenticar();
   } else {
-    document.getElementById("loginErro").innerText = "Usuário ou senha incorretos.";
+    loginErro.innerText = "Usuário ou senha incorretos.";
   }
 }
 
 function autenticar(){
+  loginTela.style.display = "none";
   document.body.style.visibility = "visible";
-  document.getElementById("splash").style.visibility = "visible";
-  document.getElementById("loginTela").style.display = "none";
+
+  splash.style.visibility = "visible";
+  splash.style.opacity = "1";
+
+  setTimeout(()=>{
+    splash.style.transition = "0.8s";
+    splash.style.opacity = "0";
+    setTimeout(()=> splash.style.visibility = "hidden", 800);
+  }, 800);
 }
 
-/* BLOQUEIA TUDO ATÉ LOGAR */
+/* BLOQUEIO TOTAL ATÉ LOGAR */
 window.onload = () => {
   const userLocal = localStorage.getItem("usuarioLogado");
-  const userSess = sessionStorage.getItem("usuarioLogado");
+  const userSess  = sessionStorage.getItem("usuarioLogado");
 
   if(userLocal || userSess){
     autenticar();
   } else {
-    document.getElementById("loginTela").style.display = "flex";
     document.body.style.visibility = "hidden";
+    loginTela.style.display = "flex";
   }
 };
 
 /* =========================================
-   SEU CÓDIGO ORIGINAL — NÃO ALTERADO
+   SEU CÓDIGO ORIGINAL
 ========================================= */
-document.getElementById("toggleBtn").onclick = () => {
-  document.getElementById("sidebar").classList.toggle("minimized");
+toggleBtn.onclick = () => {
+  sidebar.classList.toggle("minimized");
 };
 
 function loadIframe(url) {
-  document.getElementById("homeSection").style.display = "none";
-  const iframe = document.getElementById("iframePage");
-  iframe.style.display = "block";
-  iframe.src = url;
+  homeSection.style.display = "none";
+  iframePage.style.display = "block";
+  iframePage.src = url;
 }
 
 function loadPage(page) {
   if (page === "home") {
-    document.getElementById("homeSection").style.display = "block";
-    document.getElementById("iframePage").style.display = "none";
+    homeSection.style.display = "block";
+    iframePage.style.display = "none";
   }
 }
 </script>
