@@ -588,14 +588,29 @@ function abrirArquivo(nome,url){
 function fecharModal(){
   document.getElementById("modal").style.display="none";
 }
-   function baixarArquivo(){
+function baixarArquivo(){
+  if (!linkAtual) return;
+
+  // EXTRAI O ID DO ARQUIVO
+  let idMatch = linkAtual.match(/\/d\/(.*)\/|id=([^&]+)/);
+  let fileId = idMatch ? (idMatch[1] || idMatch[2]) : null;
+
+  if (!fileId){
+    alert("Não foi possível gerar o link de download.");
+    return;
+  }
+
+  // LINK FORÇADO DE DOWNLOAD
+  let linkDownload = "https://drive.google.com/uc?export=download&id=" + fileId;
+
   const a = document.createElement("a");
-  a.href = linkAtual;
-  a.download = linkAtual.split("/").pop(); // nome automático
+  a.href = linkDownload;
+  a.download = "";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 }
+
 
 
 
