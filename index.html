@@ -67,6 +67,12 @@ body {
   width:70px;
 }
 
+#sidebar h2 {
+  font-size:20px;
+  margin-bottom:20px;
+  text-align:center;
+}
+
 #toggleBtn {
   background:none;
   border:none;
@@ -90,6 +96,7 @@ body {
   background:#3c4565;
 }
 
+/* Esconde texto quando minimiza */
 #sidebar.minimized .nav-text {
   display:none;
 }
@@ -139,14 +146,6 @@ body {
   font-size:14px;
   font-weight:bold;
 }
-
-/* IFARME DAS PÁGINAS INTERNAS */
-#iframePage {
-  display:none;
-  width:100%;
-  height:90vh;
-  border:none;
-}
 </style>
 </head>
 <body>
@@ -185,13 +184,12 @@ body {
      CONTEÚDO PRINCIPAL
 ==================== -->
 <div id="content">
+  <!-- Home padrão -->
   <div id="homeSection">
     <h1 style="margin-bottom:20px;">SISTEMA DE LICITAÇÕES</h1>
 
     <div class="cards">
-
-      <!-- AGORA ABRE POPUP REAL -->
-      <div class="card" onclick="openPopupReal('https://www.comprasnet.gov.br/seguro/loginPortal.asp')">
+      <div class="card" onclick="window.open('https://www.gov.br/compras/pt-br', '_blank')">
         <img src="https://github.com/grupodvbr/cotacao/blob/main/paste/Design%20sem%20nome%20(28).png?raw=true">
         <p>Compras.gov</p>
       </div>
@@ -215,24 +213,20 @@ body {
         <img src="https://picsum.photos/200/200?5">
         <p>OpenAI</p>
       </div>
-
     </div>
   </div>
 
-  <iframe id="iframePage"></iframe>
+  <!-- Iframe para carregar páginas -->
+  <iframe id="iframePage" style="display:none; width:100%; height:90vh; border:none;"></iframe>
 </div>
 
 <script>
-/* ======================
-   Menu lateral
-====================== */
+// Toggle da barra lateral
 document.getElementById("toggleBtn").onclick = () => {
   document.getElementById("sidebar").classList.toggle("minimized");
 };
 
-/* ======================
-   Carregar páginas internas
-====================== */
+// Carregar página interna via iframe
 function loadIframe(url) {
   document.getElementById("homeSection").style.display = "none";
   const iframe = document.getElementById("iframePage");
@@ -240,24 +234,14 @@ function loadIframe(url) {
   iframe.src = url;
 }
 
+// Voltar para Home
 function loadPage(page) {
   if (page === "home") {
     document.getElementById("homeSection").style.display = "block";
     document.getElementById("iframePage").style.display = "none";
   }
 }
-
-/* ======================
-   POP-UP REAL
-====================== */
-function openPopupReal(url) {
-  window.open(
-    url,
-    "popupCompras",
-    "width=1300,height=800,top=50,left=80,resizable=yes,scrollbars=yes"
-  );
-}
 </script>
 
 </body>
-</html>
+</html>compr
