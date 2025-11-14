@@ -19,8 +19,6 @@
   --danger:#dc2626;
   --radius:20px;
   --shadow:0 8px 26px rgba(0,0,0,.12);
-
-  --overlay-bg:rgba(0,0,0,.55);
 }
 
 /* BASE */
@@ -148,12 +146,12 @@ body{
 .modal{
   position:fixed;
   inset:0;
-  background:var(--overlay-bg);
+  background:rgba(0,0,0,.55);
   display:none;
   justify-content:center;
   align-items:flex-start;
   padding-top:40px;
-  z-index:999;
+  z-index:99;
 }
 
 .modal .box{
@@ -193,7 +191,6 @@ body{
   font-size:18px;
   font-weight:700;
 }
-
 .closeBtn{
   float:right;
   font-size:15px;
@@ -206,15 +203,15 @@ body{
   border:none;
 }
 
-/* OVERLAY LOADING */
+/* OVERLAY CARREGANDO ITENS */
 #overlayLoad{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.45);
+  background:rgba(0,0,0,.55);
   display:none;
   justify-content:center;
   align-items:center;
-  z-index:9999;
+  z-index:200;
 }
 
 .loader{
@@ -283,25 +280,23 @@ body{
 </div>
 
 <script>
-// TROCAR PARA SUA WEB APP FINAL
-const API = "https://script.google.com/macros/s/AKfycbzpAsKA9kzco9FwRboLCi2jOL4sMOX9hQtqehYn2cVthyirP7spXZc9ZMNS_pFX8LDg/exec";
+// COLOQUE AQUI A URL DO SEU WEB APP PUBLICADO
+const API = "https://script.google.com/macros/s/AKfycbxXMPl-z812afJW96a2JFpO1WE-F3Fa0Q2lbDq5_f71U9QpKYqI_S41n6-U1F-1dWMy/exec";
 
-const $ = s => document.querySelector(s);
+const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 let licitacoes = [];
 let filtro = "TODOS";
-let busca = "";
+let busca  = "";
 
-/* FORMATADORES */
+/* FORMATOS */
 function moeda4(v){
   return parseFloat(v).toFixed(4).replace('.', ',');
 }
-
 function moedaMoney(v){
   return "R$ " + parseFloat(v).toFixed(4).replace('.', ',');
 }
-
 function dataBR(d){
   if(!d) return "-";
   const dt = new Date(d);
@@ -346,23 +341,23 @@ $('#busca').addEventListener('input', e=>{
   render();
 });
 
-/* FILTROS */
-$$('#filtros .chip').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
-    btn.classList.add('ativo');
-    filtro = btn.dataset.status;
+/* FILTRO */
+$$('#filtros .chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
+    chip.classList.add('ativo');
+    filtro = chip.dataset.status;
     render();
   });
 });
 
 /* VER ITENS */
 async function verItens(codigo, nome){
-
-  $('#overlayLoad').style.display = "flex"; // overlay ON
+  // overlay ligado
+  $('#overlayLoad').style.display = "flex";
 
   $('#tituloItens').innerText = "Itens da Licitação";
-  $('#subItens').innerText = nome;
+  $('#subItens').innerText   = nome;
 
   const r = await fetch(`${API}?action=getItens&codigo=${codigo}`);
   const j = await r.json();
@@ -391,15 +386,16 @@ async function verItens(codigo, nome){
 
   $('#totalGeral').innerHTML = `TOTAL GERAL: ${moedaMoney(totalGeral)}`;
 
-  $('#overlayLoad').style.display = "none"; // overlay OFF
-  $('#modalItens').style.display = "flex";
+  // desliga overlay e abre modal
+  $('#overlayLoad').style.display = "none";
+  $('#modalItens').style.display  = "flex";
 }
 
 function fecharModal(){
   $('#modalItens').style.display = "none";
 }
 
-/* CARREGAR LISTA */
+/* CARREGAR LISTA INICIAL */
 async function carregar(){
   $('#lista').innerHTML = `
     <div class="skel"></div>
