@@ -5,111 +5,195 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LICITAR</title>
 
-<style>
-* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-/* TELA DE BLOQUEIO */
-#lockScreen {
-  position: fixed;
-  top:0; left:0; width:100%; height:100%;
+<style>
+:root{
+  --azul:#1a73e8;
+  --azul-dark:#1557b0;
+  --bg:#f1f3f7;
+  --sidebar:#111827;
+  --sidebar-hover:#1f2937;
+  --texto:#f9f9f9;
+  --trans:.3s ease;
+  --radius:14px;
+  --azul-brilho:linear-gradient(120deg,#1a73e8,#4c8ef5,#1a73e8);
+}
+
+/* ===== TELA DE LOGIN ===== */
+#lockScreen{
+  position:fixed; inset:0;
   background:#0a0f15;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex; align-items:center; justify-content:center;
   z-index:99999;
 }
 
-/* LOGIN */
-#loginBox {
+#loginBox{
   background:#111822;
   padding:35px;
   width:90%; max-width:350px;
-  border-radius:14px;
+  border-radius:var(--radius);
   text-align:center;
   color:white;
 }
-.loginCampo {
-  width:100%; padding:10px;
-  border:none; border-radius:6px;
+
+.loginCampo{
+  width:100%; padding:12px;
+  border:none; border-radius:8px;
   margin-bottom:12px;
   font-size:15px;
+  background:#1f2937;
+  color:white;
 }
-#btnLogin {
-  width:100%; padding:10px;
-  background:#1a73e8; border:none;
-  color:white; font-weight:bold;
-  border-radius:6px;
+
+#btnLogin{
+  width:100%; padding:12px;
+  background:var(--azul);
+  border:none; border-radius:8px;
+  color:white; font-weight:600;
   cursor:pointer;
+  transition:var(--trans);
 }
-#loginErro { margin-top:10px; color:#ff6b6b; height:18px; }
-
-#lembrarBox {
-  margin-bottom:12px; font-size:14px;
-  display:flex; gap:6px; align-items:center;
+#btnLogin:hover{
+  background:var(--azul-dark);
 }
 
-/* LAYOUT */
-body {
-  background:#f1f3f7;
+#loginErro{
+  margin-top:10px; height:20px;
+  color:#ff6b6b;
+}
+
+/* ===== BEM-VINDO ===== */
+#welcomeScreen{
+  position:fixed; inset:0;
+  background:var(--azul-brilho);
+  background-size:300% 300%;
+  animation:brilho 4s infinite alternate;
+  display:flex; align-items:center; justify-content:center;
+  color:white; font-size:52px;
+  font-weight:700;
+  opacity:0; pointer-events:none;
+  transition:1s ease;
+  z-index:90000;
+  font-family:"Inter";
+}
+
+@keyframes brilho {
+  from { background-position:0% 50%; }
+  to { background-position:100% 50%; }
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+body{
+  margin:0;
+  background:var(--bg);
   display:flex;
   height:100vh;
   overflow:hidden;
+  font-family:"Inter",sans-serif;
 }
 
-/* MENU */
-#sidebar {
-  width:230px;
-  background:#1a1f2e;
+/* ===== SIDEBAR ===== */
+#sidebar{
+  width:260px;
+  background:var(--sidebar);
   color:white;
   padding:20px 10px;
-  transition:0.3s;
+  transition:var(--trans);
+  position:relative;
 }
-.nav-item {
-  padding:12px 10px;
-  background:#2b3248;
-  margin-bottom:10px;
-  border-radius:8px;
+
+#sidebar.collapsed{
+  width:70px;
+}
+
+/* Botão recolher */
+#toggleMenu{
+  position:absolute;
+  top:10px; right:-18px;
+  background:var(--sidebar);
+  width:35px; height:35px;
+  border-radius:50%;
+  color:white;
+  display:flex; align-items:center; justify-content:center;
   cursor:pointer;
+  border:2px solid #0003;
+  transition:.2s;
 }
-.nav-item:hover { background:#3c4565; }
+#toggleMenu:hover{
+  background:var(--sidebar-hover);
+}
 
-/* CONTEÚDO */
-#content { flex:1; padding:25px; overflow:auto; }
+.nav-item{
+  padding:12px 14px;
+  background:#1f2937;
+  margin-bottom:12px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:var(--trans);
+  display:flex; align-items:center; gap:10px;
+}
+.nav-item:hover{
+  background:#374151;
+}
 
-.cards {
+.nav-icon{
+  font-size:20px;
+}
+
+.nav-text{
+  transition:var(--trans);
+  white-space:nowrap;
+}
+
+#sidebar.collapsed .nav-text{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* ===== CONTEÚDO ===== */
+#content{
+  flex:1;
+  padding:25px;
+  overflow:auto;
+}
+
+.cards{
   display:flex; gap:20px; flex-wrap:wrap;
 }
-.card {
-  width:150px; background:white;
-  border-radius:10px;
+.card{
+  width:170px;
+  background:white;
+  border-radius:12px;
   padding:10px;
   text-align:center;
   cursor:pointer;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  box-shadow:0 4px 12px rgba(0,0,0,0.12);
+  transition:.2s;
 }
-.card:hover { transform: scale(1.05); }
-.card img {
-  width:100%; height:100px;
-  object-fit:cover; border-radius:8px;
+.card:hover{
+  transform:scale(1.05);
+}
+.card img{
+  width:100%; height:110px;
+  object-fit:cover;
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ======================
-     BLOQUEIO + LOGIN
-====================== -->
+<!-- LOGIN -->
 <div id="lockScreen">
   <div id="loginBox">
-    <h2>LICITAR</h2>
+    <h2 style="margin-bottom:10px;">LICITAR</h2>
 
     <input id="loginUser" class="loginCampo" type="text" placeholder="Usuário">
     <input id="loginPass" class="loginCampo" type="password" placeholder="Senha">
 
-    <div id="lembrarBox">
-      <input type="checkbox" id="lembrar">
-      <label for="lembrar">Lembrar de mim</label>
+    <div style="margin-bottom:12px; display:flex; align-items:center; gap:6px; font-size:14px;">
+      <input type="checkbox" id="lembrar"><label for="lembrar">Lembrar de mim</label>
     </div>
 
     <button id="btnLogin" onclick="fazerLogin()">Entrar</button>
@@ -117,19 +201,39 @@ body {
   </div>
 </div>
 
-<!-- MENU -->
+<!-- TELA DE BOAS-VINDAS -->
+<div id="welcomeScreen">LICITAR</div>
+
+<!-- MENU LATERAL -->
 <div id="sidebar">
-  <div class="nav-item" onclick="loadPage('home')"><span class="nav-text">Página Inicial</span></div>
-  <div class="nav-item" onclick="loadIframe('comparacao.html')"><span class="nav-text">Itens</span></div>
-  <div class="nav-item" onclick="loadIframe('documentos.html')"><span class="nav-text">Documentação</span></div>
-  <div class="nav-item" onclick="loadIframe('pagina3.html')"><span class="nav-text">Relatórios</span></div>
-  <div class="nav-item" onclick="loadIframe('pagina4.html')"><span class="nav-text">Configurações</span></div>
+  <div id="toggleMenu" onclick="toggleSidebar()">☰</div>
+
+  <div class="nav-item" onclick="loadPage('home')">
+    <span class="nav-icon">🏠</span><span class="nav-text">Página Inicial</span>
+  </div>
+
+  <div class="nav-item" onclick="loadIframe('comparacao.html')">
+    <span class="nav-icon">📦</span><span class="nav-text">Itens</span>
+  </div>
+
+  <div class="nav-item" onclick="loadIframe('documentos.html')">
+    <span class="nav-icon">📁</span><span class="nav-text">Documentação</span>
+  </div>
+
+  <div class="nav-item" onclick="loadIframe('pagina3.html')">
+    <span class="nav-icon">📊</span><span class="nav-text">Relatórios</span>
+  </div>
+
+  <div class="nav-item" onclick="loadIframe('pagina4.html')">
+    <span class="nav-icon">⚙️</span><span class="nav-text">Configurações</span>
+  </div>
 </div>
 
-<!-- CONTEÚDO -->
+<!-- CONTEÚDO PRINCIPAL -->
 <div id="content">
+
   <div id="homeSection">
-    <h1 style="margin-bottom:20px;">Sistemas de licitações</h1>
+    <h1 style="margin-bottom:25px;">Sistema de Licitações</h1>
 
     <div class="cards">
       <div class="card" onclick="window.open('https://www.gov.br/compras/pt-br', '_blank')">
@@ -145,30 +249,26 @@ body {
   </div>
 
   <iframe id="iframePage" style="display:none; width:100%; height:90vh; border:none;"></iframe>
+
 </div>
 
 <script>
-/* USUÁRIOS */
+/* LOGIN */
 const usuarios = {
-  adm: "1234",
-  joao: "1111",
-  ana: "2222"
+  adm:"1234",
+  joao:"1111",
+  ana:"2222"
 };
 
-/* LOGIN */
 function fazerLogin(){
   const u = loginUser.value.trim().toLowerCase();
   const p = loginPass.value.trim();
 
   if(usuarios[u] && usuarios[u] === p){
+    const token = btoa(u+"|"+p);
 
-    const token = btoa(u + "|" + p);
-
-    if(lembrar.checked){
-      localStorage.setItem("token", token);
-    } else {
-      sessionStorage.setItem("token", token);
-    }
+    if(lembrar.checked) localStorage.setItem("token", token);
+    else sessionStorage.setItem("token", token);
 
     liberarAcesso();
   } else {
@@ -176,29 +276,37 @@ function fazerLogin(){
   }
 }
 
-/* VALIDA TOKEN */
 function validarLogin(){
   let token = localStorage.getItem("token") || sessionStorage.getItem("token");
   if(!token) return false;
 
   const [u,p] = atob(token).split("|");
-
   return usuarios[u] === p;
 }
 
-/* LIBERAR O SISTEMA */
 function liberarAcesso(){
-  lockScreen.style.display = "none";
+  lockScreen.style.display="none";
+
+  welcomeScreen.style.opacity="1";
+  welcomeScreen.style.pointerEvents="auto";
+
+  setTimeout(()=>{
+    welcomeScreen.style.opacity="0";
+    setTimeout(()=> welcomeScreen.style.display="none", 800);
+  }, 1300);
 }
 
-/* VERIFICAR AO ABRIR */
-window.onload = () => {
+window.onload = ()=>{
   if(validarLogin()){
     liberarAcesso();
   }
 };
 
-/* CARREGAR PÁGINAS */
+/* MENU */
+function toggleSidebar(){
+  sidebar.classList.toggle("collapsed");
+}
+
 function loadIframe(url){
   homeSection.style.display="none";
   iframePage.style.display="block";
