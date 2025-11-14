@@ -2,319 +2,359 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LICITAR • Licitações</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LICITAR • Ultra Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* ===========================================
-   PALETA PREMIUM (MESMA QUE VOCÊ USA)
-=========================================== */
 :root{
-  --bg:#f3f5f8;
-  --card:#ffffff;
+  --bg:#eef2f7;
+  --card:#ffffffcc;
+  --glass:rgba(255,255,255,0.55);
   --azul:#0b1e39;
-  --azul2:#193053;
-  --muted:#697487;
+  --azul2:#13345a;
+  --muted:#6d7687;
   --ok:#16a34a;
   --danger:#dc2626;
-  --warn:#d97706;
-  --shadow:0 14px 40px rgba(0,0,0,.12);
+  --shadow:0 20px 45px rgba(0,0,0,.12);
   --radius:20px;
+  --gradient:linear-gradient(145deg,#0b1e39,#134a7c);
 }
 
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",sans-serif;}
 body{
   background:var(--bg);
   padding:32px;
-  font-family:"Inter",sans-serif;
   color:var(--azul);
 }
 
-/* ===========================================
-   TÍTULO
-=========================================== */
+/* TITULO */
 .titulo{
-  font-size:34px;
-  font-weight:700;
-  margin-bottom:22px;
+  font-size:36px;
+  font-weight:800;
+  margin-bottom:25px;
 }
 
-/* ===========================================
-   TOPO
-=========================================== */
+/* BUSCA */
 .topo{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+  margin-bottom:22px;
 }
 
 .input{
-  width:360px;
+  width:350px;
   padding:14px;
   border-radius:14px;
-  border:1px solid #d4d8de;
+  border:1px solid #ccd2dd;
   background:#fff;
   font-size:15px;
-  transition:.2s;
-}
-.input:focus{
-  outline:none;
-  border-color:var(--azul);
-  box-shadow:0 0 0 3px rgba(11,30,57,.1);
 }
 
-/* ===========================================
-   FILTROS
-=========================================== */
+/* FILTROS */
 .filtros{
   display:flex;
-  gap:10px;
+  gap:12px;
+  margin-bottom:24px;
   flex-wrap:wrap;
-  margin-bottom:20px;
 }
 
 .chip{
   padding:10px 20px;
   border-radius:999px;
-  border:1px solid #d4d8de;
+  border:1px solid #d3d7e0;
   background:#fff;
   cursor:pointer;
-  transition:.2s;
   font-weight:600;
+  transition:.2s;
+  font-size:14px;
 }
 
-.chip:hover{background:#eef1f6;}
 .chip.ativo{
   background:var(--azul);
   color:#fff;
   border-color:var(--azul);
 }
 
-/* ===========================================
-   GRID
-=========================================== */
+/* GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
-  gap:26px;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:24px;
 }
 
-/* Skeleton */
-.skel{
-  height:210px;
-  border-radius:var(--radius);
-  background:#e4e7eb;
-  animation:pulse 1.2s infinite alternate;
-}
-@keyframes pulse{
-  from{opacity:.5;} to{opacity:1;}
-}
-
-/* ===========================================
-   CARDS ULTRA PREMIUM
-=========================================== */
+/* CARD ULTRA PREMIUM */
 .card{
-  background:#fff;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
   border-radius:var(--radius);
   padding:24px;
+  border:1px solid rgba(255,255,255,0.2);
   box-shadow:var(--shadow);
   transition:.3s;
-  border-left:6px solid var(--azul);
 }
+
 .card:hover{
   transform:translateY(-6px);
-  box-shadow:0 16px 48px rgba(0,0,0,.18);
+  box-shadow:0 28px 55px rgba(0,0,0,.18);
 }
 
 .card h3{
   font-size:20px;
-  color:var(--azul2);
+  font-weight:700;
+  margin-bottom:6px;
 }
 
+/* ROW */
 .row{
+  margin:14px 0;
   display:flex;
   flex-direction:column;
-  gap:6px;
-  margin:16px 0;
-  color:#333;
+  gap:5px;
 }
 
-/* BADGES */
+/* BADGE */
 .badge{
-  padding:8px 14px;
-  border-radius:10px;
-  font-weight:700;
+  padding:7px 14px;
+  border-radius:12px;
   font-size:12px;
+  font-weight:700;
   display:inline-block;
-  margin-top:12px;
+  margin-top:10px;
 }
-.st-Pendente{background:#fff7cc;color:#8a5e00;}
-.st-Futura{background:#dceafe;color:#1854b3;}
-.st-Em_andamento{background:#fde99a;color:#946c00;}
-.st-Finalizada{background:#dcfce7;color:#187a42;}
-.st-Suspensa{background:#ffd6dc;color:#b61d35;}
 
-/* Botões */
+.st-PENDENTE{background:#fff3bf;color:#866300;}
+.st-FUTURA{background:#dceafe;color:#1854b3;}
+.st-EM_ANDAMENTO{background:#fceabb;color:#8f6a00;}
+.st-FINALIZADA{background:#dcfce7;color:#187a42;}
+.st-SUSPENSA{background:#ffd6dc;color:#b61d35;}
+
+/* BOTÃO */
 .btn{
-  padding:12px 18px;
-  background:var(--azul);
+  padding:12px 20px;
+  background:var(--azul2);
   color:#fff;
   border:none;
   border-radius:12px;
   cursor:pointer;
-  font-size:14px;
   font-weight:600;
-  transition:.2s;
+  font-size:14px;
+  width:100%;
+  margin-top:18px;
 }
-.btn:hover{background:var(--azul2);}
 
-/* ===========================================
-   MODAL ULTRA PREMIUM
-=========================================== */
+/* MODAL ULTRA PREMIUM */
 .modal{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.55);
   display:none;
   justify-content:center;
-  align-items:flex-start;
-  padding-top:40px;
+  align-items:center;
   z-index:10;
 }
 
 .modal .box{
   background:#fff;
-  width:90%;
-  max-width:1200px;
-  padding:34px;
-  border-radius:20px;
-  box-shadow:var(--shadow);
-  max-height:85vh;
+  width:620px;
+  max-height:90vh;
   overflow-y:auto;
-  animation:fadeIn .25s;
+  border-radius:20px;
+  padding:28px;
+  box-shadow:var(--shadow);
+  animation:fade .25s ease;
 }
-@keyframes fadeIn{
-  from{opacity:0;transform:scale(.97);}
+
+@keyframes fade{
+  from{opacity:0;transform:scale(.94);}
   to{opacity:1;transform:scale(1);}
 }
 
-.box h2{
-  color:var(--azul2);
-  margin-bottom:4px;
+/* TABS */
+.tabs{
+  display:flex;
+  margin-bottom:16px;
+  border-bottom:2px solid #e3e6f0;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:20px;
-}
-thead{
-  background:#f0f2f5;
-}
-th,td{
-  padding:14px;
-  text-align:left;
-  border-bottom:1px solid #e5e7eb;
-}
-th{
-  font-size:14px;
-  color:var(--azul);
-}
-td{
-  font-size:14px;
-  color:#333;
+.tab{
+  padding:12px 20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:15px;
+  border-radius:10px 10px 0 0;
+  margin-right:8px;
 }
 
-.total-geral{
-  margin-top:20px;
-  font-size:18px;
+.tab.active{
+  background:var(--azul);
+  color:white;
+}
+
+/* LISTA DE ITENS */
+.itemBox{
+  background:#f8fafc;
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:12px;
+  border:1px solid #e3e7ef;
+}
+
+.itemHead{
   font-weight:700;
-  text-align:right;
-  color:var(--azul2);
+  margin-bottom:6px;
+  font-size:15px;
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="titulo">LICITAR • Licitações</div>
+<div class="titulo">LICITAR • Ultra Premium</div>
 
 <div class="topo">
-  <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO">
+  <input id="busca" class="input" placeholder="Buscar licitação...">
 </div>
 
 <div class="filtros" id="filtros">
   <div class="chip ativo" data-status="TODOS">Todos</div>
-  <div class="chip" data-status="Pendente">Pendente</div>
-  <div class="chip" data-status="Futura">Futura</div>
-  <div class="chip" data-status="Em andamento">Em andamento</div>
-  <div class="chip" data-status="Finalizada">Finalizada</div>
-  <div class="chip" data-status="Suspensa">Suspensa</div>
+  <div class="chip" data-status="PENDENTE">Pendente</div>
+  <div class="chip" data-status="FUTURA">Futura</div>
+  <div class="chip" data-status="EM ANDAMENTO">Em andamento</div>
+  <div class="chip" data-status="FINALIZADA">Finalizada</div>
+  <div class="chip" data-status="SUSPENSA">Suspensa</div>
 </div>
 
-<div class="grid" id="lista">
-  <div class="skel"></div>
-  <div class="skel"></div>
-  <div class="skel"></div>
-</div>
+<div class="grid" id="lista">Carregando...</div>
 
-<!-- MODAL PARA ITENS -->
-<div class="modal" id="modalItens">
+<!-- MODAL -->
+<div class="modal" id="modal">
   <div class="box">
-    <h2 id="tituloItens"></h2>
-    <p id="subTituloItens" style="color:#697487;margin-bottom:18px"></p>
-    <div id="tabelaItens">Carregando…</div>
+    <h2 id="mTitulo"></h2>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="info">Informações</div>
+      <div class="tab" data-tab="itens">Itens</div>
+      <div class="tab" data-tab="total">Totalizador</div>
+    </div>
+
+    <div id="tab-info" class="tabContent"></div>
+    <div id="tab-itens" class="tabContent" style="display:none"></div>
+    <div id="tab-total" class="tabContent" style="display:none"></div>
   </div>
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycby6NqgsdoTp3RPNLkNVxDJSFG9SbwQqc6TsRrhr9Nwf-T-l_EvnsdGgzDD7KWaTMqxM/exec";
+
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 let licitacoes = [];
-let filtro="TODOS";
-let busca="";
-let editID=null;
+let itens = [];
+let filtro = "TODOS";
+let busca = "";
 
-/* MÁSCARAS */
-function mascaraValor(v){
-  return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
-}
-function mascaraData(dt){
-  const d=new Date(dt);
-  if(isNaN(d)) return "-";
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+/* FORMATADORES */
+function maskVal(v){return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});}
+function maskDate(d){
+  const dt = new Date(d);
+  return isNaN(dt)?"-":`${String(dt.getDate()).padStart(2,'0')}/${dt.getMonth()+1}/${dt.getFullYear()}`;
 }
 
-/* RENDERIZAÇÃO DOS CARDS */
+/* RENDER */
 function render(){
-  const lista=$('#lista');
-
-  const dados=licitacoes.filter(l =>
+  const lista = $('#lista');
+  const dados = licitacoes.filter(l =>
     (filtro==="TODOS" || l.status===filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
-  lista.innerHTML=dados.map(l=>`
+  lista.innerHTML = dados.map(l=>`
     <div class="card">
       <h3>${l.instituicao}</h3>
       <small>Código: ${l.codigo}</small>
-
       <div class="row">
-        <div><b>Data:</b> ${mascaraData(l.dataSessaoBR)}</div>
-        <div><b>Valor:</b> R$ ${mascaraValor(l.valorBR)}</div>
+        <div><b>Data:</b> ${maskDate(l.dataSessaoBR)}</div>
+        <div><b>Valor Total:</b> R$ ${maskVal(l.valorBR)}</div>
         <div><b>Critério:</b> ${l.criterio}</div>
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
 
       <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
 
-      <button class="btn" style="margin-top:16px" onclick="verItens('${l.codigo}','${l.instituicao.replace(/'/g,'')}')">Ver Itens</button>
+      <button class="btn" onclick="abrir('${l.codigo}')">Ver Itens</button>
     </div>
   `).join('');
 }
+
+/* ABRIR MODAL */
+async function abrir(codigo){
+  const l = licitacoes.find(x=>x.codigo===codigo);
+  $('#mTitulo').innerText = l.instituicao;
+
+  /* ABA INFO */
+  $('#tab-info').innerHTML = `
+    <p><b>Data da Sessão:</b> ${maskDate(l.dataSessaoBR)}</p>
+    <p><b>Valor Total Licitação:</b> R$ ${maskVal(l.valorBR)}</p>
+    <p><b>Status:</b> ${l.status}</p>
+    <p><b>Código:</b> ${l.codigo}</p>
+  `;
+
+  /* CARREGAR ITENS */
+  const r = await fetch(API+"?action=listItens&codigo="+codigo);
+  const j = await r.json();
+  itens = j.itens || [];
+
+  /* ABA ITENS */
+  $('#tab-itens').innerHTML = itens.map(i=>{
+    const unit = Number(i.valorUnit)||0;
+    const min = Number(i.quantMin)||0;
+    const tot = unit*min;
+
+    return `
+      <div class="itemBox">
+        <div class="itemHead">${i.itemTR}</div>
+        <div><b>Especificação:</b> ${i.especificacao}</div>
+        <div><b>Marca:</b> ${i.marca}</div>
+        <div><b>Modelo:</b> ${i.modelo}</div>
+        <div><b>Unid.:</b> ${i.unidade}</div>
+        <div><b>Qtd. Mínima:</b> ${min}</div>
+        <div><b>Valor Unitário:</b> R$ ${maskVal(unit)}</div>
+        <div><b>Total Item:</b> R$ ${maskVal(tot)}</div>
+      </div>
+    `;
+  }).join('');
+
+  /* TOTALIZADOR */
+  const total = itens.reduce((s,i)=> s + (Number(i.valorUnit)||0)*(Number(i.quantMin)||0),0);
+  $('#tab-total').innerHTML = `
+    <h3>Total Geral da Licitação</h3>
+    <div style="margin-top:10px;font-size:22px;font-weight:800;color:var(--azul2)">
+      R$ ${maskVal(total)}
+    </div>
+  `;
+
+  $('#modal').style.display="flex";
+}
+
+/* FECHAR MODAL */
+$('#modal').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) e.currentTarget.style.display="none";
+});
+
+/* TABS */
+$$('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    $$('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+
+    const tab = t.dataset.tab;
+    $$('.tabContent').forEach(cnt=>cnt.style.display="none");
+    $('#tab-'+tab).style.display="block";
+  });
+});
 
 /* BUSCA */
 $('#busca').addEventListener('input',e=>{
@@ -327,88 +367,18 @@ $$('#filtros .chip').forEach(ch=>{
   ch.addEventListener('click',()=>{
     $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
     ch.classList.add('ativo');
-    filtro=ch.dataset.status;
+    filtro = ch.dataset.status;
     render();
   });
 });
 
-/* ============ VER ITENS (ULTRA PREMIUM) ============ */
-async function verItens(codigo, nome){
-  $('#modalItens').style.display="flex";
-  $('#tituloItens').innerHTML="Itens da Licitação";
-  $('#subTituloItens').innerHTML=nome;
-  $('#tabelaItens').innerHTML="Carregando…";
-
-  const r=await fetch(`${API}?action=listItens&codigo=${codigo}`);
-  const j=await r.json();
-
-  if(!j.itens || j.itens.length===0){
-    $('#tabelaItens').innerHTML="<p>Nenhum item encontrado.</p>";
-    return;
-  }
-
-  let totalGeral=0;
-
-  const rows=j.itens.map(i=>{
-    const valor=Number(i.valorUnit)||0;
-    const total=valor*(Number(i.quantMin)||0);
-    totalGeral+=total;
-
-    return `
-      <tr>
-        <td>${i.itemTR}</td>
-        <td>${i.especificacao}</td>
-        <td>${i.unidade}</td>
-        <td>${i.quantMax}</td>
-        <td>${i.quantMin}</td>
-        <td>R$ ${mascaraValor(valor)}</td>
-        <td><b>R$ ${mascaraValor(total)}</b></td>
-      </tr>
-    `;
-  }).join("");
-
-  $('#tabelaItens').innerHTML=`
-    <table>
-      <thead>
-        <tr>
-          <th>Item TR</th>
-          <th>Descrição</th>
-          <th>Unidade</th>
-          <th>Máx</th>
-          <th>Mín</th>
-          <th>Valor Unit.</th>
-          <th>Total (mín.)</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-
-    <div class="total-geral">
-      Total Geral (mínimos): R$ ${mascaraValor(totalGeral)}
-    </div>
-  `;
-}
-
-/* FECHAR MODAL */
-$('#modalItens').addEventListener('click',e=>{
-  if(e.target===e.currentTarget) e.currentTarget.style.display='none';
-});
-
 /* CARREGAR */
 async function carregar(){
-  $('#lista').innerHTML=`
-    <div class="skel"></div>
-    <div class="skel"></div>
-    <div class="skel"></div>
-  `;
-
-  const r=await fetch(API+"?action=listLicitacoes");
-  const j=await r.json();
-
-  licitacoes=j.licitacoes;
+  const r = await fetch(API+"?action=listLicitacoes");
+  const j = await r.json();
+  licitacoes = j.licitacoes;
   render();
 }
-
 carregar();
 </script>
 
