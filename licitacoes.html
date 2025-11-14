@@ -297,7 +297,7 @@ body{
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycby2TxL0alp4ZeTzuLCVsn0WqNA8ZQ9cqOK5uWKOQecoQV2ccs1Ssib4KjwxAvaDdGXJ/exec";
+const API = "https://script.google.com/macros/s/AKfycbwg9ZmsZpisEOI3J_3D0rS-Wwn0-dUD4yLVwxa7Yi1_pm0PAuu_HS3d7cB7Z5p0Il8s/exec";
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -343,7 +343,22 @@ function render(){
 
       <div class="badge st-${l.status.replace(" ","_").toUpperCase()}">${l.status}</div>
 
-      <button class="btn" onclick="verItens('${l.codigo}','${l.instituicao}')">Ver itens</button>
+      <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+
+  <select onchange="alterarStatus('${l.codigo}', this.value)"
+          style="padding:10px 14px; border-radius:10px; border:1px solid #ccd2d9; font-size:14px;">
+    <option value="">Status…</option>
+    <option value="PENDENTE">Pendente</option>
+    <option value="FUTURA">Futura</option>
+    <option value="EM ANDAMENTO">Em andamento</option>
+    <option value="FINALIZADA">Finalizada</option>
+    <option value="SUSPENSA">Suspensa</option>
+  </select>
+
+  <button class="btn" onclick="verItens('${l.codigo}','${l.instituicao}')">Ver itens</button>
+
+</div>
+
     </div>
   `).join('');
 }
@@ -374,6 +389,37 @@ $('#buscarItem').addEventListener('input', e=>{
 
   renderItensTabela(filtrado);
 });
+async function alterarStatus(codigo, novoStatus){
+  if(!novoStatus){
+    alert("Selecione um status válido.");
+    return;
+  }
+
+  // Mostra overlay enquanto salva
+  $('#overlayLoad').style.display = "flex";
+
+  const payload = {
+    action: "updateLicitacao",
+    codigo: codigo,
+    status: novoStatus
+  };
+
+  const r = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  const j = await r.json();
+
+  $('#overlayLoad').style.display = "none";
+
+  if(j.ok){
+    alert("Status atualizado com sucesso!");
+    carregar(); // recarrega lista das licitações
+  } else {
+    alert("Erro ao atualizar: " + (j.erro || "desconhecido"));
+  }
+}
 
 
 /* VER ITENS */
