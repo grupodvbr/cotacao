@@ -88,7 +88,7 @@ th{background:#f8fafc;position:sticky;top:0}
   <div class="titulo">LICITAR • Painel de Licitações</div>
   <div class="actions">
     <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
-    <button class="btn btn-primary" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
+    <button class="btn btn-primary" id="btnNovaLicitacao">+ Nova Licitação</button>
   </div>
 </div>
 
@@ -104,7 +104,6 @@ th{background:#f8fafc;position:sticky;top:0}
 
 <!-- Lista -->
 <div class="grid" id="lista">Carregando…</div>
-
 <!-- Modal Licitação -->
 <div class="modal" id="modalLicitacao">
   <div class="content">
@@ -112,6 +111,7 @@ th{background:#f8fafc;position:sticky;top:0}
       <h3 id="tituloModalLicitacao">Nova Licitação</h3>
       <button class="close" data-close="#modalLicitacao">Fechar</button>
     </div>
+
     <div class="grid-modal">
 
       <div class="col-6 field">
@@ -155,12 +155,13 @@ th{background:#f8fafc;position:sticky;top:0}
       </div>
 
       <div class="col-12" style="margin-top:8px">
-        <button class="btn btn-primary" id="btnSalvarLicitacao">Salvar</button>
+        <button class="btn btn-primary" id="btnSalvarLicitacao">Salvar Licitação</button>
       </div>
 
     </div>
   </div>
 </div>
+
 
 <!-- Modal Empresa -->
 <div class="modal" id="modalEmpresa">
@@ -169,6 +170,7 @@ th{background:#f8fafc;position:sticky;top:0}
       <h3>Nova Empresa</h3>
       <button class="close" data-close="#modalEmpresa">Fechar</button>
     </div>
+
     <div class="grid-modal">
 
       <div class="col-6 field">
@@ -193,6 +195,7 @@ th{background:#f8fafc;position:sticky;top:0}
     </div>
   </div>
 </div>
+
 
 <!-- Modal Itens -->
 <div class="modal" id="modalItens">
@@ -285,6 +288,7 @@ th{background:#f8fafc;position:sticky;top:0}
   </div>
 </div>
 
+
 <!-- Modal Prévia Importação -->
 <div class="modal" id="modalPreview">
   <div class="content">
@@ -302,7 +306,6 @@ th{background:#f8fafc;position:sticky;top:0}
     </div>
   </div>
 </div>
-
 <script>
 /* ==========================
    CONFIG / STATE
@@ -318,14 +321,16 @@ const show = sel => ($(sel).style.display = 'flex');
 const hide = sel => ($(sel).style.display = 'none');
 
 let state = {
-  filtro: 'Todos',
+  filtro: 'TODOS',
   busca: '',
   empresas: [],
   licitacoes: [],
   licAtual: null,
   itens: [],
-  preview: []
+  preview: [],
+  editIndex: null
 };
+
 
 /* ==========================
    TOASTS / OVERLAY / MASKS
@@ -344,22 +349,27 @@ function overlay(on) {
 
 function maskMoney(el) {
   let v = el.value.replace(/[^\d,]/g, '').replace(',', '');
+
   if (!v) {
     el.value = '';
     return;
   }
   v = (parseInt(v, 10) || 0).toString();
   if (v.length < 3) v = v.padStart(3, '0');
-  const cents = v.slice(-2),
-    ints = v.slice(0, -2);
-  el.value =
-    'R$ ' + ints.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + cents;
+
+  const cents = v.slice(-2);
+  const ints = v.slice(0, -2);
+
+  el.value = 'R$ ' + ints.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + cents;
 }
 
 function maskDate(el) {
   let v = el.value.replace(/\D/g, '').slice(0, 8);
-  if (v.length >= 5) el.value = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
-  else if (v.length >= 3) el.value = v.slice(0, 2) + '/' + v.slice(2);
+
+  if (v.length >= 5)
+    el.value = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+  else if (v.length >= 3)
+    el.value = v.slice(0, 2) + '/' + v.slice(2);
   else el.value = v;
 }
 
@@ -375,14 +385,17 @@ function attachMasks() {
   );
 }
 
+
 /* ==========================
    API HELPERS
 ========================== */
 async function apiGet(qs) {
   const url = API + '?' + new URLSearchParams(qs).toString();
+
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 15000);
+
     const r = await fetch(url, { method: 'GET', signal: ctrl.signal });
     clearTimeout(t);
 
@@ -392,6 +405,7 @@ async function apiGet(qs) {
     if (j.error) throw new Error(j.error);
 
     return j;
+
   } catch (e) {
     toast("Erro de comunicação", e.message, "warn");
     throw e;
@@ -399,16 +413,17 @@ async function apiGet(qs) {
 }
 
 async function apiPost(body) {
-  const url = API;
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 20000);
-    const r = await fetch(url, {
+
+    const r = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
       signal: ctrl.signal
     });
+
     clearTimeout(t);
 
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -417,11 +432,13 @@ async function apiPost(body) {
     if (j.error) throw new Error(j.error);
 
     return j;
+
   } catch (e) {
     toast("Erro no envio", e.message, "warn");
     throw e;
   }
 }
+
 
 /* ==========================
    RENDER LISTA
@@ -445,13 +462,13 @@ function renderLista() {
 
   lista.innerHTML = dados
     .map(l => {
-      const statusUI = l.status
-        .toUpperCase()
-        .replace('PENDENTE', 'Pendente')
-        .replace('FUTURA', 'Futura')
-        .replace('EM ANDAMENTO', 'Em andamento')
-        .replace('FINALIZADA', 'Finalizada')
-        .replace('SUSPENSA', 'Suspensa');
+      const statusUI =
+        l.status.toUpperCase()
+          .replace('PENDENTE', 'Pendente')
+          .replace('FUTURA', 'Futura')
+          .replace('EM ANDAMENTO', 'Em andamento')
+          .replace('FINALIZADA', 'Finalizada')
+          .replace('SUSPENSA', 'Suspensa');
 
       const stClass = 'st-' + statusUI.replace(/ /g, '\\ ');
 
@@ -479,89 +496,55 @@ function renderLista() {
     .join('');
 }
 
+
 /* ==========================
    CARREGAMENTO INICIAL
 ========================== */
 async function carregarEmpresas() {
   try {
     const j = await apiGet({ action: 'listEmpresas' });
-    state.empresas = j.empresas || j || [];
+    state.empresas = j.empresas || [];
 
     $('#selInstituicao').innerHTML =
       state.empresas
         .map(e => `<option value="${e.codigo}">${e.nome}</option>`)
         .join('');
-  } catch {}
+
+  } catch (e) {}
 }
 
 async function carregarLicitacoes() {
   try {
     const j = await apiGet({ action: 'listLicitacoes' });
-    state.licitacoes = j.licitacoes || j || [];
+    state.licitacoes = j.licitacoes || [];
     renderLista();
-  } catch {
+
+  } catch (e) {
     $('#lista').innerHTML =
       '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações.</div>';
   }
 }
 
-/* ==========================
-   ABRIR POPUP
-========================== */
-function abrirNovaLicitacao() {
-  window.open(
-    'novalicitacao.html',
-    'popupNovaLicitacao',
-    'width=980,height=700,top=50,left=50,scrollbars=yes'
-  );
-}
-/* ==========================
-   EMPRESA (CRUD)
-========================== */
-$('#btnNovaEmpresa').addEventListener('click', () => show('#modalEmpresa'));
-
-$('#btnSalvarEmpresa').addEventListener('click', async () => {
-  const nome = $('#empRazao').value.trim().toUpperCase();
-  const cnpj = $('#empCnpj').value.trim();
-  const uf = $('#empUf').value.trim().toUpperCase();
-
-  if (!nome) { toast('Informe a RAZÃO SOCIAL'); return; }
-
-  overlay(true);
-  try {
-    const j = await apiPost({
-      action: 'addEmpresa',
-      nome,
-      cnpj,
-      uf
-    });
-
-    toast('Empresa salva!', `Código gerado: ${j.codigo || '-'}`, 'ok');
-    hide('#modalEmpresa');
-
-    await carregarEmpresas();
-
-    if (j.codigo) {
-      $('#selInstituicao').value = j.codigo;
-    }
-
-  } finally {
-    overlay(false);
-  }
-});
-
 
 /* ==========================
-   LICITAÇÃO — ADD / EDIT / DELETE
+   ABRIR CADASTRO
 ========================== */
+$('#btnNovaLicitacao').addEventListener('click', () => {
+  state.licAtual = null;
 
-function limpaFormLicit() {
+  $('#tituloModalLicitacao').innerText = 'Nova Licitação';
+  $('#selInstituicao').value = state.empresas[0]?.codigo || '';
   $('#inpData').value = '';
   $('#inpValor').value = '';
   $('#inpCriterio').value = '';
   $('#inpModo').value = '';
   $('#selStatus').value = 'Pendente';
-}
+
+  show('#modalLicitacao');
+});
+/* ==========================
+   LICITAÇÃO — ADD / EDIT / DELETE
+========================== */
 
 function coletaFormLicit() {
   return {
@@ -589,7 +572,6 @@ async function salvarLicitacao() {
     if (state.licAtual) {
       await apiPost({ action:'updateLicitacao', codigo:state.licAtual, ...body });
       toast('Licitação atualizada!', '', 'ok');
-
     } else {
       const r = await apiPost({ action:'addLicitacao', ...body });
       toast('Licitação criada!', `Código: ${r.codigo}`, 'ok');
@@ -597,12 +579,15 @@ async function salvarLicitacao() {
 
     hide('#modalLicitacao');
     state.licAtual = null;
+
     await carregarLicitacoes();
 
   } finally {
     overlay(false);
   }
 }
+
+$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 
 function editarLicitacao(codigo) {
   const l = state.licitacoes.find(x => x.codigo === codigo);
@@ -612,26 +597,14 @@ function editarLicitacao(codigo) {
 
   $('#tituloModalLicitacao').innerText = 'Editar Licitação';
   $('#selInstituicao').value = l.instCode;
-
-  // CORREÇÃO AQUI:
   $('#inpData').value = l.dataSessaoBR || '';
   $('#inpValor').value = l.valorBR || '';
   $('#inpCriterio').value = l.criterio || '';
   $('#inpModo').value = l.modo || '';
-
-  const s = l.status.toUpperCase();
-  const ui =
-    s === 'PENDENTE' ? 'Pendente' :
-    s === 'FUTURA' ? 'Futura' :
-    s === 'EM ANDAMENTO' ? 'Em andamento' :
-    s === 'FINALIZADA' ? 'Finalizada' :
-    s === 'SUSPENSA' ? 'Suspensa' : 'Pendente';
-
-  $('#selStatus').value = ui;
+  $('#selStatus').value = l.status;
 
   show('#modalLicitacao');
 }
-
 
 async function excluirLicitacao(codigo) {
   if (!confirm('Deseja excluir esta licitação?')) return;
@@ -654,7 +627,6 @@ async function excluirLicitacao(codigo) {
 async function abrirItens(codigo) {
   state.licAtual = codigo;
   $('#infoCodigo').innerText = '• ' + codigo;
-
   show('#modalItens');
   await carregarItens();
 }
@@ -665,32 +637,52 @@ async function carregarItens() {
     state.itens = j.itens || [];
 
     const tb = $('#tblItens tbody');
-    tb.innerHTML = state.itens
-  .map((i, idx) => `
+    tb.innerHTML = state.itens.map((i, idx) => `
       <tr>
-
-        <td>${i.itemTR || ''}</td>
-        <td>${i.especificacao || ''}</td>
-        <td>${i.marca || ''}</td>
-        <td>${i.modelo || ''}</td>
-        <td>${i.unidade || ''}</td>
-        <td>${i.quantMax || ''}</td>
-        <td>${i.quantMin || ''}</td>
-        <td>${i.valorUnit || ''}</td>
-        <td>${i.garantia || ''}</td>
-        <td><button class="btn btn-lite" onclick="editarItem(${idx})">Editar</button></td>
+        <td>${i.itemTR}</td>
+        <td>${i.especificacao}</td>
+        <td>${i.marca}</td>
+        <td>${i.modelo}</td>
+        <td>${i.unidade}</td>
+        <td>${i.quantMax}</td>
+        <td>${i.quantMin}</td>
+        <td>${i.valorUnit}</td>
+        <td>${i.garantia}</td>
+        <td>
+          <button class="btn btn-lite" onclick="editarItem(${idx})">Editar</button>
+        </td>
       </tr>
     `).join('');
-
   } catch (e) {}
 }
 
-$('#btnSalvarItem').addEventListener('click', async () => {
+function editarItem(idx) {
+  const it = state.itens[idx];
+  if (!it) return;
 
+  $('#itTR').value = it.itemTR;
+  $('#itEsp').value = it.especificacao;
+  $('#itMarca').value = it.marca;
+  $('#itModelo').value = it.modelo;
+  $('#itUnid').value = it.unidade;
+  $('#itQmax').value = it.quantMax;
+  $('#itQmin').value = it.quantMin;
+  $('#itVlr').value = it.valorUnit;
+  $('#itGarant').value = it.garantia;
+
+  state.editIndex = idx;
+}
+
+
+/* ==========================
+   SALVAR ITEM
+========================== */
+$('#btnSalvarItem').addEventListener('click', async () => {
   const body = {
     action: state.editIndex != null ? 'updateItem' : 'addItem',
     codigoLicitacao: state.licAtual,
     index: state.editIndex,
+
     itemTR: $('#itTR').value.trim().toUpperCase(),
     especificacao: $('#itEsp').value.trim().toUpperCase(),
     marca: $('#itMarca').value.trim().toUpperCase(),
@@ -708,23 +700,21 @@ $('#btnSalvarItem').addEventListener('click', async () => {
   }
 
   overlay(true);
-
   try {
     await apiPost(body);
     toast('Item salvo!', '', 'ok');
 
+    // limpar formulário
     ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant']
       .forEach(id => $('#' + id).value = '');
 
     state.editIndex = null;
-
     await carregarItens();
 
   } finally {
     overlay(false);
   }
 });
-
 
 
 /* ==========================
@@ -743,14 +733,14 @@ $('#inpImport').addEventListener('change', async ev => {
 
   previewRows = rows.map(r => ({
     itemTR: (r['Item do TR'] || r['ITEM TR'] || r['ITEM'] || '').toString(),
-    especificacao: (r['Especificação'] || r['ESPECIFICAÇÃO'] || r['Especificacao'] || '').toString(),
+    especificacao: (r['Especificação'] || '').toString(),
     marca: (r['Marca'] || '').toString(),
     modelo: (r['Modelo'] || '').toString(),
     unidade: (r['Unidade'] || '').toString(),
-    quantMax: (r['Quantidade Máxima'] || r['QTD MAXIMA'] || r['QTD MÁX'] || '').toString(),
-    quantMin: (r['Quantidade Mínima'] || r['QTD MINIMA'] || r['QTD MÍN'] || '').toString(),
-    valorUnit: (r['Valor Unitário'] || r['VALOR UNITARIO'] || '').toString(),
-    garantia: (r['Prazo garantia ou validade'] || r['GARANTIA'] || '').toString()
+    quantMax: (r['Quantidade Máxima'] || '').toString(),
+    quantMin: (r['Quantidade Mínima'] || '').toString(),
+    valorUnit: (r['Valor Unitário'] || '').toString(),
+    garantia: (r['Prazo garantia ou validade'] || '').toString()
   }));
 
   const tbl = $('#tblPreview');
@@ -762,9 +752,7 @@ $('#inpImport').addEventListener('change', async ev => {
     '</tr></thead>' +
     '<tbody>' +
     previewRows.map(r =>
-      '<tr>' +
-      cols.map(c => `<td>${(r[c] || '').toString().toUpperCase()}</td>`).join('') +
-      '</tr>'
+      '<tr>' + cols.map(c => `<td>${(r[c] || '').toUpperCase()}</td>`).join('') + '</tr>'
     ).join('') +
     '</tbody>';
 
@@ -773,10 +761,9 @@ $('#inpImport').addEventListener('change', async ev => {
 
 
 $('#btnConfirmImport').addEventListener('click', async () => {
-  if (!previewRows.length) { hide('#modalPreview'); return; }
+  if (!previewRows.length) return hide('#modalPreview');
 
   overlay(true);
-
   try {
     const rowsFixed = previewRows.map(r => ({
       'Item do TR': r.itemTR,
@@ -811,44 +798,39 @@ $('#btnConfirmImport').addEventListener('click', async () => {
 /* ==========================
    EXPORTAR & PDF
 ========================== */
-async function exportarItens(codigo) {
+$('#btnExportar').addEventListener('click', async () => {
   try {
-    const j = await apiGet({ action:'exportItens', codigo });
-    const url = j.url || j.link || j.download;
-
-    if (!url) {
-      toast('Exportação indisponível');
-      return;
-    }
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
+    const j = await apiGet({ action:'exportItens', codigo:state.licAtual });
+    if (!j.url) return toast('Erro ao exportar');
+    window.open(j.url, '_blank');
   } catch (e) {}
-}
+});
 
-async function gerarPdf(codigo) {
+$('#btnPdf').addEventListener('click', async () => {
   try {
-    const j = await apiGet({ action:'gerarPdf', codigo });
-    const url = j.url || j.link;
-
-    if (!url) {
-      toast('PDF indisponível');
-      return;
-    }
-
-    window.open(url, '_blank');
-
+    const j = await apiGet({ action:'gerarPdf', codigo:state.licAtual });
+    if (!j.url) return toast('Erro ao gerar PDF');
+    window.open(j.url, '_blank');
   } catch (e) {}
-}
+});
 
 
 /* ==========================
-   BUSCA / FILTROS
+   FECHAR MODAIS
+========================== */
+$$('.close').forEach(btn => {
+  btn.addEventListener('click', () => hide(btn.dataset.close));
+});
+
+$$('.modal').forEach(m => {
+  m.addEventListener('click', e => {
+    if (e.target === m) hide('#' + m.id);
+  });
+});
+
+
+/* ==========================
+   FILTROS / BUSCA
 ========================== */
 $('#busca').addEventListener('input', e => {
   state.busca = e.target.value.toUpperCase();
@@ -859,7 +841,6 @@ $$('#filtros .chip').forEach(ch =>
   ch.addEventListener('click', () => {
     $$('#filtros .chip').forEach(c => c.classList.remove('ativo'));
     ch.classList.add('ativo');
-
     state.filtro = ch.dataset.status.toUpperCase();
     renderLista();
   })
@@ -874,105 +855,6 @@ $$('#filtros .chip').forEach(ch =>
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
-
-  function formatarDataBonita(iso) {
-  if (!iso) return '-';
-  const d = new Date(iso);
-  if (isNaN(d)) return '-';
-
-  const dd = String(d.getDate()).padStart(2,'0');
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const yyyy = d.getFullYear();
-
-  const hh = String(d.getHours()).padStart(2,'0');
-  const min = String(d.getMinutes()).padStart(2,'0');
-
-  return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
-}
-  /* ============================================
-   FECHAR MODAIS (botão FECHAR e clique no fundo)
-============================================ */
-$$('.close').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.dataset.close;
-    if (target) hide(target);
-  });
-});
-
-// fechar ao clicar fora do conteúdo
-$$('.modal').forEach(modal => {
-  modal.addEventListener('click', e => {
-    if (e.target === modal) hide('#' + modal.id);
-  });
-});
-
-/* ============================================
-   EDITAR ITEM
-============================================ */
-function editarItem(index) {
-  const it = state.itens[index];
-  if (!it) return;
-
-  // exibe no formulário
-  $('#itTR').value      = it.itemTR || '';
-  $('#itEsp').value     = it.especificacao || '';
-  $('#itMarca').value   = it.marca || '';
-  $('#itModelo').value  = it.modelo || '';
-  $('#itUnid').value    = it.unidade || '';
-  $('#itQmax').value    = it.quantMax || '';
-  $('#itQmin').value    = it.quantMin || '';
-  $('#itVlr').value     = it.valorUnit || '';
-  $('#itGarant').value  = it.garantia || '';
-
-  // guarda qual item está sendo editado
-  state.editIndex = index;
-  toast('Editando item…', '', 'warn');
-}
-
-/* ============================================
-   SALVAR ITEM (ADD OU EDIT)
-============================================ */
-$('#btnSalvarItem').addEventListener('click', async () => {
-
-  const body = {
-    action: state.editIndex != null ? 'updateItem' : 'addItem',
-    codigoLicitacao: state.licAtual,
-    index: state.editIndex,
-    itemTR: $('#itTR').value.trim().toUpperCase(),
-    especificacao: $('#itEsp').value.trim().toUpperCase(),
-    marca: $('#itMarca').value.trim().toUpperCase(),
-    modelo: $('#itModelo').value.trim().toUpperCase(),
-    unidade: $('#itUnid').value.trim().toUpperCase(),
-    quantMax: $('#itQmax').value.trim(),
-    quantMin: $('#itQmin').value.trim(),
-    valorUnit: $('#itVlr').value.trim(),
-    garantia: $('#itGarant').value.trim().toUpperCase()
-  };
-
-  if (!body.itemTR) {
-    toast('Informe o ITEM TR');
-    return;
-  }
-
-  overlay(true);
-
-  try {
-    await apiPost(body);
-    toast('Item salvo!', '', 'ok');
-
-    // limpa form
-    ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant']
-      .forEach(id => $('#' + id).value = '');
-
-    state.editIndex = null;
-
-    await carregarItens();
-
-  } finally {
-    overlay(false);
-  }
-});
-
 </script>
 
 </body>
