@@ -3,238 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>LICITAR • Licitações</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
 <style>
-/* ============================
-   TEMA PREMIUM
-============================ */
+/* ===========================================
+   PALETA PREMIUM (MESMA QUE VOCÊ USA)
+=========================================== */
 :root{
-  --bg:#eef1f5;
-  --card:#ffffffcc;
-  --glass:blur(22px) saturate(160%);
-  --azul:#0f1f3a;
-  --muted:#6b7887;
-  --primary:#0d3b66;
-
-  --radius:22px;
-  --shadow:0 20px 40px rgba(0,0,0,.12);
+  --bg:#f3f5f8;
+  --card:#ffffff;
+  --azul:#0b1e39;
+  --azul2:#193053;
+  --muted:#697487;
+  --ok:#16a34a;
+  --danger:#dc2626;
+  --warn:#d97706;
+  --shadow:0 14px 40px rgba(0,0,0,.12);
+  --radius:20px;
 }
 
-/* ============================
-   GERAL
-============================ */
 body{
-  margin:0;
-  padding:34px;
   background:var(--bg);
+  padding:32px;
   font-family:"Inter",sans-serif;
   color:var(--azul);
 }
 
+/* ===========================================
+   TÍTULO
+=========================================== */
 .titulo{
   font-size:34px;
-  font-weight:800;
-  margin-bottom:24px;
-  letter-spacing:-1px;
+  font-weight:700;
+  margin-bottom:22px;
+}
+
+/* ===========================================
+   TOPO
+=========================================== */
+.topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
 }
 
 .input{
-  width:380px;
-  padding:14px 16px;
+  width:360px;
+  padding:14px;
   border-radius:14px;
-  border:1px solid #d5d9df;
+  border:1px solid #d4d8de;
+  background:#fff;
   font-size:15px;
-  background:white;
   transition:.2s;
 }
 .input:focus{
-  border-color:var(--primary);
   outline:none;
-  box-shadow:0 0 0 3px #0d3b6615;
+  border-color:var(--azul);
+  box-shadow:0 0 0 3px rgba(11,30,57,.1);
 }
 
-/* ============================
+/* ===========================================
    FILTROS
-============================ */
+=========================================== */
 .filtros{
   display:flex;
-  gap:12px;
-  margin:20px 0 26px 0;
+  gap:10px;
   flex-wrap:wrap;
+  margin-bottom:20px;
 }
 
 .chip{
   padding:10px 20px;
   border-radius:999px;
-  background:white;
-  border:1px solid #cfd4da;
+  border:1px solid #d4d8de;
+  background:#fff;
   cursor:pointer;
-  font-weight:600;
-  font-size:14px;
   transition:.2s;
-}
-.chip:hover{
-  background:#f0f3f8;
-}
-.chip.ativo{
-  background:var(--primary);
-  border-color:var(--primary);
-  color:white;
+  font-weight:600;
 }
 
-/* ============================
-   GRID & SKELETON
-============================ */
+.chip:hover{background:#eef1f6;}
+.chip.ativo{
+  background:var(--azul);
+  color:#fff;
+  border-color:var(--azul);
+}
+
+/* ===========================================
+   GRID
+=========================================== */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
   gap:26px;
 }
 
+/* Skeleton */
 .skel{
-  height:230px;
+  height:210px;
   border-radius:var(--radius);
-  background:#d9dde2;
-  animation:pulse 1.5s infinite alternate;
+  background:#e4e7eb;
+  animation:pulse 1.2s infinite alternate;
 }
-@keyframes pulse{from{opacity:.6;}to{opacity:1;}}
+@keyframes pulse{
+  from{opacity:.5;} to{opacity:1;}
+}
 
-/* ============================
-   CARD PREMIUM
-============================ */
+/* ===========================================
+   CARDS ULTRA PREMIUM
+=========================================== */
 .card{
-  background:var(--card);
-  backdrop-filter:var(--glass);
-  padding:26px;
+  background:#fff;
   border-radius:var(--radius);
+  padding:24px;
   box-shadow:var(--shadow);
-  transition:.25s ease;
-  border:1px solid rgba(255,255,255,.35);
-  position:relative;
-  overflow:hidden;
+  transition:.3s;
+  border-left:6px solid var(--azul);
 }
 .card:hover{
   transform:translateY(-6px);
-  box-shadow:0 26px 50px rgba(0,0,0,.18);
+  box-shadow:0 16px 48px rgba(0,0,0,.18);
 }
 
 .card h3{
   font-size:20px;
-  font-weight:800;
-  margin:0 0 6px 0;
-  letter-spacing:-0.3px;
+  color:var(--azul2);
 }
 
-small{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* linhas */
 .row{
-  margin-top:16px;
   display:flex;
   flex-direction:column;
   gap:6px;
-  font-size:14px;
+  margin:16px 0;
+  color:#333;
 }
 
-.row div b{
-  color:var(--azul);
-}
-
-/* BADGES premium */
+/* BADGES */
 .badge{
-  padding:8px 16px;
-  border-radius:12px;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:700;
   font-size:12px;
-  font-weight:700;
-  margin-top:14px;
-  width:max-content;
-  background:linear-gradient(135deg,#ececec,#d9d9d9);
+  display:inline-block;
+  margin-top:12px;
 }
+.st-Pendente{background:#fff7cc;color:#8a5e00;}
+.st-Futura{background:#dceafe;color:#1854b3;}
+.st-Em_andamento{background:#fde99a;color:#946c00;}
+.st-Finalizada{background:#dcfce7;color:#187a42;}
+.st-Suspensa{background:#ffd6dc;color:#b61d35;}
 
-.st-Pendente{background:linear-gradient(135deg,#fff1b8,#ffe58f); color:#8a6f1a;}
-.st-Futura{background:linear-gradient(135deg,#d6ecff,#b0d4ff); color:#084a92;}
-.st-Em_andamento{background:linear-gradient(135deg,#ffe7a8,#ffcd63); color:#875f00;}
-.st-Finalizada{background:linear-gradient(135deg,#d8ffe8,#a1f7c2); color:#0d7a48;}
-.st-Suspensa{background:linear-gradient(135deg,#ffd6df,#ffb2c1); color:#99223d;}
-
-/* BOTÃO */
+/* Botões */
 .btn{
-  width:100%;
-  padding:14px;
-  background:var(--primary);
+  padding:12px 18px;
+  background:var(--azul);
+  color:#fff;
   border:none;
-  border-radius:14px;
-  margin-top:18px;
-  color:white;
-  font-weight:700;
+  border-radius:12px;
   cursor:pointer;
-  font-size:15px;
+  font-size:14px;
+  font-weight:600;
   transition:.2s;
 }
-.btn:hover{
-  opacity:.85;
-}
+.btn:hover{background:var(--azul2);}
 
-.btn:active{
-  transform:scale(.97);
-}
-
-/* ============================
-   MODAL ITENS PREMIUM
-============================ */
+/* ===========================================
+   MODAL ULTRA PREMIUM
+=========================================== */
 .modal{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.55);
   display:none;
   justify-content:center;
-  align-items:center;
-  padding:20px;
+  align-items:flex-start;
+  padding-top:40px;
+  z-index:10;
 }
 
-.modal-box{
-  width:860px;
-  max-height:90vh;
-  overflow-y:auto;
-  background:white;
+.modal .box{
+  background:#fff;
+  width:90%;
+  max-width:1200px;
+  padding:34px;
   border-radius:20px;
-  padding:28px;
   box-shadow:var(--shadow);
-  animation:zoom .26s;
+  max-height:85vh;
+  overflow-y:auto;
+  animation:fadeIn .25s;
 }
-@keyframes zoom{
-  from{opacity:0; transform:scale(.92);}
-  to{opacity:1; transform:scale(1);}
-}
-
-.modal h2{
-  margin-top:0;
-  font-size:24px;
-  font-weight:800;
-  color:var(--primary);
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(.97);}
+  to{opacity:1;transform:scale(1);}
 }
 
-/* tabela */
+.box h2{
+  color:var(--azul2);
+  margin-bottom:4px;
+}
+
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:22px;
+  margin-top:20px;
+}
+thead{
+  background:#f0f2f5;
 }
 th,td{
-  border-bottom:1px solid #e5e5e5;
-  padding:12px;
-  font-size:14px;
+  padding:14px;
+  text-align:left;
+  border-bottom:1px solid #e5e7eb;
 }
 th{
-  background:#f5f7fa;
+  font-size:14px;
+  color:var(--azul);
+}
+td{
+  font-size:14px;
+  color:#333;
+}
+
+.total-geral{
+  margin-top:20px;
+  font-size:18px;
   font-weight:700;
+  text-align:right;
+  color:var(--azul2);
 }
 </style>
 </head>
@@ -243,7 +240,9 @@ th{
 
 <div class="titulo">LICITAR • Licitações</div>
 
-<input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO">
+<div class="topo">
+  <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO">
+</div>
 
 <div class="filtros" id="filtros">
   <div class="chip ativo" data-status="TODOS">Todos</div>
@@ -260,46 +259,45 @@ th{
   <div class="skel"></div>
 </div>
 
-<!-- MODAL DE ITENS -->
+<!-- MODAL PARA ITENS -->
 <div class="modal" id="modalItens">
-  <div class="modal-box">
-    <h2 id="tituloItens">Itens da Licitação</h2>
-    <div id="tabelaItens">Carregando...</div>
+  <div class="box">
+    <h2 id="tituloItens"></h2>
+    <p id="subTituloItens" style="color:#697487;margin-bottom:18px"></p>
+    <div id="tabelaItens">Carregando…</div>
   </div>
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxxmYYo5IuDKFu_QmQl7wXk-XMDTKukziOIgyBrHWSVdvqmT7D5Y_nImOv1CAIGoiPC/exec";
-
-/* ---- atalhos ---- */
+const API = "https://script.google.com/macros/s/AKfycbwFVk0kmZm0rhthqtVBufO-l0b5dQGHcFvsH4Ke5On3vgXnNZ8sgpgXS_a7vq1XvV4i/exec";
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 let licitacoes = [];
 let filtro="TODOS";
 let busca="";
+let editID=null;
 
-/* ------------ FORMATOS ------------ */
+/* MÁSCARAS */
 function mascaraValor(v){
   return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
 }
-
-function mascaraData(d){
-  const dt = new Date(d);
-  if(isNaN(dt)) return d;
-  return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+function mascaraData(dt){
+  const d=new Date(dt);
+  if(isNaN(d)) return "-";
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 }
 
-/* ------------ RENDER ------------ */
+/* RENDERIZAÇÃO DOS CARDS */
 function render(){
-  const lista = $('#lista');
+  const lista=$('#lista');
 
-  const dados = licitacoes.filter(l =>
+  const dados=licitacoes.filter(l =>
     (filtro==="TODOS" || l.status===filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
-  lista.innerHTML = dados.map(l => `
+  lista.innerHTML=dados.map(l=>`
     <div class="card">
       <h3>${l.instituicao}</h3>
       <small>Código: ${l.codigo}</small>
@@ -313,53 +311,63 @@ function render(){
 
       <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
 
-      <button class="btn" onclick="verItens('${l.codigo}','${l.instituicao}')">Ver Itens</button>
+      <button class="btn" style="margin-top:16px" onclick="verItens('${l.codigo}','${l.instituicao.replace(/'/g,'')}')">Ver Itens</button>
     </div>
-  `).join("");
+  `).join('');
 }
 
-/* ------------ FILTROS ------------ */
-$$('#filtros .chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
-    chip.classList.add('ativo');
-    filtro = chip.dataset.status;
+/* BUSCA */
+$('#busca').addEventListener('input',e=>{
+  busca=e.target.value;
+  render();
+});
+
+/* FILTROS */
+$$('#filtros .chip').forEach(ch=>{
+  ch.addEventListener('click',()=>{
+    $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
+    ch.classList.add('ativo');
+    filtro=ch.dataset.status;
     render();
   });
 });
 
-/* ------------ BUSCA ------------ */
-$('#busca').addEventListener('input',e=>{
-  busca = e.target.value;
-  render();
-});
-
-/* ------------ VER ITENS ------------ */
-async function verItens(codigo,nome){
+/* ============ VER ITENS (ULTRA PREMIUM) ============ */
+async function verItens(codigo, nome){
   $('#modalItens').style.display="flex";
-  $('#tituloItens').innerHTML = `Itens da Licitação<br><small>${nome}</small>`;
-  $('#tabelaItens').innerHTML = "Carregando...";
+  $('#tituloItens').innerHTML="Itens da Licitação";
+  $('#subTituloItens').innerHTML=nome;
+  $('#tabelaItens').innerHTML="Carregando…";
 
-  const r = await fetch(`${API}?action=listItens&codigo=${codigo}`);
-  const j = await r.json();
+  const r=await fetch(`${API}?action=listItens&codigo=${codigo}`);
+  const j=await r.json();
 
   if(!j.itens || j.itens.length===0){
-    $('#tabelaItens').innerHTML = "<p>Nenhum item encontrado.</p>";
+    $('#tabelaItens').innerHTML="<p>Nenhum item encontrado.</p>";
     return;
   }
 
-  const rows = j.itens.map(i=>`
-    <tr>
-      <td>${i.itemTR}</td>
-      <td>${i.especificacao}</td>
-      <td>${i.unidade}</td>
-      <td>${i.quantMax}</td>
-      <td>${i.quantMin}</td>
-      <td>${mascaraValor(i.valorUnit)}</td>
-    </tr>
-  `).join("");
+  let totalGeral=0;
 
-  $('#tabelaItens').innerHTML = `
+  const rows=j.itens.map(i=>{
+    const valor=Number(i.valorUnit)||0;
+    const total=valor*(Number(i.quantMin)||0);
+    totalGeral+=total;
+
+    return `
+      <tr>
+        <td>${i.itemTR}</td>
+        <td>${i.especificacao}</td>
+        <td>${i.unidade}</td>
+        <td>${i.quantMax}</td>
+        <td>${i.quantMin}</td>
+        <td>R$ ${mascaraValor(valor)}</td>
+        <td><b>R$ ${mascaraValor(total)}</b></td>
+      </tr>
+    `;
+  }).join("");
+
+  $('#tabelaItens').innerHTML=`
     <table>
       <thead>
         <tr>
@@ -369,29 +377,40 @@ async function verItens(codigo,nome){
           <th>Máx</th>
           <th>Mín</th>
           <th>Valor Unit.</th>
+          <th>Total (mín.)</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>
+
+    <div class="total-geral">
+      Total Geral (mínimos): R$ ${mascaraValor(totalGeral)}
+    </div>
   `;
 }
 
-/* fechar modal */
+/* FECHAR MODAL */
 $('#modalItens').addEventListener('click',e=>{
-  if(e.target===e.currentTarget){
-    e.currentTarget.style.display='none';
-  }
+  if(e.target===e.currentTarget) e.currentTarget.style.display='none';
 });
 
-/* ------------ CARREGAR ------------ */
+/* CARREGAR */
 async function carregar(){
-  const r = await fetch(`${API}?action=listLicitacoes`);
-  const j = await r.json();
-  licitacoes = j.licitacoes || [];
+  $('#lista').innerHTML=`
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel"></div>
+  `;
+
+  const r=await fetch(API+"?action=listLicitacoes");
+  const j=await r.json();
+
+  licitacoes=j.licitacoes;
   render();
 }
 
 carregar();
 </script>
+
 </body>
 </html>
