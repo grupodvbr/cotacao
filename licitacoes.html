@@ -48,10 +48,10 @@ body{background:var(--bg);color:#0f172a;padding:28px}
 
 /* Overlay */
 #overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;z-index:9999}
-#overlay .box{background:#fff;padding:22px 26px;border-radius:12px;box-shadow:var(--shadow);font-weight:700;color:var(--azul)}
+#overlay .box{background:#fff;padding:22px 26px;border-radius:12px;box-shadow:var(--shadow);font-weight:700;color:#azul}
 
 /* Toast */
-.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:300px;max-width:520px;white-space:pre-wrap}
+.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:290px;max-width:420px;white-space:pre-line}
 .toast.ok{border-left-color:var(--ok)}
 .toast.warn{border-left-color:var(--warn)}
 .toast b{display:block;margin-bottom:4px}
@@ -84,6 +84,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
     <div class="titulo">LICITAR • Painel de Licitações</div>
     <div class="actions">
       <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
+      <button class="btn btn-lite" id="btnConfig">API</button>
       <button class="btn btn-primary" id="btnNova">+ Nova Licitação</button>
     </div>
   </div>
@@ -196,13 +197,13 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
 /* ==========================
    CONFIG / STATE
 ========================== */
-const DEFAULT_API = "https://script.google.com/macros/s/AKfycbzSLiXMvHlGDRxxeqFABZgjtXBp4EW7H0FQTVJ0QPfcH2oD3zO6zKPa6Ox6i_rK3xVN/exec";
-// permite override via ?api=URL
-const API = new URLSearchParams(location.search).get('api') || DEFAULT_API;
+const CONFIG_KEY = 'LICITAR_API_URL';
+const urlParam = new URLSearchParams(location.search).get('api');
+if (urlParam) localStorage.setItem(CONFIG_KEY, urlParam);
+let API = localStorage.getItem(CONFIG_KEY) || 'https://script.google.com/macros/s/AKfycbyIZ2hYtgECjQog-9B01RaV6eZ6BOpfvn6Z5WaZeQL2-Hb7KnfGsJsl0HtG2A-2whJg/exec';
 
 const $ = sel => document.querySelector(sel), $$ = sel => [...document.querySelectorAll(sel)];
-const show = sel => ($(sel).style.display='flex'), hide = sel => ($(sel).style.display='none');
-
+const show = sel => (document.querySelector(sel).style.display='flex'), hide = sel => (document.querySelector(sel).style.display='none');
 let state = { filtro:'Todos', busca:'', empresas:[], licitacoes:[], licAtual:null, itens:[], preview:[] };
 
 /* ==========================
@@ -213,23 +214,16 @@ function toast(title, details='', type='err'){
   t.className = 'toast' + (type==='ok'?' ok': type==='warn'?' warn':'');
   t.innerHTML = `<b>${title}</b>${details?`<small>${details}</small>`:''}`;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 7000);
+  setTimeout(()=>t.remove(), 8000);
 }
 function showFetchError(ctx, err, method, url){
   const msg = (err && err.message) || String(err) || 'erro desconhecido';
-  const tips = (msg.includes('Failed to fetch')||msg.includes('NetworkError')||msg.includes('AbortError')) ?
-`Possíveis causas:
-• URL incorreta
-• Web App não implantado (Deploy > Manage deployments)
-• Permissão do Web App diferente de "Qualquer pessoa"
-• Versão desatualizada (publique novamente)
-
-${method} falhou em:
-${url}` : msg;
+  const tips = (msg.includes('Failed to fetch')||msg.includes('NetworkError')) ?
+    `Possíveis causas:\n• URL incorreta\n• Web App não implantado (Deploy > Manage deployments)\n• Permissão do Web App diferente de "Qualquer pessoa"\n• Versão desatualizada (publique novamente)\n\n${method} falhou em:\n${url}` : msg;
   toast(`Falha ao ${ctx}`, tips, 'warn');
 }
-function overlay(on){ $('#overlay').style.display = on?'flex':'none'; }
-function upperizeInputs(){ $$('input,select,textarea').forEach(el=>{
+function overlay(on){ document.querySelector('#overlay').style.display = on?'flex':'none'; }
+function upperizeInputs(){ document.querySelectorAll('input,select,textarea').forEach(el=>{
   el.addEventListener('input', ()=>{ if(getComputedStyle(el).textTransform==='uppercase') el.value = el.value.toUpperCase(); });
 }); }
 function maskMoney(el){
@@ -247,9 +241,21 @@ function maskDate(el){
   else el.value = v;
 }
 function attachMasks(){
-  $$('input[data-mask="money"]').forEach(el=> el.addEventListener('input', ()=>maskMoney(el)));
-  $$('input[data-mask="date"]').forEach(el=> el.addEventListener('input', ()=>maskDate(el)));
+  document.querySelectorAll('input[data-mask="money"]').forEach(el=> el.addEventListener('input', ()=>maskMoney(el)));
+  document.querySelectorAll('input[data-mask="date"]').forEach(el=> el.addEventListener('input', ()=>maskDate(el)));
 }
+
+/* ==========================
+   CONFIG BUTTON
+========================== */
+document.querySelector('#btnConfig').addEventListener('click', ()=>{
+  const v = prompt('Cole a URL do seu Web App (GAS)\nDica: você pode passar ?api=URL na barra para salvar automaticamente.', API);
+  if (!v) return;
+  API = v.trim();
+  localStorage.setItem(CONFIG_KEY, API);
+  toast('API atualizada', API, 'ok');
+  init();
+});
 
 /* ==========================
    FETCH HELPERS (com timeout)
@@ -258,26 +264,21 @@ async function apiGet(qs){
   const url = API + '?' + new URLSearchParams(qs).toString();
   try{
     const ctrl = new AbortController();
-    const t = setTimeout(()=>ctrl.abort(), 15000);
+    const t = setTimeout(()=>ctrl.abort(), 20000);
     const r = await fetch(url, {method:'GET', signal: ctrl.signal});
     clearTimeout(t);
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const j = await r.json();
     if(j.error) throw new Error(j.error);
     return j;
-  }catch(e){ showFetchError(`carregar ${qs.action||'dados'}`, e, 'GET', url); throw e; }
+  }catch(e){ showFetchError(`carregar ${qs.action}`, e, 'GET', url); throw e; }
 }
 async function apiPost(body){
   const url = API;
   try{
     const ctrl = new AbortController();
     const t = setTimeout(()=>ctrl.abort(), 20000);
-    const r = await fetch(url, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify(body),
-      signal: ctrl.signal
-    });
+    const r = await fetch(url, {method:'POST', body: JSON.stringify(body), signal: ctrl.signal});
     clearTimeout(t);
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const j = await r.json();
@@ -290,7 +291,7 @@ async function apiPost(body){
    RENDER LISTA
 ========================== */
 function renderLista(){
-  const lista = $('#lista');
+  const lista = document.querySelector('#lista');
   const f = state.filtro, b = (state.busca||'').toUpperCase();
   const dados = state.licitacoes.filter(l =>
     (f==='Todos' || l.status===f) && (l.instituicao||'').toUpperCase().includes(b)
@@ -306,8 +307,8 @@ function renderLista(){
       <h3>${l.instituicao}</h3>
       <small>Código: <b>${l.codigo}</b></small>
       <div class="row">
-        <div class="kv">Data: ${l.dataSessaoBR||l.dataSessao||'-'}</div>
-        <div class="kv">Valor: ${l.valorBR||l.valor||'-'}</div>
+        <div class="kv">Data: ${l.dataSessaoBR||'-'}</div>
+        <div class="kv">Valor: ${l.valorBR||'-'}</div>
         <div class="kv">Critério: ${l.criterio||'-'}</div>
         <div class="kv">Modo: ${l.modo||'-'}</div>
       </div>
@@ -329,28 +330,29 @@ function renderLista(){
 async function carregarEmpresas(){
   try{
     const j = await apiGet({action:'listEmpresas'});
-    state.empresas = j.empresas||j||[];
-    const sel = $('#selInstituicao');
+    state.empresas = j.empresas||[];
+    const sel = document.querySelector('#selInstituicao');
     sel.innerHTML = state.empresas.map(e=>`<option value="${e.codigo}">${e.nome}</option>`).join('');
-  }catch(e){}
+  }catch(e){ }
 }
 async function carregarLicitacoes(){
   try{
     const j = await apiGet({action:'listLicitacoes'});
-    state.licitacoes = j.licitacoes||j||[];
+    state.licitacoes = j.licitacoes||[];
     renderLista();
   }catch(e){
-    $('#lista').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações. Veja o balão no canto direito.</div>';
+    document.querySelector('#lista').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações. Veja o balão no canto direito.</div>';
   }
 }
 
 /* ==========================
    EMPRESA (CRUD)
 ========================== */
-$('#btnNovaEmpresa').addEventListener('click', ()=> show('#modalEmpresa'));
-$('#btnSalvarEmpresa').addEventListener('click', async ()=>{
-  const nome=$('#empRazao').value.trim().toUpperCase(),
-        cnpj=$('#empCnpj').value.trim(), uf=$('#empUf').value.trim().toUpperCase();
+
+document.querySelector('#btnNovaEmpresa').addEventListener('click', ()=> show('#modalEmpresa'));
+document.querySelector('#btnSalvarEmpresa').addEventListener('click', async ()=>{
+  const nome=document.querySelector('#empRazao').value.trim().toUpperCase(),
+        cnpj=document.querySelector('#empCnpj').value.trim(), uf=document.querySelector('#empUf').value.trim().toUpperCase();
   if(!nome){ toast('Informe a RAZÃO SOCIAL'); return; }
   overlay(true);
   try{
@@ -358,7 +360,7 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
     toast('Empresa salva', `Código gerado: ${j.codigo||'-'}`, 'ok');
     hide('#modalEmpresa');
     await carregarEmpresas();
-    const sel = $('#selInstituicao');
+    const sel = document.querySelector('#selInstituicao');
     if(j.codigo) sel.value = j.codigo;
   }finally{ overlay(false); }
 });
@@ -366,19 +368,20 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
 /* ==========================
    LICITAÇÃO (ADD/EDIT/DEL)
 ========================== */
-$('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); $('#tituloModalLicitacao').innerText='Nova Licitação'; state.licAtual=null; show('#modalLicitacao'); });
-$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 
-function limpaFormLicit(){ $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value=''; $('#inpModo').value=''; $('#selStatus').value='Pendente'; }
+document.querySelector('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); document.querySelector('#tituloModalLicitacao').innerText='Nova Licitação'; state.licAtual=null; show('#modalLicitacao'); });
+document.querySelector('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
+
+function limpaFormLicit(){ document.querySelector('#inpData').value=''; document.querySelector('#inpValor').value=''; document.querySelector('#inpCriterio').value=''; document.querySelector('#inpModo').value=''; document.querySelector('#selStatus').value='Pendente'; }
 function coletaFormLicit(){
   return {
-    instCode: $('#selInstituicao').value,
-    instituicao: $('#selInstituicao').selectedOptions[0]?.text || '',
-    dataSessaoBR: $('#inpData').value.trim(),
-    valorBR: $('#inpValor').value.trim(),
-    criterio: $('#inpCriterio').value.trim().toUpperCase(),
-    modo: $('#inpModo').value.trim().toUpperCase(),
-    status: $('#selStatus').value
+    instCode: document.querySelector('#selInstituicao').value,
+    instituicao: document.querySelector('#selInstituicao').selectedOptions[0]?.text || '',
+    dataSessaoBR: document.querySelector('#inpData').value.trim(),
+    valorBR: document.querySelector('#inpValor').value.trim(),
+    criterio: document.querySelector('#inpCriterio').value.trim().toUpperCase(),
+    modo: document.querySelector('#inpModo').value.trim().toUpperCase(),
+    status: document.querySelector('#selStatus').value
   };
 }
 async function salvarLicitacao(){
@@ -400,13 +403,13 @@ function editarLicitacao(codigo){
   const l = state.licitacoes.find(x=>x.codigo===codigo);
   if(!l) return;
   state.licAtual = codigo;
-  $('#tituloModalLicitacao').innerText='Editar Licitação';
-  $('#selInstituicao').value = l.instCode;
-  $('#inpData').value = (l.dataSessaoBR||l.dataSessao||'');
-  $('#inpValor').value = (l.valorBR||l.valor||'');
-  $('#inpCriterio').value = l.criterio||'';
-  $('#inpModo').value = l.modo||'';
-  $('#selStatus').value = l.status||'Pendente';
+  document.querySelector('#tituloModalLicitacao').innerText='Editar Licitação';
+  document.querySelector('#selInstituicao').value = l.instCode;
+  document.querySelector('#inpData').value = (l.dataSessaoBR||'');
+  document.querySelector('#inpValor').value = (l.valorBR||'');
+  document.querySelector('#inpCriterio').value = l.criterio||'';
+  document.querySelector('#inpModo').value = l.modo||'';
+  document.querySelector('#selStatus').value = l.status||'Pendente';
   show('#modalLicitacao');
 }
 async function excluirLicitacao(codigo){
@@ -424,15 +427,15 @@ async function excluirLicitacao(codigo){
 ========================== */
 async function abrirItens(codigo){
   state.licAtual = codigo;
-  $('#infoCodigo').innerText = '• ' + codigo;
+  document.querySelector('#infoCodigo').innerText = '• ' + codigo;
   show('#modalItens');
   await carregarItens();
 }
 async function carregarItens(){
   try{
     const j = await apiGet({action:'listItens', codigo: state.licAtual});
-    state.itens = j.itens||j||[];
-    const tb = $('#tblItens tbody');
+    state.itens = j.itens||[];
+    const tb = document.querySelector('#tblItens tbody');
     tb.innerHTML = state.itens.map(i=>`
       <tr>
         <td>${i.itemTR||''}</td><td>${i.especificacao||''}</td><td>${i.marca||''}</td>
@@ -442,32 +445,32 @@ async function carregarItens(){
         <td><button class="btn btn-lite" onclick="/* editar futuramente */">Editar</button></td>
       </tr>
     `).join('');
-  }catch(e){}
+  }catch(e){ }
 }
-$('#btnSalvarItem').addEventListener('click', async ()=>{
+document.querySelector('#btnSalvarItem').addEventListener('click', async ()=>{
   const body = {
     action:'addItem', codigoLicitacao: state.licAtual,
-    itemTR: $('#itTR').value.trim().toUpperCase(),
-    especificacao: $('#itEsp').value.trim().toUpperCase(),
-    marca: $('#itMarca').value.trim().toUpperCase(),
-    modelo: $('#itModelo').value.trim().toUpperCase(),
-    unidade: $('#itUnid').value.trim().toUpperCase(),
-    quantMax: $('#itQmax').value.trim(), quantMin: $('#itQmin').value.trim(),
-    valorUnit: $('#itVlr').value.trim(), garantia: $('#itGarant').value.trim().toUpperCase()
+    itemTR: document.querySelector('#itTR').value.trim().toUpperCase(),
+    especificacao: document.querySelector('#itEsp').value.trim().toUpperCase(),
+    marca: document.querySelector('#itMarca').value.trim().toUpperCase(),
+    modelo: document.querySelector('#itModelo').value.trim().toUpperCase(),
+    unidade: document.querySelector('#itUnid').value.trim().toUpperCase(),
+    quantMax: document.querySelector('#itQmax').value.trim(), quantMin: document.querySelector('#itQmin').value.trim(),
+    valorUnit: document.querySelector('#itVlr').value.trim(), garantia: document.querySelector('#itGarant').value.trim().toUpperCase()
   };
   if(!body.itemTR){ toast('Informe o ITEM TR'); return; }
   overlay(true);
   try{
     await apiPost(body);
     toast('Item adicionado', '', 'ok');
-    ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant'].forEach(id=>$('#'+id).value='');
+    ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant'].forEach(id=>document.querySelector('#'+id).value='');
     await carregarItens();
   }finally{ overlay(false); }
 });
 
 /* Importação XLSX com prévia */
 let previewRows = [];
-$('#inpImport').addEventListener('change', async (ev)=>{
+document.querySelector('#inpImport').addEventListener('change', async (ev)=>{
   const file = ev.target.files[0]; if(!file) return;
   const data = await file.arrayBuffer();
   const wb = XLSX.read(data, {type:'array'});
@@ -484,14 +487,14 @@ $('#inpImport').addEventListener('change', async (ev)=>{
     valorUnit: (r['Valor Unitário']||r['VALOR UNITARIO']||r['VLR UNIT']||'').toString(),
     garantia: (r['Prazo garantia ou validade']||r['GARANTIA']||'').toString()
   }));
-  const tbl = $('#tblPreview');
+  const tbl = document.querySelector('#tblPreview');
   const cols = ['itemTR','especificacao','marca','modelo','unidade','quantMax','quantMin','valorUnit','garantia'];
   tbl.innerHTML =
     '<thead><tr>'+cols.map(c=>`<th>${c.toUpperCase()}</th>`).join('')+'</tr></thead>'+
     '<tbody>'+previewRows.map(r=>'<tr>'+cols.map(c=>`<td>${(r[c]||'').toString().toUpperCase()}</td>`).join('')+'</tr>').join('')+'</tbody>';
   show('#modalPreview');
 });
-$('#btnConfirmImport').addEventListener('click', async ()=>{
+document.querySelector('#btnConfirmImport').addEventListener('click', async ()=>{
   if(!previewRows.length){ hide('#modalPreview'); return; }
   overlay(true);
   try{
@@ -521,9 +524,9 @@ async function gerarPdf(codigo){
 /* ==========================
    Busca / filtros / masks
 ========================== */
-$('#busca').addEventListener('input', e=>{ state.busca = e.target.value.toUpperCase(); renderLista(); });
-$$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
-  $$('#filtros .chip').forEach(c=>c.classList.remove('ativo')); ch.classList.add('ativo');
+document.querySelector('#busca').addEventListener('input', e=>{ state.busca = e.target.value.toUpperCase(); renderLista(); });
+document.querySelectorAll('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
+  document.querySelectorAll('#filtros .chip').forEach(c=>c.classList.remove('ativo')); ch.classList.add('ativo');
   state.filtro = ch.dataset.status; renderLista();
 }));
 upperizeInputs(); attachMasks();
@@ -531,11 +534,13 @@ upperizeInputs(); attachMasks();
 /* ==========================
    Boot
 ========================== */
-(async function init(){
-  // Primeiro tenta empresas; se falhar, o toast mostra a URL exata e possíveis causas
+async function init(){
+  document.querySelector('#lista').innerHTML = 'Carregando…';
   await carregarEmpresas();
   await carregarLicitacoes();
-})();
+}
+
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
