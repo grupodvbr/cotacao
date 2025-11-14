@@ -601,12 +601,28 @@ function editarLicitacao(codigo) {
   $('#tituloModalLicitacao').innerText = 'Editar Licitação';
   $('#selInstituicao').value = l.instCode;
 
-  $('#inpData').value = l.dataSessaoBR || '';
+  // 🔥 CORREÇÃO DA DATA
+  let dataBR = l.dataSessaoBR;
+
+  // Caso venha ISO (2025-12-10T03:00:00.000Z)
+  if (dataBR.includes('T') || dataBR.includes('-')) {
+    const d = new Date(dataBR);
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yyyy = d.getFullYear();
+    dataBR = `${dd}/${mm}/${yyyy}`;
+  }
+
+  $('#inpData').value = dataBR;
+
+  // 🔥 FORMATO DE DINHEIRO
   $('#inpValor').value = l.valorBR || '';
+
   $('#inpCriterio').value = l.criterio || '';
   $('#inpModo').value = l.modo || '';
 
   const s = l.status.toUpperCase();
+
   $('#selStatus').value =
     s === 'PENDENTE' ? 'Pendente' :
     s === 'FUTURA' ? 'Futura' :
@@ -616,6 +632,7 @@ function editarLicitacao(codigo) {
 
   show('#modalLicitacao');
 }
+
 
 async function excluirLicitacao(codigo) {
   if (!confirm('Deseja excluir esta licitação?')) return;
