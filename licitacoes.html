@@ -3,138 +3,192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>LICITAR • Licitações</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
 <style>
-/* Tema */
+/* ============================
+   TEMA PREMIUM
+============================ */
 :root{
-  --bg:#eef2f5;
-  --card:#ffffff;
-  --azul:#0b1e39;
-  --muted:#6d7785;
-  --ok:#16a34a;
-  --shadow:0 14px 40px rgba(0,0,0,.08);
-  --radius:20px;
+  --bg:#eef1f5;
+  --card:#ffffffcc;
+  --glass:blur(22px) saturate(160%);
+  --azul:#0f1f3a;
+  --muted:#6b7887;
+  --primary:#0d3b66;
+
+  --radius:22px;
+  --shadow:0 20px 40px rgba(0,0,0,.12);
 }
 
+/* ============================
+   GERAL
+============================ */
 body{
   margin:0;
-  padding:32px;
+  padding:34px;
   background:var(--bg);
   font-family:"Inter",sans-serif;
   color:var(--azul);
 }
 
-/* Título */
 .titulo{
-  font-size:32px;
-  font-weight:700;
+  font-size:34px;
+  font-weight:800;
   margin-bottom:24px;
+  letter-spacing:-1px;
 }
 
-/* Input */
 .input{
-  width:350px;
-  padding:14px;
+  width:380px;
+  padding:14px 16px;
   border-radius:14px;
-  border:1px solid #d4d8de;
+  border:1px solid #d5d9df;
   font-size:15px;
+  background:white;
+  transition:.2s;
+}
+.input:focus{
+  border-color:var(--primary);
+  outline:none;
+  box-shadow:0 0 0 3px #0d3b6615;
 }
 
-/* Filtros */
+/* ============================
+   FILTROS
+============================ */
 .filtros{
   display:flex;
-  gap:10px;
-  margin:20px 0;
+  gap:12px;
+  margin:20px 0 26px 0;
   flex-wrap:wrap;
 }
 
 .chip{
-  padding:8px 16px;
+  padding:10px 20px;
   border-radius:999px;
+  background:white;
   border:1px solid #cfd4da;
-  background:#fff;
   cursor:pointer;
   font-weight:600;
   font-size:14px;
+  transition:.2s;
+}
+.chip:hover{
+  background:#f0f3f8;
 }
 .chip.ativo{
-  background:var(--azul);
-  border-color:var(--azul);
-  color:#fff;
+  background:var(--primary);
+  border-color:var(--primary);
+  color:white;
 }
 
-/* GRID */
+/* ============================
+   GRID & SKELETON
+============================ */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
-  gap:22px;
+  grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
+  gap:26px;
 }
 
-/* Skeleton */
 .skel{
-  background:#dfe3e8;
-  height:210px;
+  height:230px;
   border-radius:var(--radius);
-  animation:pulse 1.4s infinite alternate;
+  background:#d9dde2;
+  animation:pulse 1.5s infinite alternate;
 }
 @keyframes pulse{from{opacity:.6;}to{opacity:1;}}
 
-/* Card */
+/* ============================
+   CARD PREMIUM
+============================ */
 .card{
-  background:#fff;
+  background:var(--card);
+  backdrop-filter:var(--glass);
+  padding:26px;
   border-radius:var(--radius);
-  padding:22px;
   box-shadow:var(--shadow);
+  transition:.25s ease;
+  border:1px solid rgba(255,255,255,.35);
+  position:relative;
+  overflow:hidden;
 }
-.card h3{
-  margin:0 0 4px 0;
-  font-size:19px;
-  font-weight:700;
-}
-.card small{
-  color:var(--muted);
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 26px 50px rgba(0,0,0,.18);
 }
 
+.card h3{
+  font-size:20px;
+  font-weight:800;
+  margin:0 0 6px 0;
+  letter-spacing:-0.3px;
+}
+
+small{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* linhas */
 .row{
-  margin-top:12px;
+  margin-top:16px;
   display:flex;
   flex-direction:column;
   gap:6px;
+  font-size:14px;
 }
 
+.row div b{
+  color:var(--azul);
+}
+
+/* BADGES premium */
 .badge{
-  display:inline-block;
-  padding:8px 14px;
-  border-radius:10px;
+  padding:8px 16px;
+  border-radius:12px;
   font-size:12px;
-  margin-top:14px;
   font-weight:700;
+  margin-top:14px;
+  width:max-content;
+  background:linear-gradient(135deg,#ececec,#d9d9d9);
 }
 
-.st-Pendente{background:#fff3cd;color:#8a6d1d;}
-.st-Futura{background:#dceafe;color:#1854b3;}
-.st-Em_andamento{background:#ffe6a3;color:#7e5b00;}
-.st-Finalizada{background:#dcfce7;color:#1f7a47;}
-.st-Suspensa{background:#ffccd5;color:#97233a;}
+.st-Pendente{background:linear-gradient(135deg,#fff1b8,#ffe58f); color:#8a6f1a;}
+.st-Futura{background:linear-gradient(135deg,#d6ecff,#b0d4ff); color:#084a92;}
+.st-Em_andamento{background:linear-gradient(135deg,#ffe7a8,#ffcd63); color:#875f00;}
+.st-Finalizada{background:linear-gradient(135deg,#d8ffe8,#a1f7c2); color:#0d7a48;}
+.st-Suspensa{background:linear-gradient(135deg,#ffd6df,#ffb2c1); color:#99223d;}
 
+/* BOTÃO */
 .btn{
-  margin-top:16px;
   width:100%;
-  padding:12px;
+  padding:14px;
+  background:var(--primary);
   border:none;
-  border-radius:12px;
-  background:var(--azul);
+  border-radius:14px;
+  margin-top:18px;
   color:white;
-  font-size:15px;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
+  font-size:15px;
   transition:.2s;
 }
-.btn:hover{opacity:.85;}
+.btn:hover{
+  opacity:.85;
+}
 
-/* MODAL ITENS */
+.btn:active{
+  transform:scale(.97);
+}
+
+/* ============================
+   MODAL ITENS PREMIUM
+============================ */
 .modal{
   position:fixed;
   inset:0;
@@ -146,43 +200,45 @@ body{
 }
 
 .modal-box{
-  width:750px;
+  width:860px;
   max-height:90vh;
   overflow-y:auto;
-  background:#fff;
-  border-radius:18px;
-  padding:24px;
-  animation:zoom .25s;
+  background:white;
+  border-radius:20px;
+  padding:28px;
+  box-shadow:var(--shadow);
+  animation:zoom .26s;
 }
 @keyframes zoom{
-  from{opacity:0;transform:scale(.95);}
-  to{opacity:1;transform:scale(1);}
+  from{opacity:0; transform:scale(.92);}
+  to{opacity:1; transform:scale(1);}
 }
 
 .modal h2{
   margin-top:0;
-  font-size:22px;
-  color:var(--azul);
+  font-size:24px;
+  font-weight:800;
+  color:var(--primary);
 }
 
 /* tabela */
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:18px;
+  margin-top:22px;
 }
 th,td{
-  border-bottom:1px solid #e7e7e7;
-  padding:10px;
+  border-bottom:1px solid #e5e5e5;
+  padding:12px;
   font-size:14px;
 }
 th{
-  background:#f4f6f8;
-  font-weight:600;
+  background:#f5f7fa;
+  font-weight:700;
 }
-
 </style>
 </head>
+
 <body>
 
 <div class="titulo">LICITAR • Licitações</div>
@@ -204,7 +260,7 @@ th{
   <div class="skel"></div>
 </div>
 
-<!-- MODAL ITENS -->
+<!-- MODAL DE ITENS -->
 <div class="modal" id="modalItens">
   <div class="modal-box">
     <h2 id="tituloItens">Itens da Licitação</h2>
@@ -215,21 +271,23 @@ th{
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxxmYYo5IuDKFu_QmQl7wXk-XMDTKukziOIgyBrHWSVdvqmT7D5Y_nImOv1CAIGoiPC/exec";
 
+/* ---- atalhos ---- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 let licitacoes = [];
-let filtro = "TODOS";
-let busca = "";
+let filtro="TODOS";
+let busca="";
 
 /* ------------ FORMATOS ------------ */
 function mascaraValor(v){
   return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
 }
+
 function mascaraData(d){
   const dt = new Date(d);
   if(isNaN(dt)) return d;
-  return `${String(dt.getDate()).padStart(2,"0")}/${String(dt.getMonth()+1).padStart(2,"0")}/${dt.getFullYear()}`;
+  return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
 }
 
 /* ------------ RENDER ------------ */
@@ -237,7 +295,7 @@ function render(){
   const lista = $('#lista');
 
   const dados = licitacoes.filter(l =>
-    (filtro === "TODOS" || l.status === filtro) &&
+    (filtro==="TODOS" || l.status===filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
@@ -253,20 +311,14 @@ function render(){
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
 
-      <div class="badge st-${l.status.replace(" ", "_")}">${l.status}</div>
+      <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
 
       <button class="btn" onclick="verItens('${l.codigo}','${l.instituicao}')">Ver Itens</button>
     </div>
-  `).join('');
+  `).join("");
 }
 
-/* ------------ BUSCA ------------ */
-$('#busca').addEventListener('input', e=>{
-  busca = e.target.value;
-  render();
-});
-
-/* ------------ FILTRO ------------ */
+/* ------------ FILTROS ------------ */
 $$('#filtros .chip').forEach(chip=>{
   chip.addEventListener('click',()=>{
     $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
@@ -276,16 +328,22 @@ $$('#filtros .chip').forEach(chip=>{
   });
 });
 
+/* ------------ BUSCA ------------ */
+$('#busca').addEventListener('input',e=>{
+  busca = e.target.value;
+  render();
+});
+
 /* ------------ VER ITENS ------------ */
-async function verItens(codigo, nome){
-  $('#modalItens').style.display = "flex";
+async function verItens(codigo,nome){
+  $('#modalItens').style.display="flex";
   $('#tituloItens').innerHTML = `Itens da Licitação<br><small>${nome}</small>`;
   $('#tabelaItens').innerHTML = "Carregando...";
 
   const r = await fetch(`${API}?action=listItens&codigo=${codigo}`);
   const j = await r.json();
 
-  if(!j.itens || j.itens.length === 0){
+  if(!j.itens || j.itens.length===0){
     $('#tabelaItens').innerHTML = "<p>Nenhum item encontrado.</p>";
     return;
   }
@@ -318,16 +376,16 @@ async function verItens(codigo, nome){
   `;
 }
 
-/* -------- FECHAR MODAL -------- */
+/* fechar modal */
 $('#modalItens').addEventListener('click',e=>{
-  if(e.target === e.currentTarget){
-    e.currentTarget.style.display = "none";
+  if(e.target===e.currentTarget){
+    e.currentTarget.style.display='none';
   }
 });
 
 /* ------------ CARREGAR ------------ */
 async function carregar(){
-  const r = await fetch(API+"?action=listLicitacoes");
+  const r = await fetch(`${API}?action=listLicitacoes`);
   const j = await r.json();
   licitacoes = j.licitacoes || [];
   render();
@@ -335,6 +393,5 @@ async function carregar(){
 
 carregar();
 </script>
-
 </body>
 </html>
