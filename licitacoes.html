@@ -4,151 +4,213 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LICITAR • Licitações</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
 <style>
+/* ===========================================
+   ESTILO GERAL
+=========================================== */
 :root{
-  --bg:#f5f6fa;
+  --bg:#f3f5f8;
   --card:#ffffff;
   --azul:#0b1e39;
-  --azul2:#142945;
-  --muted:#667085;
+  --azul2:#193053;
+  --muted:#697487;
   --ok:#16a34a;
   --danger:#dc2626;
   --warn:#d97706;
-  --radius:14px;
-  --shadow:0 8px 28px rgba(0,0,0,.1);
+
+  --shadow:0 10px 32px rgba(0,0,0,.10);
+  --radius:18px;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",sans-serif;}
-body{background:var(--bg);padding:28px;color:var(--azul);}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Inter",sans-serif;
+}
 
+body{
+  background:var(--bg);
+  padding:30px;
+  color:var(--azul);
+}
+
+/* ===========================================
+   TÍTULO E TOPO
+=========================================== */
 .titulo{
-  font-size:30px;
+  font-size:32px;
   font-weight:700;
-  margin-bottom:18px;
+  margin-bottom:20px;
 }
 
 .topo{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:14px;
+  margin-bottom:18px;
 }
 
 .input{
-  width:320px;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #d0d4da;
+  width:340px;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid #d4d8de;
+  background:#fff;
+  font-size:15px;
 }
 
+/* ===========================================
+   FILTROS
+=========================================== */
 .filtros{
   display:flex;
   gap:10px;
-  margin-bottom:18px;
   flex-wrap:wrap;
+  margin-bottom:20px;
 }
 
 .chip{
-  padding:8px 16px;
-  border:1px solid #d0d4da;
+  padding:8px 18px;
+  background:#fff;
+  border:1px solid #d4d8de;
   border-radius:999px;
   cursor:pointer;
-  background:#fff;
   font-weight:600;
-  font-size:14px;
+  transition:.2s;
 }
 
+.chip:hover{background:#eef2f7;}
 .chip.ativo{
   background:var(--azul);
   color:#fff;
   border-color:var(--azul);
 }
 
+/* ===========================================
+   GRID / SKELETON LOADING
+=========================================== */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
-  gap:18px;
-  margin-top:10px;
+  gap:20px;
 }
 
+/* Skeleton */
+.skel{
+  background:#e4e7eb;
+  height:170px;
+  border-radius:var(--radius);
+  animation:pulse 1.2s infinite alternate;
+}
+
+@keyframes pulse{
+  from{opacity:.5;}
+  to{opacity:1;}
+}
+
+/* ===========================================
+   CARD DE LICITAÇÃO
+=========================================== */
 .card{
   background:var(--card);
-  padding:18px;
+  padding:20px;
   border-radius:var(--radius);
   box-shadow:var(--shadow);
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
 }
 
 .card small{color:var(--muted);}
 
 .row{
-  margin:10px 0;
+  margin:12px 0;
   display:flex;
   flex-direction:column;
-  gap:4px;
+  gap:5px;
+  color:#333;
 }
 
+/* BADGES */
 .badge{
   display:inline-block;
-  padding:6px 12px;
-  border-radius:10px;
+  padding:7px 14px;
   font-size:12px;
   font-weight:700;
-  margin-top:10px;
+  border-radius:10px;
 }
 
-.st-Pendente{background:#fff7d6;color:#a15e00}
-.st-Futura{background:#dceafe;color:#1854b3}
-.st-Em{background:#fff5cc;color:#947000}
-.st-Finalizada{background:#dcfce7;color:#167a4d}
-.st-Suspensa{background:#ffe4e6;color:#b01731}
+.st-Pendente{background:#fff7cc;color:#875f00;}
+.st-Futura{background:#dceafe;color:#1854b3;}
+.st-Em_andamento{background:#fff2b3;color:#987000;}
+.st-Finalizada{background:#dcfce7;color:#1e7a42;}
+.st-Suspensa{background:#ffd9df;color:#9f1c32;}
 
+/* Botões */
 .btn{
   border:none;
-  padding:8px 14px;
-  border-radius:10px;
+  padding:10px 16px;
+  border-radius:12px;
   cursor:pointer;
-  font-size:13px;
+  font-size:14px;
   font-weight:600;
 }
 
 .btn-edit{background:var(--azul);color:#fff;}
-.btn-del{background:var(--danger);color:#fff;margin-left:6px;}
+.btn-del{background:var(--danger);color:#fff;margin-left:8px;}
 
+/* ===========================================
+   MODAL
+=========================================== */
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.5);
+  background:rgba(0,0,0,.50);
   display:none;
   justify-content:center;
   align-items:center;
+  z-index:10;
 }
 
 .modal .box{
   background:#fff;
-  padding:20px;
+  padding:24px;
   width:420px;
-  border-radius:14px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  animation:fadeIn .25s ease;
 }
 
-.field{margin-bottom:12px;}
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(.97);}
+  to{opacity:1; transform:scale(1);}
+}
+
+.field{margin-bottom:14px;}
 label{font-size:12px;font-weight:600;color:var(--muted);}
 input,select{
   width:100%;
   padding:12px;
   margin-top:4px;
-  border-radius:10px;
-  border:1px solid #d0d4da;
+  border-radius:12px;
+  border:1px solid #cdd3db;
+  background:#fff;
 }
 
 .btn-save{
   width:100%;
+  padding:14px;
   background:var(--ok);
   color:#fff;
-  padding:12px;
-  border-radius:10px;
-  margin-top:8px;
+  font-size:15px;
+  font-weight:700;
+  border-radius:12px;
+  margin-top:10px;
 }
 
 </style>
@@ -171,12 +233,17 @@ input,select{
   <div class="chip" data-status="Suspensa">Suspensa</div>
 </div>
 
-<div class="grid" id="lista">Carregando…</div>
+<!-- GRID -->
+<div class="grid" id="lista">
+  <div class="skel"></div>
+  <div class="skel"></div>
+  <div class="skel"></div>
+</div>
 
 <!-- MODAL -->
 <div class="modal" id="modalEdit">
   <div class="box">
-    <h3 style="margin-bottom:10px">Editar Licitação</h3>
+    <h3 style="margin-bottom:12px;color:var(--azul)">Editar Licitação</h3>
 
     <div class="field">
       <label>Instituição</label>
@@ -209,7 +276,7 @@ input,select{
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzJQSSSIHPIIfSmDk4IW1qX3eJKcc39RusKAeaYqiieqdhXy-tNCgqc3ijSgG05QKhl/exec"; // COLOQUE A URL DO GAS
+const API = "https://script.google.com/macros/s/AKfycbzASrGlnB80KiowF0pUuqV95Jwyx0EUoAGFTdzssB1VH3AWHWfLSodU8r4Xm6dBZtbQ/exec";
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -219,50 +286,67 @@ let filtro = "TODOS";
 let busca = "";
 let editID = null;
 
-// FORMATOS
-function mascaraValor(v){return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});}
+/* ============================
+   FORMATAÇÕES
+============================ */
+function mascaraValor(v){
+  return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
+}
+
 function mascaraData(iso){
   const d = new Date(iso);
   if(isNaN(d))return "-";
   return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 }
 
-// RENDER
+/* ============================
+   RENDERIZAÇÃO DOS CARDS
+============================ */
 function render(){
   const lista = $('#lista');
+
   const dados = licitacoes.filter(l =>
     (filtro==="TODOS" || l.status===filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
+  if(dados.length === 0){
+    lista.innerHTML = `<div style="color:#667085">Nenhuma licitação encontrada…</div>`;
+    return;
+  }
+
   lista.innerHTML = dados.map(l=>`
     <div class="card">
-      <h3>${l.instituicao}</h3>
+      <h3 style="font-size:18px;margin-bottom:4px">${l.instituicao}</h3>
       <small>Código: ${l.codigo}</small>
 
       <div class="row">
-        <div>Data: ${mascaraData(l.dataSessaoBR)}</div>
-        <div>Valor: R$ ${mascaraValor(l.valorBR)}</div>
-        <div>Critério: ${l.criterio}</div>
-        <div>Modo: ${l.modo}</div>
+        <div><b>Data:</b> ${mascaraData(l.dataSessaoBR)}</div>
+        <div><b>Valor:</b> R$ ${mascaraValor(l.valorBR)}</div>
+        <div><b>Critério:</b> ${l.criterio}</div>
+        <div><b>Modo:</b> ${l.modo}</div>
       </div>
 
       <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
 
-      <div style="margin-top:10px">
+      <div style="margin-top:14px">
         <button class="btn btn-edit" onclick="editar('${l.codigo}')">Editar</button>
       </div>
     </div>
   `).join('');
 }
 
-// BUSCA
+/* ============================
+   BUSCA
+============================ */
 $('#busca').addEventListener('input',e=>{
   busca = e.target.value;
   render();
 });
 
-// FILTRO
+/* ============================
+   FILTRO
+============================ */
 $$('#filtros .chip').forEach(ch=>{
   ch.addEventListener('click',()=>{
     $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
@@ -272,7 +356,9 @@ $$('#filtros .chip').forEach(ch=>{
   });
 });
 
-// EDITAR
+/* ============================
+   EDITAR LICITAÇÃO
+============================ */
 async function editar(codigo){
   const l = licitacoes.find(x=>x.codigo===codigo);
   if(!l)return;
@@ -288,6 +374,7 @@ async function editar(codigo){
 }
 
 $('#btnSalvar').addEventListener('click',async()=>{
+
   await fetch(API,{
     method:"POST",
     headers:{'Content-Type':'application/json'},
@@ -305,19 +392,30 @@ $('#btnSalvar').addEventListener('click',async()=>{
   carregar();
 });
 
+/* Fechar modal clicando fora */
 $('#modalEdit').addEventListener('click',e=>{
   if(e.target===e.currentTarget) e.currentTarget.style.display='none';
 });
 
-// CARREGAR
+/* ============================
+   CARREGAR DADOS
+============================ */
 async function carregar(){
+  $('#lista').innerHTML = `
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel"></div>
+  `;
+
   const r = await fetch(API+"?action=listLicitacoes");
   const j = await r.json();
+
   licitacoes = j.licitacoes;
   render();
 }
 
 carregar();
 </script>
+
 </body>
 </html>
