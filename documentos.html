@@ -118,7 +118,6 @@ body{
   transform:translateY(-4px);
 }
 
-/* THUMBNAIL */
 .thumb{
   width:85px;
   height:85px;
@@ -138,7 +137,7 @@ body{
   font-weight:500;
 }
 
-/* ===== POPUPS ===== */
+/* POPUPS */
 #popupCriar, #popupUpload{
   position:fixed;
   inset:0;
@@ -192,7 +191,7 @@ body{
   background:#eef5ff;
 }
 
-/* ===== MODAL PREVIEW ===== */
+/* MODAL PREVIEW */
 #modal{
   position:fixed;
   inset:0;
@@ -220,7 +219,7 @@ body{
   margin-top:10px;
 }
 
-/* Skeleton Loading */
+/* Skeleton */
 .skeleton{
   background:#e5e5e5;
   border-radius:14px;
@@ -267,7 +266,7 @@ body{
       <div class="colorSelect" style="background:#ef4444" data-cor="vermelho"></div>
       <div class="colorSelect" style="background:#a855f7" data-cor="roxo"></div>
       <div class="colorSelect" style="background:#737373" data-cor="cinza"></div>
-      <div class="colorSelect" style="background:#000000" data-cor="preto"></div>
+      <div class="colorSelect" style="background:#000" data-cor="preto"></div>
       <div class="colorSelect" style="background:#ec4899" data-cor="rosa"></div>
       <div class="colorSelect" style="background:#8b5e3c" data-cor="marrom"></div>
     </div>
@@ -305,6 +304,10 @@ body{
     <h2 id="modalTitulo"></h2>
     <iframe id="modalPreview"></iframe>
     <button onclick="baixarArquivo()" class="btn btn-upload" style="margin-top:15px;">⬇ Download</button>
+
+    <!-- BOTÃO EXCLUIR -->
+    <button onclick="excluirArquivo()" class="btn" style="margin-left:10px;background:#d9534f;">🗑 Excluir</button>
+
     <button onclick="navigator.clipboard.writeText(linkAtual)" class="btn btn-nova" style="margin-left:10px;">🔗 Copiar Link</button>
   </div>
 </div>
@@ -313,7 +316,6 @@ body{
 
 <script>
 
-/* CONFIG */
 const API = "https://script.google.com/macros/s/AKfycbxjN6NomQdDyCluvGgO0N9vWRB9c-8ysCaE2e0vIA3jeZti4hj70U9kH8grObJQx8CwXw/exec";
 let usuario = localStorage.getItem("usuarioLogado") || "desconhecido";
 
@@ -324,9 +326,7 @@ let corEscolhida = null;
 let linkAtual = "";
 
 
-/* =====================================================
-   LOADING INICIAL BONITO
-===================================================== */
+/* LOADING */
 window.onload = ()=>{
   renderSkeleton();
   carregar();
@@ -340,10 +340,7 @@ function renderSkeleton(){
   document.getElementById("lista").innerHTML = html;
 }
 
-
-/* =====================================================
-   CARREGAR LISTA
-===================================================== */
+/* LISTAR */
 async function carregar(){
   const req = await fetch(API+"?action=listar");
   dados = await req.json();
@@ -352,10 +349,6 @@ async function carregar(){
   mostrarPasta(pastaAtual);
 }
 
-
-/* =====================================================
-   MOSTRAR PASTA
-===================================================== */
 function mostrarPasta(id){
   pastaAtual = id;
 
@@ -377,22 +370,16 @@ function mostrarPasta(id){
       const thumb = gerarThumbnail(item.url,item.nome);
       html += `
       <div class="item"
-     draggable="true"
-     ondragstart="dragArquivo(event, '${item.nome}', '${item.url}')"
-     onclick="abrirArquivo('${item.nome}','${item.url}')">
-    ${thumb}
-    <div class="itemNome">${item.nome}</div>
-</div>`;
+        onclick="abrirArquivo('${item.nome}','${item.url}')">
+        ${thumb}
+        <div class="itemNome">${item.nome}</div>
+      </div>`;
     }
   });
 
   document.getElementById("lista").innerHTML = html || "Vazio.";
 }
 
-
-/* =====================================================
-   PASTAS COLORIDAS
-===================================================== */
 function svgCor(cor){
   const cores = {
     azul:"#4F8CF1", verde:"#60D364", amarelo:"#F8D441",
@@ -406,10 +393,6 @@ function svgCor(cor){
   `;
 }
 
-
-/* =====================================================
-   THUMBNAIL DOS ARQUIVOS
-===================================================== */
 function gerarThumbnail(url,nome){
   let ext = nome.split(".").pop().toLowerCase();
   const imgExt = ["jpg","jpeg","png","gif","webp"];
@@ -427,10 +410,7 @@ function extrairID(link){
   return m ? m[1] : "";
 }
 
-
-/* =====================================================
-   ENTRAR / VOLTAR PASTAS
-===================================================== */
+/* NAVEGAÇÃO */
 function entrarPasta(id){
   historicoPastas.push(id);
   mostrarPasta(id);
@@ -443,10 +423,7 @@ function voltarPasta(){
   }
 }
 
-
-/* =====================================================
-   POPUP CRIAR PASTA
-===================================================== */
+/* CRIAR PASTA */
 document.querySelectorAll(".colorSelect").forEach(c=>{
   c.onclick = ()=>{
     document.querySelectorAll(".colorSelect").forEach(x=>x.classList.remove("active"));
@@ -484,10 +461,7 @@ function criarPasta(){
   });
 }
 
-
-/* =====================================================
-   UPLOAD COM DRAG & DROP
-===================================================== */
+/* UPLOAD */
 function abrirUpload(){
   document.getElementById("popupUpload").style.display="flex";
 }
@@ -550,10 +524,7 @@ function enviarArquivos(files){
   fecharUpload();
 }
 
-
-/* =====================================================
-   PREVIEW + DOWNLOAD
-===================================================== */
+/* MODAL */
 function abrirArquivo(nome,url){
   document.getElementById("modalTitulo").innerText = nome;
   document.getElementById("modalPreview").src = url;
@@ -579,20 +550,15 @@ function baixarArquivo(){
   a.remove();
 }
 
-
-/* =====================================================
-   BUSCA
-===================================================== */
+/* BUSCA */
 function pesquisar(){
   const q = document.getElementById("busca").value.toLowerCase().trim();
 
-  // Se o campo estiver vazio, volta para a pasta atual
   if(q === ""){
     mostrarPasta(pastaAtual);
     return;
   }
 
-  // Busca global em todos os itens
   const itens = dados.filter(p =>
     p.nome.toLowerCase().includes(q)
   );
@@ -622,33 +588,26 @@ function pesquisar(){
   document.getElementById("breadcrumbs").innerHTML = "🔍 Resultados da busca global";
 }
 
-async function dragArquivo(ev, nome, url){
-  ev.preventDefault();
+/* 🔥 EXCLUIR ARQUIVO */
+async function excluirArquivo() {
+  if (!confirm("Tem certeza que deseja excluir este arquivo?")) return;
 
-  // Extrai ID do arquivo
-  let idMatch = url.match(/\/d\/(.*?)\//) || url.match(/id=(.*?)(&|$)/);
-  let fileId = idMatch ? (idMatch[1] || idMatch[2]) : null;
+  let nome = document.getElementById("modalTitulo").innerText;
+  let url = linkAtual;
 
-  if (!fileId) return;
+  await fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "excluir",
+      nome: nome,
+      url: url,
+      usuario: usuario
+    })
+  });
 
-  // Gera link de download direto
-  let downloadURL = "https://drive.google.com/uc?export=download&id=" + fileId;
-
-  // Baixa o arquivo como blob para poder arrastar
-  const response = await fetch(downloadURL);
-  const blob = await response.blob();
-  const file = new File([blob], nome, { type: blob.type });
-
-  // Anexa o arquivo real ao drag
-  ev.dataTransfer.clearData();
-  ev.dataTransfer.effectAllowed = "copy";
-  ev.dataTransfer.setData("DownloadURL", `${blob.type}:${nome}:${downloadURL}`);
-  ev.dataTransfer.items.add(file);
-
-  console.log("Arrastando arquivo:", nome);
+  fecharModal();
+  carregar();
 }
-
-
 
 </script>
 
