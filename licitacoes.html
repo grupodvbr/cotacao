@@ -5,92 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LICITAR • Painel de Licitações</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <!-- SheetJS para leitura de XLSX (usaremos na PARTE 5) -->
+  <!-- SheetJS para leitura de XLSX -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* =============================
-       PARTE 1/6 — TEMA + LAYOUT BASE
-       (As próximas partes só acrescentam JS e pequenos estilos)
-    ============================== */
-    :root {
-      --bg: #f4f6fa;
-      --azul: #0b1e39;
-      --azul-2: #193055;
-      --dourado: #c9a86c;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --ok: #16a34a;
-      --danger: #dc2626;
-      --warn: #b45309;
-      --radius: 14px;
-      --shadow: 0 10px 28px rgba(0,0,0,.10);
+    :root{
+      --bg:#f4f6fa;
+      --azul:#0b1e39;
+      --azul-2:#193055;
+      --dourado:#c9a86c;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --ok:#16a34a;
+      --danger:#dc2626;
+      --warn:#b45309;
+      --radius:14px;
+      --shadow:0 10px 28px rgba(0,0,0,.10);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background: var(--bg); color: #0f172a; padding: 28px; }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+    body{background:var(--bg);color:#0f172a;padding:28px}
+    .topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .titulo{color:var(--azul);font-size:28px;font-weight:700;letter-spacing:.5px}
+    .actions{display:flex;gap:10px;align-items:center}
+    .input{padding:12px;border:1px solid #d0d4da;border-radius:12px;background:#fff;width:280px;font-size:14px}
+    .btn{border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--azul);color:#fff}
+    .btn-primary:hover{background:var(--azul-2)}
+    .btn-lite{background:#fff;border:1px solid #d0d4da}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-ok{background:var(--ok);color:#fff}
+    .btn-ghost{background:transparent;color:var(--azul);border:1px dashed var(--azul)}
+    .filtros{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}
+    .chip{padding:8px 14px;border-radius:999px;border:1px solid #c7ccd4;background:#fff;cursor:pointer;font-weight:600}
+    .chip.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;border-left:6px solid var(--azul)}
+    .card h3{font-size:18px;margin-bottom:6px}
+    .card small{color:#475569}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .kv{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid #e6e9ee;border-radius:10px;padding:6px 10px}
+    .status{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:10px;font-weight:700;font-size:12px}
+    .st-Pendente{background:#fff3cd;color:#a15e00}
+    .st-Futura{background:#dbeafe;color:#1e40af}
+    .st-Em\ andamento{background:#fef9c3;color:#854d0e}
+    .st-Finalizada{background:#dcfce7;color:#166534}
+    .st-Suspensa{background:#ffe4e6;color:#9f1239}
+    .card-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .card-actions .btn{padding:9px 12px;border-radius:10px;font-size:12px}
 
-    /* Topo */
-    .topo { display:flex; justify-content: space-between; align-items:center; margin-bottom: 18px; }
-    .titulo { color: var(--azul); font-size: 28px; font-weight: 700; letter-spacing: .5px; }
-    .actions { display:flex; gap: 10px; align-items:center; }
-    .input { padding: 12px; border:1px solid #d0d4da; border-radius: 12px; background:#fff; width: 280px; font-size: 14px; }
-    .btn { border:none; border-radius:12px; padding:12px 16px; font-weight:700; cursor:pointer; }
-    .btn-primary { background: var(--azul); color:#fff; }
-    .btn-primary:hover { background: var(--azul-2); }
-    .btn-lite { background:#fff; border:1px solid #d0d4da; }
+    #overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;z-index:9999}
+    #overlay .box{background:#fff;padding:22px 26px;border-radius:12px;box-shadow:var(--shadow);font-weight:700;color:var(--azul)}
 
-    /* Chips de filtro */
-    .filtros { display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0 16px; }
-    .chip { padding:8px 14px; border-radius:999px; border:1px solid #c7ccd4; background:#fff; cursor:pointer; font-weight:600; }
-    .chip.ativo { background: var(--azul); color:#fff; border-color: var(--azul); }
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;z-index:9998;padding:16px}
+    .modal .content{background:#fff;border-radius:16px;box-shadow:var(--shadow);max-width:920px;width:100%;padding:20px}
+    .modal .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .modal .grid{grid-template-columns:repeat(12,1fr);gap:10px}
+    .col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}.col-12{grid-column:span 12}
+    label{font-size:12px;color:#334155;font-weight:700;letter-spacing:.3px}
+    .field{margin-bottom:10px}
+    .field input,.field select{width:100%;padding:12px;border:1px solid #d0d4da;border-radius:12px;background:#fff;font-size:14px;text-transform:uppercase}
+    .help{font-size:11px;color:#64748b;margin-top:4px}
+    .close{background:#e2e8f0;border:none;padding:8px 12px;border-radius:10px;cursor:pointer}
 
-    /* Grid de cards */
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:18px; }
-    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding:18px; border-left:6px solid var(--azul); }
-    .card h3 { font-size:18px; margin-bottom:6px; }
-    .card small { color:#475569; }
-    .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-    .kv { font-size:13px; color:#0f172a; background:#f8fafc; border:1px solid #e6e9ee; border-radius:10px; padding:6px 10px; }
-    .status { display:inline-block; margin-top:10px; padding:6px 10px; border-radius:10px; font-weight:700; font-size:12px; }
-    .st-Pendente{ background:#fff3cd; color:#a15e00 }
-    .st-Futura{ background:#dbeafe; color:#1e40af }
-    .st-Em\ andamento{ background:#fef9c3; color:#854d0e }
-    .st-Finalizada{ background:#dcfce7; color:#166534 }
-    .st-Suspensa{ background:#ffe4e6; color:#9f1239 }
-
-    .card-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap }
-    .card-actions .btn{ padding:9px 12px; border-radius:10px; font-size:12px }
-    .btn-danger{ background: var(--danger); color:#fff }
-    .btn-ok{ background: var(--ok); color:#fff }
-    .btn-ghost{ background: transparent; color: var(--azul); border:1px dashed var(--azul) }
-
-    /* Overlay de envio */
-    #overlay{ position:fixed; inset:0; background: rgba(2,6,23,.55); display:none; align-items:center; justify-content:center; z-index: 9999 }
-    #overlay .box{ background:#fff; padding:22px 26px; border-radius:12px; box-shadow: var(--shadow); font-weight:700; color: var(--azul) }
-
-    /* Modal base */
-    .modal{ position:fixed; inset:0; background: rgba(2,6,23,.55); display:none; align-items:center; justify-content:center; z-index: 9998; padding:16px }
-    .modal .content{ background:#fff; border-radius:16px; box-shadow: var(--shadow); max-width: 920px; width:100%; padding:20px }
-    .modal .header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px }
-    .modal .grid{ grid-template-columns: repeat(12, 1fr); gap:10px }
-    .col-6{ grid-column: span 6 }
-    .col-4{ grid-column: span 4 }
-    .col-3{ grid-column: span 3 }
-    .col-12{ grid-column: span 12 }
-    label{ font-size:12px; color:#334155; font-weight:700; letter-spacing:.3px }
-    .field{ margin-bottom:10px }
-    .field input, .field select{ width:100%; padding:12px; border:1px solid #d0d4da; border-radius:12px; background:#fff; font-size:14px; text-transform: uppercase }
-    .help{ font-size:11px; color:#64748b; margin-top:4px }
-    .close{ background:#e2e8f0; border:none; padding:8px 12px; border-radius:10px; cursor:pointer }
-
-    /* Tabela prévia import */
-    .table-wrap{ max-height: 320px; overflow:auto; border:1px solid #e2e8f0; border-radius:12px }
-    table{ width:100%; border-collapse: collapse; font-size:13px }
-    th, td{ padding:10px; border-bottom:1px solid #e2e8f0; text-align:left }
-    th{ background:#f8fafc; position:sticky; top:0 }
+    .table-wrap{max-height:320px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left}
+    th{background:#f8fafc;position:sticky;top:0}
   </style>
 </head>
 <body>
-  <!-- OVERLAY ENVIANDO -->
+  <!-- OVERLAY -->
   <div id="overlay"><div class="box">Enviando dados…</div></div>
 
   <!-- TOPO -->
@@ -98,7 +81,7 @@
     <div class="titulo">LICITAR • Painel de Licitações</div>
     <div class="actions">
       <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
-      <button class="btn btn-primary" id="btnNova">+ Nova Licitação</button>
+      <button class="btn btn-primary" id="btnNova" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
     </div>
   </div>
 
@@ -112,10 +95,10 @@
     <div class="chip" data-status="Suspensa">Suspensa</div>
   </div>
 
-  <!-- LISTA DE CARDS -->
+  <!-- LISTA -->
   <div class="grid" id="lista">Carregando…</div>
 
-  <!-- MODAL: NOVA/EDITAR LICITAÇÃO -->
+  <!-- MODAL LICITAÇÃO -->
   <div class="modal" id="modalLicitacao">
     <div class="content">
       <div class="header">
@@ -127,7 +110,7 @@
           <label>INSTITUIÇÃO</label>
           <div style="display:flex; gap:8px; align-items:center">
             <select id="selInstituicao" class="field-select" style="flex:1; padding:12px; border:1px solid #d0d4da; border-radius:12px; text-transform:uppercase"></select>
-            <button class="btn btn-lite" id="btnNovaEmpresa">+</button>
+            <button class="btn btn-lite" id="btnNovaEmpresa" type="button">+</button>
           </div>
           <div class="help">Escolha a empresa. Clique em "+" para cadastrar na hora.</div>
         </div>
@@ -135,23 +118,20 @@
         <div class="col-3 field"><label>VALOR TOTAL</label><input id="inpValor" placeholder="R$ 0,00" /></div>
         <div class="col-6 field"><label>CRITÉRIO DE JULGAMENTO</label><input id="inpCriterio" placeholder="MAIOR DESCONTO POR ITEM" /></div>
         <div class="col-6 field"><label>MODO DE DISPUTA</label><input id="inpModo" placeholder="ABERTO E FECHADO" /></div>
-        <div class="col-6 field"><label>STATUS</label>
+        <div class="col-6 field">
+          <label>STATUS</label>
           <select id="selStatus">
-            <option>Pendente</option>
-            <option>Futura</option>
-            <option>Em andamento</option>
-            <option>Finalizada</option>
-            <option>Suspensa</option>
+            <option>Pendente</option><option>Futura</option><option>Em andamento</option><option>Finalizada</option><option>Suspensa</option>
           </select>
         </div>
         <div class="col-12" style="margin-top:8px">
-          <button class="btn btn-primary" id="btnSalvarLicitacao">Salvar</button>
+          <button class="btn btn-primary" id="btnSalvarLicitacao" type="button">Salvar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: EMPRESA -->
+  <!-- MODAL EMPRESA -->
   <div class="modal" id="modalEmpresa">
     <div class="content">
       <div class="header">
@@ -162,48 +142,42 @@
         <div class="col-6 field"><label>RAZÃO SOCIAL</label><input id="empRazao" placeholder="RAZÃO SOCIAL" /></div>
         <div class="col-3 field"><label>CNPJ</label><input id="empCnpj" placeholder="00.000.000/0000-00" /></div>
         <div class="col-3 field"><label>UF</label><input id="empUf" placeholder="BA" /></div>
-        <div class="col-12"><button class="btn btn-primary" id="btnSalvarEmpresa">Salvar Empresa</button></div>
+        <div class="col-12"><button class="btn btn-primary" id="btnSalvarEmpresa" type="button">Salvar Empresa</button></div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: ITENS -->
+  <!-- MODAL ITENS -->
   <div class="modal" id="modalItens">
     <div class="content">
       <div class="header">
         <h3>Itens da Licitação <span id="infoCodigo"></span></h3>
-        <button class="close" data-close="#modalItens">Fechar</button>
+        <div>
+          <button class="close" data-close="#modalItens">Fechar</button>
+        </div>
       </div>
 
       <div class="row" style="margin-bottom:10px">
-        <button class="btn btn-ok" id="btnAddItem">+ Adicionar Item</button>
+        <button class="btn btn-ok" id="btnAddItem" type="button">+ Adicionar Item</button>
         <label class="btn btn-lite" for="inpImport">Importar Planilha</label>
         <input type="file" id="inpImport" accept=".xlsx,.xls,.csv" style="display:none" />
-        <button class="btn btn-ghost" id="btnExportar">Exportar Excel</button>
-        <button class="btn btn-ghost" id="btnPdf">Gerar PDF</button>
+        <button class="btn btn-ghost" id="btnExportar" type="button">Exportar Excel</button>
+        <button class="btn btn-ghost" id="btnPdf" type="button">Gerar PDF</button>
       </div>
 
       <div class="table-wrap">
         <table id="tblItens">
           <thead>
             <tr>
-              <th>ITEM TR</th>
-              <th>ESPECIFICAÇÃO</th>
-              <th>MARCA</th>
-              <th>MODELO</th>
-              <th>UNID</th>
-              <th>QTD MÁX</th>
-              <th>QTD MÍN</th>
-              <th>VLR UNIT</th>
-              <th>GARANTIA</th>
-              <th>AÇÕES</th>
+              <th>ITEM TR</th><th>ESPECIFICAÇÃO</th><th>MARCA</th><th>MODELO</th><th>UNID</th>
+              <th>QTD MÁX</th><th>QTD MÍN</th><th>VLR UNIT</th><th>GARANTIA</th><th>AÇÕES</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
 
-      <!-- Form rápido de item -->
+      <!-- Form rápido -->
       <div class="grid" style="margin-top:12px">
         <div class="col-2 field"><label>ITEM TR</label><input id="itTR" /></div>
         <div class="col-5 field"><label>ESPECIFICAÇÃO</label><input id="itEsp" /></div>
@@ -214,12 +188,12 @@
         <div class="col-2 field"><label>QTD MÍN</label><input id="itQmin" /></div>
         <div class="col-2 field"><label>VLR UNIT</label><input id="itVlr" /></div>
         <div class="col-2 field"><label>GARANTIA</label><input id="itGarant" /></div>
-        <div class="col-12"><button class="btn btn-ok" id="btnSalvarItem">Salvar Item</button></div>
+        <div class="col-12"><button class="btn btn-ok" id="btnSalvarItem" type="button">Salvar Item</button></div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: PRÉVIA IMPORTAÇÃO -->
+  <!-- MODAL PRÉVIA IMPORT -->
   <div class="modal" id="modalPreview">
     <div class="content">
       <div class="header">
@@ -228,67 +202,99 @@
       </div>
       <div class="table-wrap"><table id="tblPreview"></table></div>
       <div class="row" style="margin-top:10px">
-        <button class="btn btn-primary" id="btnConfirmImport">Confirmar Importação</button>
+        <button class="btn btn-primary" id="btnConfirmImport" type="button">Confirmar Importação</button>
       </div>
     </div>
   </div>
 
-  <!-- =============================
-       PLACEHOLDER DE SCRIPTS
-       (Partes 2..6 vão completar abaixo)
-  ============================== -->
   <script>
-    // PARTE 1/6 — Vars básicas e stubs seguros
-    const API = "https://script.google.com/macros/s/AKfycbyGAQAMHUuNqgHiFDEIvX5AkXzZkwsxe1baHMaRd9-N-hxydrNX0GoDzVaY9QMEzMP4/exec";
-    let estado = { filtro: 'Todos', busca: '', empresas: [], licitacoes: [], licAtual: null, itens: [], preview: [] };
+    /* =========================
+       CONFIG + HELPERS
+    ========================== */
+    const API = "https://script.google.com/macros/s/AKfycbzjP4H0VtNrFJ1B0pM9DMtXOsjQ7QqgGyQDGNBOODXvc60K2ZapOmngi_rspFbCFzXG/exec";
+    const qs = s=>document.querySelector(s);
+    const qsa = s=>[...document.querySelectorAll(s)];
+    const show = s=>{ const el=qs(s); if(el) el.style.display='flex'; };
+    const hide = s=>{ const el=qs(s); if(el) el.style.display='none'; };
+    const showOverlay = (msg='Enviando dados…')=>{ const box=qs('#overlay .box'); if(box) box.textContent = msg; show('#overlay'); };
+    const hideOverlay = ()=> hide('#overlay');
 
-    // Stubs para evitar erros antes das próximas partes
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => [...document.querySelectorAll(sel)];
-    const show = el => (document.querySelector(el).style.display = 'flex');
-    const hide = el => (document.querySelector(el).style.display = 'none');
+    const estado = { empresas:[], licitacoes:[], itens:[], licAtual:null, filtro:'Todos', busca:'' };
 
-    // Fechar modais pelo botão data-close
-    document.addEventListener('click', (e)=>{
-      const closeSel = e.target.getAttribute?.('data-close');
-      if(closeSel){ hide(closeSel); }
-    });
+    async function api(action, payload={}) {
+      const isGet = !payload || Object.keys(payload).length===0;
+      const url = isGet ? `${API}?action=${encodeURIComponent(action)}` : API;
+      const opt = isGet ? { method:'GET' } : { method:'POST', body: JSON.stringify({ action, ...payload }) };
+      const res = await fetch(url, opt);
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const ct = res.headers.get('content-type')||'';
+      return ct.includes('application/json') ? res.json() : res.text();
+    }
 
-    // Interações básicas já no ar (demais funções virão na PARTE 2/6):
-    $('#btnNova').addEventListener('click', ()=>{ show('#modalLicitacao'); });
-    $('#btnNovaEmpresa').addEventListener('click', ()=>{ show('#modalEmpresa'); });
+    function toBRL(v){
+      if(v===undefined||v===null||v==='') return '';
+      const n = typeof v==='number' ? v :
+        Number(String(v).replace(/[^0-9,-]/g,'').replace(/\./g,'').replace(',', '.'));
+      if(isNaN(n)) return '';
+      return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    }
+    function parseBRL(str){
+      if(!str) return 0;
+      return Number(String(str).replace(/[^0-9,-]/g,'').replace(/\./g,'').replace(',', '.')||0);
+    }
+    function maskMoney(el){
+      if(!el) return;
+      el.addEventListener('input', ()=> el.value = toBRL(parseBRL(el.value)));
+      el.addEventListener('blur',  ()=> el.value = toBRL(parseBRL(el.value)));
+    }
+    function maskDate(el){
+      if(!el) return;
+      el.addEventListener('input', ()=>{
+        let v = el.value.replace(/\D/g,'').slice(0,8);
+        if(v.length>=5) v = v.replace(/(\d{2})(\d{2})(\d+)/,'$1/$2/$3');
+        else if(v.length>=3) v = v.replace(/(\d{2})(\d+)/,'$1/$2');
+        el.value = v;
+      });
+    }
+    function uppercaseAllInputs(){
+      qsa('input, textarea').forEach(i=>{
+        const t=(i.getAttribute('type')||'text').toLowerCase();
+        if(['date','number','file','email','password'].includes(t)) return;
+        i.addEventListener('input', ()=> i.value = i.value.toUpperCase());
+      });
+    }
 
-    // Filtros e busca
-    $$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
-      $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
-      ch.classList.add('ativo');
-      estado.filtro = ch.dataset.status;
-      renderLista();
-    }));
-    $('#busca').addEventListener('input', (e)=>{ estado.busca = e.target.value.toUpperCase(); renderLista(); });
-
+    /* =========================
+       RENDER LISTA
+    ========================== */
     function renderLista(){
-      const lista = $('#lista');
+      const lista = qs('#lista');
       const filtro = estado.filtro;
       const busca = (estado.busca||'').toUpperCase();
-      const dados = estado.licitacoes.filter(l=>
-        (filtro==='Todos' || l.status===filtro) &&
-        (l.instituicao||'').toUpperCase().includes(busca)
+
+      const dados = estado.licitacoes.filter(l =>
+        (filtro==='Todos' || (l.status||'').toUpperCase()===filtro.toUpperCase()) &&
+        ((l.instituicao||'').toUpperCase().includes(busca) || String(l.codigo||'').toUpperCase().includes(busca))
       );
-      if(!dados.length){ lista.innerHTML = '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>'; return; }
+
+      if(!dados.length){
+        lista.innerHTML = '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>';
+        return;
+      }
+
       lista.innerHTML = dados.map(l=>{
-        const stClass = 'st-' + l.status.replace(/ /g,'\\ ');
+        const stClass = 'st-' + (l.status||'').replace(/ /g,'\\ ');
         return `
           <div class="card">
-            <h3>${l.instituicao}</h3>
-            <small>Código: <b>${l.codigo}</b></small>
+            <h3>${l.instituicao||'-'}</h3>
+            <small>Código: <b>${l.codigo||'-'}</b></small>
             <div class="row">
               <div class="kv">Data: ${l.dataSessao||l.data||'-'}</div>
               <div class="kv">Valor: ${l.valor||'-'}</div>
               <div class="kv">Critério: ${l.criterio||'-'}</div>
               <div class="kv">Modo: ${l.modo||'-'}</div>
             </div>
-            <div class="status ${stClass}">${l.status}</div>
+            <div class="status ${stClass}">${l.status||'-'}</div>
             <div class="card-actions">
               <button class="btn btn-ok" onclick="abrirItens('${l.codigo}')">Ver Itens</button>
               <button class="btn btn-lite" onclick="editarLicitacao('${l.codigo}')">Editar</button>
@@ -300,16 +306,309 @@
       }).join('');
     }
 
-    // Para não quebrar até termos as funções reais nas próximas partes
-    function abrirItens(){ show('#modalItens'); }
-    function editarLicitacao(){ show('#modalLicitacao'); }
-    function excluirLicitacao(){ alert('Excluir (função completa chega na PARTE 3/6)'); }
-    function exportarItens(){ alert('Exportar Excel (PARTE 5/6)'); }
-    function gerarPdf(){ alert('Gerar PDF (PARTE 5/6)'); }
+    /* =========================
+       CARREGAR BASE
+    ========================== */
+    async function carregarEmpresas(){
+      try{
+        const lista = await api('listarEmpresas');
+        estado.empresas = Array.isArray(lista)?lista:[];
+        const sel = qs('#selInstituicao');
+        if(sel){
+          sel.innerHTML = estado.empresas
+            .map(e=>`<option value="${e.codigo||e.cod||e.id||e.nome}">
+              ${(e.nome||e.razao||e.fantasia||e.instituicao||'').toUpperCase()}
+            </option>`).join('');
+        }
+      }catch(err){ console.error(err); }
+    }
+    async function carregarLicitacoes(){
+      try{
+        const lista = await api('listar');
+        estado.licitacoes = Array.isArray(lista)?lista:[];
+        renderLista();
+      }catch(err){
+        console.error(err);
+        qs('#lista').innerHTML = '<div style="grid-column:1/-1;color:#9f1239">Erro ao carregar licitações.</div>';
+      }
+    }
 
-    // Carregamento inicial fictício (substituído na PARTE 2/6 por fetch ao GAS)
-    estado.licitacoes = [];
-    renderLista();
+    /* =========================
+       EMPRESAS
+    ========================== */
+    function abrirNovaLicitacao(){
+      estado.licAtual = null;
+      qs('#tituloModalLicitacao').textContent = 'Nova Licitação';
+      ['#inpData','#inpValor','#inpCriterio','#inpModo'].forEach(s=>{ const el=qs(s); if(el) el.value=''; });
+      qs('#selStatus').value = 'Pendente';
+      show('#modalLicitacao');
+    }
+    async function salvarEmpresa(){
+      try{
+        showOverlay('Salvando empresa…');
+        const payload = {
+          nome: (qs('#empRazao')?.value||'').trim(),
+          cnpj: (qs('#empCnpj')?.value||'').trim(),
+          uf:   (qs('#empUf')?.value||'').trim()
+        };
+        if(!payload.nome){ alert('Informe a RAZÃO SOCIAL.'); return; }
+        const r = await api('cadastrarEmpresa', payload);
+        await carregarEmpresas();
+        if(r && r.codigo && qs('#selInstituicao')) qs('#selInstituicao').value = r.codigo;
+        hide('#modalEmpresa');
+      }catch(err){
+        alert('Erro ao salvar empresa.');
+        console.error(err);
+      }finally{ hideOverlay(); }
+    }
+
+    /* =========================
+       LICITAÇÕES (CRUD)
+    ========================== */
+    async function salvarLicitacao(){
+      const payload = {
+        instituicao: qs('#selInstituicao')?.selectedOptions[0]?.textContent || '',
+        instCode:    qs('#selInstituicao')?.value || '',
+        dataSessao:  qs('#inpData')?.value || '',
+        valor:       toBRL(parseBRL(qs('#inpValor')?.value||'')),
+        criterio:    (qs('#inpCriterio')?.value||'').trim(),
+        modo:        (qs('#inpModo')?.value||'').trim(),
+        status:      qs('#selStatus')?.value || 'Pendente'
+      };
+      if(!payload.instituicao){ alert('Selecione a INSTITUIÇÃO.'); return; }
+      if(payload.dataSessao && !/^\d{2}\/\d{2}\/\d{4}$/.test(payload.dataSessao)){ alert('Data inválida. Use DD/MM/AAAA.'); return; }
+      try{
+        showOverlay(estado.licAtual ? 'Atualizando licitação…' : 'Salvando licitação…');
+        if(estado.licAtual){ await api('editarLicitacao', { codigo: estado.licAtual, ...payload }); }
+        else { await api('cadastrarLicitacao', payload); }
+        hide('#modalLicitacao');
+        await carregarLicitacoes();
+      }catch(err){
+        alert('Erro ao salvar licitação.');
+        console.error(err);
+      }finally{ hideOverlay(); }
+    }
+
+    function editarLicitacao(codigo){
+      const l = estado.licitacoes.find(x => String(x.codigo)===String(codigo));
+      if(!l){ alert('Licitação não encontrada.'); return; }
+      estado.licAtual = codigo;
+      qs('#tituloModalLicitacao').textContent = 'Editar Licitação';
+
+      const sel = qs('#selInstituicao');
+      if(sel && l.instituicao){
+        const opt = [...sel.options].find(o => o.textContent.toUpperCase()===String(l.instituicao).toUpperCase());
+        if(opt) sel.value = opt.value;
+      }
+      qs('#inpData').value = (l.dataSessao||l.data||'');
+      qs('#inpValor').value = toBRL(parseBRL(l.valor||''));
+      qs('#inpCriterio').value = l.criterio||'';
+      qs('#inpModo').value = l.modo||'';
+      qs('#selStatus').value = l.status||'Pendente';
+      show('#modalLicitacao');
+    }
+
+    async function excluirLicitacao(codigo){
+      if(!confirm('Deseja realmente excluir esta licitação?')) return;
+      try{
+        showOverlay('Excluindo licitação…');
+        await api('excluirLicitacao', { codigo });
+        await carregarLicitacoes();
+      }catch(err){
+        alert('Erro ao excluir.');
+        console.error(err);
+      }finally{ hideOverlay(); }
+    }
+
+    /* =========================
+       ITENS + IMPORTAÇÃO
+    ========================== */
+    function renderItens(){
+      const tbody = qs('#tblItens tbody');
+      if(!estado.itens.length){
+        tbody.innerHTML = '<tr><td colspan="10" style="color:#64748b">Nenhum item cadastrado.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = estado.itens.map((i,idx)=>`
+        <tr>
+          <td>${i.itemTR||''}</td>
+          <td>${i.especificacao||i.especificação||''}</td>
+          <td>${i.marca||''}</td>
+          <td>${i.modelo||''}</td>
+          <td>${i.unidade||''}</td>
+          <td>${i.quantMax||i.qmax||''}</td>
+          <td>${i.quantMin||i.qmin||''}</td>
+          <td>${i.valorUnit||i.valor||''}</td>
+          <td>${i.garantia||''}</td>
+          <td><button class="btn btn-lite" disabled>—</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function abrirItens(codigo){
+      try{
+        showOverlay('Carregando itens…');
+        estado.licAtual = codigo;
+        qs('#infoCodigo').textContent = `— CÓDIGO ${codigo}`;
+        const lista = await api('itensDaLicitacao', { codigo });
+        estado.itens = Array.isArray(lista)?lista:[];
+        renderItens();
+        show('#modalItens');
+      }catch(err){
+        alert('Erro ao carregar itens.');
+        console.error(err);
+      }finally{ hideOverlay(); }
+    }
+
+    async function salvarItem(){
+      const it = {
+        codigo: estado.licAtual,
+        itemTR: (qs('#itTR')?.value||'').trim(),
+        especificacao: (qs('#itEsp')?.value||'').trim(),
+        marca: (qs('#itMarca')?.value||'').trim(),
+        modelo: (qs('#itModelo')?.value||'').trim(),
+        unidade: (qs('#itUnid')?.value||'').trim(),
+        quantMax: (qs('#itQmax')?.value||'').trim(),
+        quantMin: (qs('#itQmin')?.value||'').trim(),
+        valorUnit: toBRL(parseBRL(qs('#itVlr')?.value||'')),
+        garantia: (qs('#itGarant')?.value||'').trim()
+      };
+      if(!it.itemTR){ alert('Informe o ITEM TR.'); return; }
+      try{
+        showOverlay('Salvando item…');
+        await api('cadastrarItens', { codigo: estado.licAtual, itens: [it] });
+        const lista = await api('itensDaLicitacao', { codigo: estado.licAtual });
+        estado.itens = Array.isArray(lista)?lista:[];
+        renderItens();
+        ['#itTR','#itEsp','#itMarca','#itModelo','#itUnid','#itQmax','#itQmin','#itVlr','#itGarant']
+          .forEach(s=>{ const e=qs(s); if(e) e.value=''; });
+      }catch(err){
+        alert('Erro ao salvar item.');
+        console.error(err);
+      }finally{ hideOverlay(); }
+    }
+
+    let importBuffer = [];
+    qs('#inpImport').addEventListener('change', async (ev)=>{
+      const file = ev.target.files?.[0];
+      if(!file) return;
+      try{
+        const data = await file.arrayBuffer();
+        const wb = XLSX.read(data,{type:'array'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(ws,{defval:'',raw:false});
+        importBuffer = json.map(r=>({
+          itemTR: r.ITEM||r.ITEM_TR||r.ITEMTR||r['ITEM TR']||r['ITEM_TR']||'',
+          especificacao: r.ESPEC||r.ESPECIFICACAO||r.ESPECIFICAÇÃO||r.DESCRICAO||r.DESCRIÇÃO||'',
+          marca: r.MARCA||'',
+          modelo: r.MODELO||'',
+          unidade: r.UNID||r.UN||r.UNIDADE||'',
+          quantMax: r.QTD_MAX||r.QTDMAX||r.QMAX||r['QTD MAX']||'',
+          quantMin: r.QTD_MIN||r.QTDMIN||r.QMIN||r['QTD MIN']||'',
+          valorUnit: toBRL(parseBRL(r.VALOR||r.VALOR_UNIT||r['VALOR UNIT']||r['VALOR UNITÁRIO']||r['VALOR UNITARIO']||0)),
+          garantia: r.GARANTIA||''
+        }));
+        const tbl = qs('#tblPreview');
+        const head = `<tr><th>ITEM TR</th><th>ESPECIFICAÇÃO</th><th>MARCA</th><th>MODELO</th><th>UNID</th><th>Q MAX</th><th>Q MIN</th><th>VLR UNIT</th><th>GARANTIA</th></tr>`;
+        const rows = importBuffer.map(i=>`<tr><td>${i.itemTR}</td><td>${i.especificacao}</td><td>${i.marca}</td><td>${i.modelo}</td><td>${i.unidade}</td><td>${i.quantMax}</td><td>${i.quantMin}</td><td>${i.valorUnit}</td><td>${i.garantia}</td></tr>`).join('');
+        tbl.innerHTML = `<thead>${head}</thead><tbody>${rows}</tbody>`;
+        show('#modalPreview');
+      }catch(err){
+        alert('Não foi possível ler a planilha.');
+        console.error(err);
+      }finally{
+        ev.target.value = '';
+      }
+    });
+
+    qs('#btnConfirmImport').addEventListener('click', async ()=>{
+      if(!estado.licAtual){ alert('Abra uma licitação primeiro.'); return; }
+      if(!importBuffer.length){ alert('Nenhum item para importar.'); return; }
+      try{
+        showOverlay('Importando itens…');
+        await api('cadastrarItens', { codigo: estado.licAtual, itens: importBuffer });
+        hide('#modalPreview');
+        const lista = await api('itensDaLicitacao', { codigo: estado.licAtual });
+        estado.itens = Array.isArray(lista)?lista:[];
+        renderItens();
+        importBuffer = [];
+      }catch(err){
+        alert('Erro ao importar itens.');
+        console.error(err);
+      }finally{ hideOverlay(); }
+    });
+
+    /* =========================
+       EXPORTAÇÕES
+    ========================== */
+    function exportarItens(codigo){
+      window.open(`${API}?action=exportarItens&codigo=${encodeURIComponent(codigo)}`,'_blank');
+    }
+    function gerarPdf(codigo){
+      window.open(`${API}?action=gerarPdf&codigo=${encodeURIComponent(codigo)}`,'_blank');
+    }
+
+    /* =========================
+       BINDS + MÁSCARAS + BOOT
+    ========================== */
+    qsa('[data-close]').forEach(btn=>{
+      btn.addEventListener('click', ()=> hide(btn.getAttribute('data-close')));
+    });
+
+    // filtro chips
+    qsa('#filtros .chip').forEach(ch=>{
+      ch.addEventListener('click', ()=>{
+        qsa('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
+        ch.classList.add('ativo');
+        estado.filtro = ch.dataset.status;
+        renderLista();
+      });
+    });
+
+    // busca global
+    qs('#busca').addEventListener('input', e=>{
+      estado.busca = (e.target.value||'').toUpperCase();
+      renderLista();
+    });
+
+    // abrir cadastro empresa
+    qs('#btnNovaEmpresa').addEventListener('click', ()=> show('#modalEmpresa'));
+
+    // salvar empresa
+    qs('#btnSalvarEmpresa').addEventListener('click', salvarEmpresa);
+
+    // salvar licitação
+    qs('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
+
+    // adicionar item (foca no TR)
+    qs('#btnAddItem').addEventListener('click', ()=> qs('#itTR').focus());
+
+    // salvar item
+    qs('#btnSalvarItem').addEventListener('click', salvarItem);
+
+    // export/pfd do modal (usam licAtual)
+    qs('#btnExportar').addEventListener('click', ()=> estado.licAtual && exportarItens(estado.licAtual));
+    qs('#btnPdf').addEventListener('click', ()=> estado.licAtual && gerarPdf(estado.licAtual));
+
+    // máscaras
+    maskMoney(qs('#inpValor'));
+    maskMoney(qs('#itVlr'));
+    maskDate(qs('#inpData'));
+    uppercaseAllInputs();
+
+    // boot
+    (async ()=>{
+      try{
+        showOverlay('Carregando dados…');
+        await carregarEmpresas();
+        await carregarLicitacoes();
+      }catch(err){
+        console.error(err);
+        alert('Falha ao carregar dados iniciais.');
+      }finally{
+        hideOverlay();
+      }
+    })();
   </script>
 </body>
 </html>
