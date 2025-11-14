@@ -1,195 +1,315 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LICITAR • Painel de Licitações</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- SheetJS para leitura de XLSX (usaremos na PARTE 5) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
+    /* =============================
+       PARTE 1/6 — TEMA + LAYOUT BASE
+       (As próximas partes só acrescentam JS e pequenos estilos)
+    ============================== */
     :root {
       --bg: #f4f6fa;
       --azul: #0b1e39;
-      --azul-claro: #25416e;
+      --azul-2: #193055;
       --dourado: #c9a86c;
       --card: #ffffff;
-      --radius: 12px;
-      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --muted: #6b7280;
+      --ok: #16a34a;
+      --danger: #dc2626;
+      --warn: #b45309;
+      --radius: 14px;
+      --shadow: 0 10px 28px rgba(0,0,0,.10);
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-    body {
-      background: var(--bg);
-      padding: 30px;
-    }
-    h1 {
-      font-size: 28px;
-      color: var(--azul);
-      margin-bottom: 20px;
-    }
-    .input, select {
-      width: 100%;
-      padding: 12px;
-      border-radius: var(--radius);
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      font-size: 14px;
-      text-transform: uppercase;
-    }
-    .btn {
-      background: var(--azul);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-weight: 600;
-      margin-right: 10px;
-    }
-    .btn:hover {
-      background: var(--azul-claro);
-    }
-    #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      display: none;
-    }
-    #overlay div {
-      background: white;
-      padding: 30px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      font-weight: bold;
-      color: var(--azul);
-    }
-    .topo {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    #search {
-      padding: 10px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: var(--radius);
-    }
-    .filtros {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      margin-bottom: 20px;
-    }
-    .filtro {
-      background: white;
-      padding: 6px 14px;
-      border: 1px solid #aaa;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .filtro.ativo {
-      background: var(--azul);
-      color: white;
-      border-color: var(--azul);
-    }
-    .card {
-      background: var(--card);
-      padding: 20px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-      border-left: 5px solid var(--azul);
-    }
-    .status {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-    .st-Pendente { background: #fff1cc; color: #b36b00; }
-    .st-Futura { background: #d5e8ff; color: #1d4e89; }
-    .st-Em\ andamento { background: #fff3bf; color: #8a6a00; }
-    .st-Finalizada { background: #d7f7cf; color: #2f7a27; }
-    .st-Suspensa { background: #ffd6d6; color: #a11a1a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background: var(--bg); color: #0f172a; padding: 28px; }
+
+    /* Topo */
+    .topo { display:flex; justify-content: space-between; align-items:center; margin-bottom: 18px; }
+    .titulo { color: var(--azul); font-size: 28px; font-weight: 700; letter-spacing: .5px; }
+    .actions { display:flex; gap: 10px; align-items:center; }
+    .input { padding: 12px; border:1px solid #d0d4da; border-radius: 12px; background:#fff; width: 280px; font-size: 14px; }
+    .btn { border:none; border-radius:12px; padding:12px 16px; font-weight:700; cursor:pointer; }
+    .btn-primary { background: var(--azul); color:#fff; }
+    .btn-primary:hover { background: var(--azul-2); }
+    .btn-lite { background:#fff; border:1px solid #d0d4da; }
+
+    /* Chips de filtro */
+    .filtros { display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0 16px; }
+    .chip { padding:8px 14px; border-radius:999px; border:1px solid #c7ccd4; background:#fff; cursor:pointer; font-weight:600; }
+    .chip.ativo { background: var(--azul); color:#fff; border-color: var(--azul); }
+
+    /* Grid de cards */
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:18px; }
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding:18px; border-left:6px solid var(--azul); }
+    .card h3 { font-size:18px; margin-bottom:6px; }
+    .card small { color:#475569; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .kv { font-size:13px; color:#0f172a; background:#f8fafc; border:1px solid #e6e9ee; border-radius:10px; padding:6px 10px; }
+    .status { display:inline-block; margin-top:10px; padding:6px 10px; border-radius:10px; font-weight:700; font-size:12px; }
+    .st-Pendente{ background:#fff3cd; color:#a15e00 }
+    .st-Futura{ background:#dbeafe; color:#1e40af }
+    .st-Em\ andamento{ background:#fef9c3; color:#854d0e }
+    .st-Finalizada{ background:#dcfce7; color:#166534 }
+    .st-Suspensa{ background:#ffe4e6; color:#9f1239 }
+
+    .card-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap }
+    .card-actions .btn{ padding:9px 12px; border-radius:10px; font-size:12px }
+    .btn-danger{ background: var(--danger); color:#fff }
+    .btn-ok{ background: var(--ok); color:#fff }
+    .btn-ghost{ background: transparent; color: var(--azul); border:1px dashed var(--azul) }
+
+    /* Overlay de envio */
+    #overlay{ position:fixed; inset:0; background: rgba(2,6,23,.55); display:none; align-items:center; justify-content:center; z-index: 9999 }
+    #overlay .box{ background:#fff; padding:22px 26px; border-radius:12px; box-shadow: var(--shadow); font-weight:700; color: var(--azul) }
+
+    /* Modal base */
+    .modal{ position:fixed; inset:0; background: rgba(2,6,23,.55); display:none; align-items:center; justify-content:center; z-index: 9998; padding:16px }
+    .modal .content{ background:#fff; border-radius:16px; box-shadow: var(--shadow); max-width: 920px; width:100%; padding:20px }
+    .modal .header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px }
+    .modal .grid{ grid-template-columns: repeat(12, 1fr); gap:10px }
+    .col-6{ grid-column: span 6 }
+    .col-4{ grid-column: span 4 }
+    .col-3{ grid-column: span 3 }
+    .col-12{ grid-column: span 12 }
+    label{ font-size:12px; color:#334155; font-weight:700; letter-spacing:.3px }
+    .field{ margin-bottom:10px }
+    .field input, .field select{ width:100%; padding:12px; border:1px solid #d0d4da; border-radius:12px; background:#fff; font-size:14px; text-transform: uppercase }
+    .help{ font-size:11px; color:#64748b; margin-top:4px }
+    .close{ background:#e2e8f0; border:none; padding:8px 12px; border-radius:10px; cursor:pointer }
+
+    /* Tabela prévia import */
+    .table-wrap{ max-height: 320px; overflow:auto; border:1px solid #e2e8f0; border-radius:12px }
+    table{ width:100%; border-collapse: collapse; font-size:13px }
+    th, td{ padding:10px; border-bottom:1px solid #e2e8f0; text-align:left }
+    th{ background:#f8fafc; position:sticky; top:0 }
   </style>
 </head>
 <body>
+  <!-- OVERLAY ENVIANDO -->
+  <div id="overlay"><div class="box">Enviando dados…</div></div>
 
-<div id="overlay"><div>Enviando dados...</div></div>
-
-<div class="topo">
-  <h1>LICITAR • Painel de Licitações</h1>
-  <div>
-    <input id="search" placeholder="Buscar licitação">
-    <button class="btn" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
-  </div>
-</div>
-
-<div class="filtros">
-  <div class="filtro ativo" onclick="filtrar('Todos')">Todos</div>
-  <div class="filtro" onclick="filtrar('Pendente')">Pendente</div>
-  <div class="filtro" onclick="filtrar('Futura')">Futura</div>
-  <div class="filtro" onclick="filtrar('Em andamento')">Em andamento</div>
-  <div class="filtro" onclick="filtrar('Finalizada')">Finalizada</div>
-  <div class="filtro" onclick="filtrar('Suspensa')">Suspensa</div>
-</div>
-
-<div id="cards">Carregando licitações...</div>
-
-<script>
-const API = "https://script.google.com/macros/s/AKfycbwNeqwU6_oqB6q0IlOhSOY8JL9HxMxbocog4Ls93EF0wO4Vw9-LZ0g0Y2kkaiveEmoZ/exec";
-let dados = [], filtroAtual = 'Todos';
-
-function filtrar(status) {
-  filtroAtual = status;
-  document.querySelectorAll('.filtro').forEach(f => f.classList.remove('ativo'));
-  [...document.querySelectorAll('.filtro')].find(f => f.innerText === status).classList.add('ativo');
-  renderizar();
-}
-
-function renderizar() {
-  const q = document.getElementById("search").value.toLowerCase();
-  const cards = document.getElementById("cards");
-  const filtrados = dados.filter(l =>
-    (filtroAtual === 'Todos' || l.status === filtroAtual) &&
-    l.instituicao.toLowerCase().includes(q)
-  );
-  cards.innerHTML = filtrados.map(l => `
-    <div class="card">
-      <h3>${l.instituicao}</h3>
-      <small>Código: ${l.codigo_licitacao}</small><br>
-      <small>Data: ${l.data}</small><br>
-      <small>Valor: R$ ${l.valor}</small><br>
-      <div class="status st-${l.status.replace(/ /g,'\\ ')}">${l.status}</div>
+  <!-- TOPO -->
+  <div class="topo">
+    <div class="titulo">LICITAR • Painel de Licitações</div>
+    <div class="actions">
+      <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
+      <button class="btn btn-primary" id="btnNova">+ Nova Licitação</button>
     </div>
-  `).join("") || "Nenhuma licitação encontrada.";
-}
+  </div>
 
-document.getElementById("search").addEventListener("input", renderizar);
+  <!-- FILTROS -->
+  <div class="filtros" id="filtros">
+    <div class="chip ativo" data-status="Todos">Todos</div>
+    <div class="chip" data-status="Pendente">Pendente</div>
+    <div class="chip" data-status="Futura">Futura</div>
+    <div class="chip" data-status="Em andamento">Em andamento</div>
+    <div class="chip" data-status="Finalizada">Finalizada</div>
+    <div class="chip" data-status="Suspensa">Suspensa</div>
+  </div>
 
-async function carregar() {
-  const req = await fetch(API + "?acao=listar");
-  dados = await req.json();
-  renderizar();
-}
+  <!-- LISTA DE CARDS -->
+  <div class="grid" id="lista">Carregando…</div>
 
-function abrirNovaLicitacao() {
-  alert("Abrir formulário de nova licitação (a ser implementado)");
-}
+  <!-- MODAL: NOVA/EDITAR LICITAÇÃO -->
+  <div class="modal" id="modalLicitacao">
+    <div class="content">
+      <div class="header">
+        <h3 id="tituloModalLicitacao">Nova Licitação</h3>
+        <button class="close" data-close="#modalLicitacao">Fechar</button>
+      </div>
+      <div class="grid">
+        <div class="col-6 field">
+          <label>INSTITUIÇÃO</label>
+          <div style="display:flex; gap:8px; align-items:center">
+            <select id="selInstituicao" class="field-select" style="flex:1; padding:12px; border:1px solid #d0d4da; border-radius:12px; text-transform:uppercase"></select>
+            <button class="btn btn-lite" id="btnNovaEmpresa">+</button>
+          </div>
+          <div class="help">Escolha a empresa. Clique em "+" para cadastrar na hora.</div>
+        </div>
+        <div class="col-3 field"><label>DATA DA SESSÃO</label><input id="inpData" placeholder="DD/MM/AAAA" /></div>
+        <div class="col-3 field"><label>VALOR TOTAL</label><input id="inpValor" placeholder="R$ 0,00" /></div>
+        <div class="col-6 field"><label>CRITÉRIO DE JULGAMENTO</label><input id="inpCriterio" placeholder="MAIOR DESCONTO POR ITEM" /></div>
+        <div class="col-6 field"><label>MODO DE DISPUTA</label><input id="inpModo" placeholder="ABERTO E FECHADO" /></div>
+        <div class="col-6 field"><label>STATUS</label>
+          <select id="selStatus">
+            <option>Pendente</option>
+            <option>Futura</option>
+            <option>Em andamento</option>
+            <option>Finalizada</option>
+            <option>Suspensa</option>
+          </select>
+        </div>
+        <div class="col-12" style="margin-top:8px">
+          <button class="btn btn-primary" id="btnSalvarLicitacao">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-carregar();
-</script>
+  <!-- MODAL: EMPRESA -->
+  <div class="modal" id="modalEmpresa">
+    <div class="content">
+      <div class="header">
+        <h3>Nova Empresa</h3>
+        <button class="close" data-close="#modalEmpresa">Fechar</button>
+      </div>
+      <div class="grid">
+        <div class="col-6 field"><label>RAZÃO SOCIAL</label><input id="empRazao" placeholder="RAZÃO SOCIAL" /></div>
+        <div class="col-3 field"><label>CNPJ</label><input id="empCnpj" placeholder="00.000.000/0000-00" /></div>
+        <div class="col-3 field"><label>UF</label><input id="empUf" placeholder="BA" /></div>
+        <div class="col-12"><button class="btn btn-primary" id="btnSalvarEmpresa">Salvar Empresa</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ITENS -->
+  <div class="modal" id="modalItens">
+    <div class="content">
+      <div class="header">
+        <h3>Itens da Licitação <span id="infoCodigo"></span></h3>
+        <button class="close" data-close="#modalItens">Fechar</button>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <button class="btn btn-ok" id="btnAddItem">+ Adicionar Item</button>
+        <label class="btn btn-lite" for="inpImport">Importar Planilha</label>
+        <input type="file" id="inpImport" accept=".xlsx,.xls,.csv" style="display:none" />
+        <button class="btn btn-ghost" id="btnExportar">Exportar Excel</button>
+        <button class="btn btn-ghost" id="btnPdf">Gerar PDF</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="tblItens">
+          <thead>
+            <tr>
+              <th>ITEM TR</th>
+              <th>ESPECIFICAÇÃO</th>
+              <th>MARCA</th>
+              <th>MODELO</th>
+              <th>UNID</th>
+              <th>QTD MÁX</th>
+              <th>QTD MÍN</th>
+              <th>VLR UNIT</th>
+              <th>GARANTIA</th>
+              <th>AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Form rápido de item -->
+      <div class="grid" style="margin-top:12px">
+        <div class="col-2 field"><label>ITEM TR</label><input id="itTR" /></div>
+        <div class="col-5 field"><label>ESPECIFICAÇÃO</label><input id="itEsp" /></div>
+        <div class="col-2 field"><label>MARCA</label><input id="itMarca" /></div>
+        <div class="col-3 field"><label>MODELO</label><input id="itModelo" /></div>
+        <div class="col-2 field"><label>UNID</label><input id="itUnid" /></div>
+        <div class="col-2 field"><label>QTD MÁX</label><input id="itQmax" /></div>
+        <div class="col-2 field"><label>QTD MÍN</label><input id="itQmin" /></div>
+        <div class="col-2 field"><label>VLR UNIT</label><input id="itVlr" /></div>
+        <div class="col-2 field"><label>GARANTIA</label><input id="itGarant" /></div>
+        <div class="col-12"><button class="btn btn-ok" id="btnSalvarItem">Salvar Item</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRÉVIA IMPORTAÇÃO -->
+  <div class="modal" id="modalPreview">
+    <div class="content">
+      <div class="header">
+        <h3>Prévia da Importação</h3>
+        <button class="close" data-close="#modalPreview">Fechar</button>
+      </div>
+      <div class="table-wrap"><table id="tblPreview"></table></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn btn-primary" id="btnConfirmImport">Confirmar Importação</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================
+       PLACEHOLDER DE SCRIPTS
+       (Partes 2..6 vão completar abaixo)
+  ============================== -->
+  <script>
+    // PARTE 1/6 — Vars básicas e stubs seguros
+    const API = "https://script.google.com/macros/s/AKfycbyGAQAMHUuNqgHiFDEIvX5AkXzZkwsxe1baHMaRd9-N-hxydrNX0GoDzVaY9QMEzMP4/exec";
+    let estado = { filtro: 'Todos', busca: '', empresas: [], licitacoes: [], licAtual: null, itens: [], preview: [] };
+
+    // Stubs para evitar erros antes das próximas partes
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => [...document.querySelectorAll(sel)];
+    const show = el => (document.querySelector(el).style.display = 'flex');
+    const hide = el => (document.querySelector(el).style.display = 'none');
+
+    // Fechar modais pelo botão data-close
+    document.addEventListener('click', (e)=>{
+      const closeSel = e.target.getAttribute?.('data-close');
+      if(closeSel){ hide(closeSel); }
+    });
+
+    // Interações básicas já no ar (demais funções virão na PARTE 2/6):
+    $('#btnNova').addEventListener('click', ()=>{ show('#modalLicitacao'); });
+    $('#btnNovaEmpresa').addEventListener('click', ()=>{ show('#modalEmpresa'); });
+
+    // Filtros e busca
+    $$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
+      $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
+      ch.classList.add('ativo');
+      estado.filtro = ch.dataset.status;
+      renderLista();
+    }));
+    $('#busca').addEventListener('input', (e)=>{ estado.busca = e.target.value.toUpperCase(); renderLista(); });
+
+    function renderLista(){
+      const lista = $('#lista');
+      const filtro = estado.filtro;
+      const busca = (estado.busca||'').toUpperCase();
+      const dados = estado.licitacoes.filter(l=>
+        (filtro==='Todos' || l.status===filtro) &&
+        (l.instituicao||'').toUpperCase().includes(busca)
+      );
+      if(!dados.length){ lista.innerHTML = '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>'; return; }
+      lista.innerHTML = dados.map(l=>{
+        const stClass = 'st-' + l.status.replace(/ /g,'\\ ');
+        return `
+          <div class="card">
+            <h3>${l.instituicao}</h3>
+            <small>Código: <b>${l.codigo}</b></small>
+            <div class="row">
+              <div class="kv">Data: ${l.dataSessao||l.data||'-'}</div>
+              <div class="kv">Valor: ${l.valor||'-'}</div>
+              <div class="kv">Critério: ${l.criterio||'-'}</div>
+              <div class="kv">Modo: ${l.modo||'-'}</div>
+            </div>
+            <div class="status ${stClass}">${l.status}</div>
+            <div class="card-actions">
+              <button class="btn btn-ok" onclick="abrirItens('${l.codigo}')">Ver Itens</button>
+              <button class="btn btn-lite" onclick="editarLicitacao('${l.codigo}')">Editar</button>
+              <button class="btn btn-danger" onclick="excluirLicitacao('${l.codigo}')">Excluir</button>
+              <button class="btn btn-ghost" onclick="exportarItens('${l.codigo}')">Exportar Excel</button>
+              <button class="btn btn-ghost" onclick="gerarPdf('${l.codigo}')">Gerar PDF</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // Para não quebrar até termos as funções reais nas próximas partes
+    function abrirItens(){ show('#modalItens'); }
+    function editarLicitacao(){ show('#modalLicitacao'); }
+    function excluirLicitacao(){ alert('Excluir (função completa chega na PARTE 3/6)'); }
+    function exportarItens(){ alert('Exportar Excel (PARTE 5/6)'); }
+    function gerarPdf(){ alert('Gerar PDF (PARTE 5/6)'); }
+
+    // Carregamento inicial fictício (substituído na PARTE 2/6 por fetch ao GAS)
+    estado.licitacoes = [];
+    renderLista();
+  </script>
 </body>
 </html>
