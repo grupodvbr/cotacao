@@ -1,998 +1,323 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LICITAR • Painel de Licitações</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LICITAR • Licitações</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
 
 <style>
 :root{
-  --bg:#f4f6fa; --azul:#0b1e39; --azul2:#193055; --dourado:#c9a86c;
-  --card:#fff; --muted:#64748b; --ok:#16a34a; --danger:#dc2626; --warn:#b45309;
-  --shadow:0 10px 28px rgba(0,0,0,.10); --radius:14px;
+  --bg:#f5f6fa;
+  --card:#ffffff;
+  --azul:#0b1e39;
+  --azul2:#142945;
+  --muted:#667085;
+  --ok:#16a34a;
+  --danger:#dc2626;
+  --warn:#d97706;
+  --radius:14px;
+  --shadow:0 8px 28px rgba(0,0,0,.1);
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
-body{background:var(--bg);color:#0f172a;padding:28px}
 
-/* Topo */
-.topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.titulo{color:var(--azul);font-size:28px;font-weight:700;letter-spacing:.5px}
-.actions{display:flex;gap:10px;align-items:center}
-.input{padding:12px;border:1px solid #d0d4da;border-radius:12px;background:#fff;width:280px;font-size:14px}
-.btn{border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--azul);color:#fff}.btn-primary:hover{background:var(--azul2)}
-.btn-lite{background:#fff;border:1px solid #d0d4da}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-ok{background:var(--ok);color:#fff}
-.btn-ghost{background:transparent;color:var(--azul);border:1px dashed var(--azul)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",sans-serif;}
+body{background:var(--bg);padding:28px;color:var(--azul);}
 
-/* Filtros */
-.filtros{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}
-.chip{padding:8px 14px;border-radius:999px;border:1px solid #c7ccd4;background:#fff;cursor:pointer;font-weight:600}
-.chip.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
+.titulo{
+  font-size:30px;
+  font-weight:700;
+  margin-bottom:18px;
+}
 
-/* Lista */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;border-left:6px solid var(--azul)}
-.card h3{font-size:18px;margin-bottom:6px}
-.card small{color:#475569}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.kv{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid #e6e9ee;border-radius:10px;padding:6px 10px}
-.status{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:10px;font-weight:700;font-size:12px}
-.st-Pendente{background:#fff3cd;color:#a15e00}.st-Futura{background:#dbeafe;color:#1e40af}
-.st-Em\ andamento{background:#fef9c3;color:#854d0e}.st-Finalizada{background:#dcfce7;color:#166534}
-.st-Suspensa{background:#ffe4e6;color:#9f1239}
-.card-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.card-actions .btn{padding:9px 12px;border-radius:10px;font-size:12px}
+.topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
 
-/* Overlay */
-#overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;z-index:9999}
-#overlay .box{background:#fff;padding:22px 26px;border-radius:12px;box-shadow:var(--shadow);font-weight:700;color:var(--azul)}
+.input{
+  width:320px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #d0d4da;
+}
 
-/* Toast */
-.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:300px;max-width:520px;white-space:pre-wrap}
-.toast.ok{border-left-color:var(--ok)}
-.toast.warn{border-left-color:var(--warn)}
-.toast b{display:block;margin-bottom:4px}
-.toast small{display:block;color:#64748b}
+.filtros{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
 
-/* Modais */
-.modal{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;z-index:9998;padding:16px}
-.modal .content{background:#fff;border-radius:16px;box-shadow:var(--shadow);max-width:980px;width:100%;padding:20px}
-.modal .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.grid-modal{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
-.col-12{grid-column:span 12}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}.col-2{grid-column:span 2}
-.field{margin-bottom:10px}
-label{font-size:12px;color:#334155;font-weight:700;letter-spacing:.3px}
-.field input,.field select{width:100%;padding:12px;border:1px solid #d0d4da;border-radius:12px;background:#fff;font-size:14px;text-transform:uppercase}
-.help{font-size:11px;color:#64748b;margin-top:4px}
-.close{background:#e2e8f0;border:none;padding:8px 12px;border-radius:10px;cursor:pointer}
+.chip{
+  padding:8px 16px;
+  border:1px solid #d0d4da;
+  border-radius:999px;
+  cursor:pointer;
+  background:#fff;
+  font-weight:600;
+  font-size:14px;
+}
 
-/* Tabela */
-.table-wrap{max-height:320px;overflow:auto;border:1px solid #e2e8f0;border-radius:12px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left}
-th{background:#f8fafc;position:sticky;top:0}
+.chip.ativo{
+  background:var(--azul);
+  color:#fff;
+  border-color:var(--azul);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+  gap:18px;
+  margin-top:10px;
+}
+
+.card{
+  background:var(--card);
+  padding:18px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.card small{color:var(--muted);}
+
+.row{
+  margin:10px 0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.st-Pendente{background:#fff7d6;color:#a15e00}
+.st-Futura{background:#dceafe;color:#1854b3}
+.st-Em{background:#fff5cc;color:#947000}
+.st-Finalizada{background:#dcfce7;color:#167a4d}
+.st-Suspensa{background:#ffe4e6;color:#b01731}
+
+.btn{
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+}
+
+.btn-edit{background:var(--azul);color:#fff;}
+.btn-del{background:var(--danger);color:#fff;margin-left:6px;}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal .box{
+  background:#fff;
+  padding:20px;
+  width:420px;
+  border-radius:14px;
+}
+
+.field{margin-bottom:12px;}
+label{font-size:12px;font-weight:600;color:var(--muted);}
+input,select{
+  width:100%;
+  padding:12px;
+  margin-top:4px;
+  border-radius:10px;
+  border:1px solid #d0d4da;
+}
+
+.btn-save{
+  width:100%;
+  background:var(--ok);
+  color:#fff;
+  padding:12px;
+  border-radius:10px;
+  margin-top:8px;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- Overlay -->
-<div id="overlay"><div class="box">ENVIANDO…</div></div>
+<div class="titulo">LICITAR • Licitações</div>
 
-<!-- Topo -->
 <div class="topo">
-  <div class="titulo">LICITAR • Painel de Licitações</div>
-  <div class="actions">
-    <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
-    <button class="btn btn-primary" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
-  </div>
+  <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO">
 </div>
 
-<!-- Filtros -->
 <div class="filtros" id="filtros">
   <div class="chip ativo" data-status="TODOS">Todos</div>
-  <div class="chip" data-status="PENDENTE">Pendente</div>
-  <div class="chip" data-status="FUTURA">Futura</div>
-  <div class="chip" data-status="EM ANDAMENTO">Em andamento</div>
-  <div class="chip" data-status="FINALIZADA">Finalizada</div>
-  <div class="chip" data-status="SUSPENSA">Suspensa</div>
+  <div class="chip" data-status="Pendente">Pendente</div>
+  <div class="chip" data-status="Futura">Futura</div>
+  <div class="chip" data-status="Em andamento">Em andamento</div>
+  <div class="chip" data-status="Finalizada">Finalizada</div>
+  <div class="chip" data-status="Suspensa">Suspensa</div>
 </div>
 
-<!-- Lista -->
 <div class="grid" id="lista">Carregando…</div>
-<!-- Modal Licitação -->
-<div class="modal" id="modalLicitacao">
-  <div class="content">
-    <div class="header">
-      <h3 id="tituloModalLicitacao">Nova Licitação</h3>
-      <button class="close" data-close="#modalLicitacao">Fechar</button>
-    </div>
-    <div class="grid-modal">
 
-      <div class="col-6 field">
-        <label>INSTITUIÇÃO</label>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="selInstituicao" style="flex:1"></select>
-          <button class="btn btn-lite" id="btnNovaEmpresa">+</button>
-        </div>
-        <div class="help">Escolha a empresa. Clique em “+” para cadastrar.</div>
-      </div>
+<!-- MODAL -->
+<div class="modal" id="modalEdit">
+  <div class="box">
+    <h3 style="margin-bottom:10px">Editar Licitação</h3>
 
-      <div class="col-3 field">
-        <label>DATA DA SESSÃO</label>
-        <input id="inpData" placeholder="DD/MM/AAAA" data-mask="date" />
-      </div>
-
-      <div class="col-3 field">
-        <label>VALOR TOTAL</label>
-        <input id="inpValor" placeholder="R$ 0,00" data-mask="money" />
-      </div>
-
-      <div class="col-6 field">
-        <label>CRITÉRIO DE JULGAMENTO</label>
-        <input id="inpCriterio" placeholder="MAIOR DESCONTO POR ITEM" />
-      </div>
-
-      <div class="col-6 field">
-        <label>MODO DE DISPUTA</label>
-        <input id="inpModo" placeholder="ABERTO E FECHADO" />
-      </div>
-
-      <div class="col-6 field">
-        <label>STATUS</label>
-        <select id="selStatus">
-          <option>Pendente</option>
-          <option>Futura</option>
-          <option>Em andamento</option>
-          <option>Finalizada</option>
-          <option>Suspensa</option>
-        </select>
-      </div>
-
-      <div class="col-12" style="margin-top:8px">
-        <button class="btn btn-primary" id="btnSalvarLicitacao">Salvar</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Modal Empresa -->
-<div class="modal" id="modalEmpresa">
-  <div class="content">
-    <div class="header">
-      <h3>Nova Empresa</h3>
-      <button class="close" data-close="#modalEmpresa">Fechar</button>
-    </div>
-    <div class="grid-modal">
-
-      <div class="col-6 field">
-        <label>RAZÃO SOCIAL</label>
-        <input id="empRazao" placeholder="RAZÃO SOCIAL" />
-      </div>
-
-      <div class="col-3 field">
-        <label>CNPJ</label>
-        <input id="empCnpj" placeholder="00.000.000/0000-00" />
-      </div>
-
-      <div class="col-3 field">
-        <label>UF</label>
-        <input id="empUf" placeholder="BA" />
-      </div>
-
-      <div class="col-12">
-        <button class="btn btn-primary" id="btnSalvarEmpresa">Salvar Empresa</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Modal Itens -->
-<div class="modal" id="modalItens">
-  <div class="content">
-    <div class="header">
-      <h3>Itens da Licitação <span id="infoCodigo"></span></h3>
-      <button class="close" data-close="#modalItens">Fechar</button>
+    <div class="field">
+      <label>Instituição</label>
+      <input id="eInst" />
     </div>
 
-    <div class="row" style="margin-bottom:10px">
-      <button class="btn btn-ok" id="btnAddItem">+ Adicionar Item</button>
-      <label class="btn btn-lite" for="inpImport">Importar Planilha</label>
-      <input type="file" id="inpImport" accept=".xlsx,.xls,.csv" style="display:none" />
-      <button class="btn btn-ghost" id="btnExportar">Exportar Excel</button>
-      <button class="btn btn-ghost" id="btnPdf">Gerar PDF</button>
+    <div class="field">
+      <label>Data da Sessão</label>
+      <input id="eData" />
     </div>
 
-    <div class="table-wrap">
-      <table id="tblItens">
-        <thead>
-          <tr>
-            <th>ITEM TR</th>
-            <th>ESPECIFICAÇÃO</th>
-            <th>MARCA</th>
-            <th>MODELO</th>
-            <th>UNID</th>
-            <th>QTD MÁX</th>
-            <th>QTD MÍN</th>
-            <th>VLR UNIT</th>
-            <th>GARANTIA</th>
-            <th>AÇÕES</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+    <div class="field">
+      <label>Valor Total</label>
+      <input id="eValor" />
     </div>
 
-    <div class="grid-modal" style="margin-top:12px">
-
-      <div class="col-2 field">
-        <label>ITEM TR</label>
-        <input id="itTR" />
-      </div>
-
-      <div class="col-5 field">
-        <label>ESPECIFICAÇÃO</label>
-        <input id="itEsp" />
-      </div>
-
-      <div class="col-2 field">
-        <label>MARCA</label>
-        <input id="itMarca" />
-      </div>
-
-      <div class="col-3 field">
-        <label>MODELO</label>
-        <input id="itModelo" />
-      </div>
-
-      <div class="col-2 field">
-        <label>UNID</label>
-        <input id="itUnid" />
-      </div>
-
-      <div class="col-2 field">
-        <label>QTD MÁX</label>
-        <input id="itQmax" />
-      </div>
-
-      <div class="col-2 field">
-        <label>QTD MÍN</label>
-        <input id="itQmin" />
-      </div>
-
-      <div class="col-2 field">
-        <label>VLR UNIT</label>
-        <input id="itVlr" data-mask="money" />
-      </div>
-
-      <div class="col-2 field">
-        <label>GARANTIA</label>
-        <input id="itGarant" />
-      </div>
-
-      <div class="col-12">
-        <button class="btn btn-ok" id="btnSalvarItem">Salvar Item</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Modal Prévia Importação -->
-<div class="modal" id="modalPreview">
-  <div class="content">
-    <div class="header">
-      <h3>Prévia da Importação</h3>
-      <button class="close" data-close="#modalPreview">Fechar</button>
+    <div class="field">
+      <label>Status</label>
+      <select id="eStatus">
+        <option>Pendente</option>
+        <option>Futura</option>
+        <option>Em andamento</option>
+        <option>Finalizada</option>
+        <option>Suspensa</option>
+      </select>
     </div>
 
-    <div class="table-wrap">
-      <table id="tblPreview"></table>
-    </div>
-
-    <div class="row" style="margin-top:10px">
-      <button class="btn btn-primary" id="btnConfirmImport">Confirmar Importação</button>
-    </div>
+    <button class="btn-save" id="btnSalvar">Salvar</button>
   </div>
 </div>
 
 <script>
-/* ==========================
-   CONFIG / STATE
-========================== */
-const DEFAULT_API =
-  "https://script.google.com/macros/s/AKfycbzLqY1HuUmjB5noK7ajeevm_YsVA30-y1Dv0_yBGZNbKr37_WTXfts68Q4H7R-D7UMJ/exec";
-
-const API = new URLSearchParams(location.search).get('api') || DEFAULT_API;
-
-const $ = sel => document.querySelector(sel);
-const $$ = sel => [...document.querySelectorAll(sel)];
-const show = sel => ($(sel).style.display = 'flex');
-const hide = sel => ($(sel).style.display = 'none');
-
-let state = {
-  filtro: 'Todos',
-  busca: '',
-  empresas: [],
-  licitacoes: [],
-  licAtual: null,
-  itens: [],
-  preview: [],
-  editIndex: null
-};
-
-/* ==========================
-   TOASTS / OVERLAY / MASKS
-========================== */
-function toast(title, details = '', type = 'err') {
-  const t = document.createElement('div');
-  t.className = 'toast' + (type === 'ok' ? ' ok' : type === 'warn' ? ' warn' : '');
-  t.innerHTML = `<b>${title}</b>${details ? `<small>${details}</small>` : ''}`;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 6500);
-}
-
-function overlay(on) {
-  $('#overlay').style.display = on ? 'flex' : 'none';
-}
-
-function maskMoney(el) {
-  let v = el.value.replace(/[^\d]/g, '');
-  if (!v) {
-    el.value = '';
-    return;
-  }
-
-  v = v.padStart(3, '0');
-  let cents = v.slice(-2);
-  let ints = v.slice(0, -2);
-
-  ints = ints.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-  el.value = `R$ ${ints},${cents}`;
-}
-
-function maskDate(el) {
-  const v = el.value.replace(/\D/g, '').slice(0, 8);
-  if (v.length >= 5) el.value = `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`;
-  else if (v.length >= 3) el.value = `${v.slice(0, 2)}/${v.slice(2)}`;
-  else el.value = v;
-}
-
-function attachMasks() {
-  $$('input[data-mask="money"]').forEach(el => {
-    el.addEventListener('input', () => maskMoney(el));
-  });
-
-  $$('input[data-mask="date"]').forEach(el =>
-    el.addEventListener('input', () => maskDate(el))
-  );
-}
-
-/* ==========================
-   API HELPERS
-========================== */
-async function apiGet(qs) {
-  const url = API + '?' + new URLSearchParams(qs).toString();
-
-  try {
-    const ctrl = new AbortController();
-    const tm = setTimeout(() => ctrl.abort(), 15000);
-
-    const r = await fetch(url, { method: 'GET', signal: ctrl.signal });
-    clearTimeout(tm);
-
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-
-    const j = await r.json();
-    if (j.error) throw new Error(j.error);
-
-    return j;
-  } catch (e) {
-    toast("Erro de comunicação", e.message, "warn");
-    throw e;
-  }
-}
-
-async function apiPost(body) {
-  try {
-    const ctrl = new AbortController();
-    const tm = setTimeout(() => ctrl.abort(), 20000);
-
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: ctrl.signal
-    });
-
-    clearTimeout(tm);
-
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-
-    const j = await r.json();
-    if (j.error) throw new Error(j.error);
-
-    return j;
-  } catch (e) {
-    toast("Erro no envio", e.message, "warn");
-    throw e;
-  }
-}
-/* ==========================
-   RENDER LISTA
-========================== */
-function renderLista() {
-  const lista = $('#lista');
-
-  const filtro = state.filtro.toUpperCase();
-  const busca = state.busca.toUpperCase();
-
-  const dados = state.licitacoes.filter(l =>
-    (filtro === 'TODOS' || (l.status || '').toUpperCase() === filtro) &&
-    (l.instituicao || '').toUpperCase().includes(busca)
-  );
-
-  if (!dados.length) {
-    lista.innerHTML =
-      '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>';
-    return;
-  }
-
-  lista.innerHTML = dados
-    .map(l => {
-      const statusUI = l.status
-        .toUpperCase()
-        .replace('PENDENTE', 'Pendente')
-        .replace('FUTURA', 'Futura')
-        .replace('EM ANDAMENTO', 'Em andamento')
-        .replace('FINALIZADA', 'Finalizada')
-        .replace('SUSPENSA', 'Suspensa');
-
-      const stClass = 'st-' + statusUI.replace(/ /g, '\\ ');
-
-      return `
-      <div class="card">
-        <h3>${l.instituicao}</h3>
-        <small>Código: <b>${l.codigo}</b></small>
-
-        <div class="row">
-          <div class="kv">Data: ${formatarDataBonita(l.dataSessaoBR) || '-'}</div>
-          <div class="kv">Valor: R$ ${formatarValorBR(l.valorBR)}</div>
-          <div class="kv">Critério: ${l.criterio || '-'}</div>
-          <div class="kv">Modo: ${l.modo || '-'}</div>
-        </div>
-
-        <div class="status ${stClass}">${statusUI}</div>
-
-        <div class="card-actions">
-          <button class="btn btn-ok" onclick="abrirItens('${l.codigo}')">Ver Itens</button>
-          <button class="btn btn-lite" onclick="editarLicitacao('${l.codigo}')">Editar</button>
-          <button class="btn btn-danger" onclick="excluirLicitacao('${l.codigo}')">Excluir</button>
-        </div>
-      </div>`;
-    })
-    .join('');
-}
-
-/* ==========================
-   CARREGAMENTO INICIAL
-========================== */
-async function carregarEmpresas() {
-  try {
-    const j = await apiGet({ action: 'listEmpresas' });
-    state.empresas = j.empresas || [];
-
-    $('#selInstituicao').innerHTML =
-      state.empresas
-        .map(e => `<option value="${e.codigo}">${e.nome}</option>`)
-        .join('');
-  } catch (e) {
-    toast('Erro ao carregar empresas', e.message, 'warn');
-  }
-}
-
-async function carregarLicitacoes() {
-  try {
-    const j = await apiGet({ action:'listLicitacoes' });
-    state.licitacoes = j.licitacoes || [];
-    renderLista();
-  } catch (e) {
-    $('#lista').innerHTML =
-      '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações.</div>';
-  }
-}
-
-/* ==========================
-   EMPRESA (CRUD)
-========================== */
-$('#btnNovaEmpresa').addEventListener('click', () => show('#modalEmpresa'));
-
-$('#btnSalvarEmpresa').addEventListener('click', async () => {
-  const nome = $('#empRazao').value.trim().toUpperCase();
-  const cnpj = $('#empCnpj').value.trim();
-  const uf = $('#empUf').value.trim().toUpperCase();
-
-  if (!nome) {
-    toast('Informe a RAZÃO SOCIAL');
-    return;
-  }
-
-  overlay(true);
-  try {
-    const j = await apiPost({
-      action: 'addEmpresa',
-      nome, cnpj, uf
-    });
-
-    toast('Empresa salva!', `Código: ${j.codigo}`, 'ok');
-    hide('#modalEmpresa');
-
-    await carregarEmpresas();
-    if (j.codigo) $('#selInstituicao').value = j.codigo;
-
-  } finally {
-    overlay(false);
-  }
-});
-
-/* ==========================
-   LICITAÇÃO — ADD / EDIT / DELETE
-========================== */
-function limpaFormLicit() {
-  $('#inpData').value = '';
-  $('#inpValor').value = '';
-  $('#inpCriterio').value = '';
-  $('#inpModo').value = '';
-  $('#selStatus').value = 'Pendente';
-}
-
-function limparValor(v) {
-  if (!v) return "";
-  return v
-    .replace("R$", "")
-    .replace(/\./g, "")
-    .replace(",", ".")
-    .trim();
-}
-
-
-
-
-
-
-  
-function coletaFormLicit() {
-  return {
-    instCode: $('#selInstituicao').value,
-    instituicao: $('#selInstituicao').selectedOptions[0]?.text || '',
-    dataSessaoBR: $('#inpData').value.trim(),
-    valorBR: limparValor($('#inpValor').value),
-    criterio: $('#inpCriterio').value.trim().toUpperCase(),
-    modo: $('#inpModo').value.trim().toUpperCase(),
-    status: $('#selStatus').value
-  };
-}
-
-async function salvarLicitacao() {
-  const body = coletaFormLicit();
-  if (!body.instCode) {
-    toast('Selecione a INSTITUIÇÃO');
-    return;
-  }
-
-  overlay(true);
-  try {
-    if (state.licAtual) {
-      await apiPost({ action:'updateLicitacao', codigo:state.licAtual, ...body });
-      toast('Licitação atualizada!', '', 'ok');
-    } else {
-      const r = await apiPost({ action:'addLicitacao', ...body });
-      toast('Licitação criada!', `Código: ${r.codigo}`, 'ok');
-    }
-
-    hide('#modalLicitacao');
-    state.licAtual = null;
-    await carregarLicitacoes();
-
-  } finally {
-    overlay(false);
-  }
-}
-
-/* 👇 ESTA LINHA FALTAVA */
-$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
-function abrirNovaLicitacao() {
-  state.licAtual = null;     // garante que será um cadastro novo
-
-  $('#tituloModalLicitacao').innerText = 'Nova Licitação';
-
-  // limpar todos os campos
-  $('#selInstituicao').value = state.empresas[0]?.codigo || '';
-  $('#inpData').value = '';
-  $('#inpValor').value = '';
-  $('#inpCriterio').value = '';
-  $('#inpModo').value = '';
-  $('#selStatus').value = 'Pendente';
-
-  show('#modalLicitacao');
-}
-
-function editarLicitacao(codigo) {
-  const l = state.licitacoes.find(x => x.codigo === codigo);
-  if (!l) return;
-
-  state.licAtual = codigo;
-
-  $('#tituloModalLicitacao').innerText = 'Editar Licitação';
-  $('#selInstituicao').value = l.instCode;
-
-  // 🔥 CORREÇÃO DA DATA
-  let dataBR = l.dataSessaoBR;
-
-  // Caso venha ISO (2025-12-10T03:00:00.000Z)
-  if (dataBR.includes('T') || dataBR.includes('-')) {
-    const d = new Date(dataBR);
-    const dd = String(d.getDate()).padStart(2,'0');
-    const mm = String(d.getMonth()+1).padStart(2,'0');
-    const yyyy = d.getFullYear();
-    dataBR = `${dd}/${mm}/${yyyy}`;
-  }
-
-  $('#inpData').value = dataBR;
-
-  // 🔥 FORMATO DE DINHEIRO AO EDITAR
-$('#inpValor').value = l.valorBR ? "R$ " + formatarValorBR(l.valorBR) : '';
-
-
-  $('#inpCriterio').value = l.criterio || '';
-  $('#inpModo').value = l.modo || '';
-
-  const s = l.status.toUpperCase();
-
-  $('#selStatus').value =
-    s === 'PENDENTE' ? 'Pendente' :
-    s === 'FUTURA' ? 'Futura' :
-    s === 'EM ANDAMENTO' ? 'Em andamento' :
-    s === 'FINALIZADA' ? 'Finalizada' :
-    s === 'SUSPENSA' ? 'Suspensa' : 'Pendente';
-
-  show('#modalLicitacao');
-}
-
-
-async function excluirLicitacao(codigo) {
-  if (!confirm('Deseja excluir esta licitação?')) return;
-
-  overlay(true);
-  try {
-    await apiPost({ action:'deleteLicitacao', codigo });
-    toast('Licitação excluída!', '', 'ok');
-    await carregarLicitacoes();
-  } finally {
-    overlay(false);
-  }
-}
-/* ==========================
-   ITENS DA LICITAÇÃO
-========================== */
-async function abrirItens(codigo) {
-  state.licAtual = codigo;
-  $('#infoCodigo').innerText = '• ' + codigo;
-
-  show('#modalItens');
-  await carregarItens();
-}
-
-async function carregarItens() {
-  try {
-    const j = await apiGet({ action:'listItens', codigo:state.licAtual });
-    state.itens = j.itens || [];
-
-    const tb = $('#tblItens tbody');
-
-    tb.innerHTML = state.itens
-      .map((i, idx) => `
-        <tr>
-          <td>${i.itemTR || ''}</td>
-          <td>${i.especificacao || ''}</td>
-          <td>${i.marca || ''}</td>
-          <td>${i.modelo || ''}</td>
-          <td>${i.unidade || ''}</td>
-          <td>${i.quantMax || ''}</td>
-          <td>${i.quantMin || ''}</td>
-          <td>${i.valorUnit || ''}</td>
-          <td>${i.garantia || ''}</td>
-          <td>
-            <button class="btn btn-lite" onclick="editarItem(${idx})">Editar</button>
-          </td>
-        </tr>
-      `)
-      .join('');
-  } catch (e) {
-    toast("Erro ao carregar itens", e.message, "warn");
-  }
-}
-
-/* ==========================
-   EDITAR ITEM
-========================== */
-function editarItem(index) {
-  const it = state.itens[index];
-  if (!it) return;
-
-  $('#itTR').value     = it.itemTR || '';
-  $('#itEsp').value    = it.especificacao || '';
-  $('#itMarca').value  = it.marca || '';
-  $('#itModelo').value = it.modelo || '';
-  $('#itUnid').value   = it.unidade || '';
-  $('#itQmax').value   = it.quantMax || '';
-  $('#itQmin').value   = it.quantMin || '';
-  $('#itVlr').value    = it.valorUnit || '';
-  $('#itGarant').value = it.garantia || '';
-
-  state.editIndex = index;
-  toast("Editando item…", '', 'warn');
-}
-
-/* ==========================
-   SALVAR ITEM (ADD / EDIT)
-========================== */
-$('#btnSalvarItem').addEventListener('click', async () => {
-
-  const body = {
-    action: state.editIndex != null ? 'updateItem' : 'addItem',
-    codigoLicitacao: state.licAtual,
-    index: state.editIndex,
-    itemTR: $('#itTR').value.trim().toUpperCase(),
-    especificacao: $('#itEsp').value.trim().toUpperCase(),
-    marca: $('#itMarca').value.trim().toUpperCase(),
-    modelo: $('#itModelo').value.trim().toUpperCase(),
-    unidade: $('#itUnid').value.trim().toUpperCase(),
-    quantMax: $('#itQmax').value.trim(),
-    quantMin: $('#itQmin').value.trim(),
-    valorUnit: limparValor($('#itVlr').value),
-    garantia: $('#itGarant').value.trim().toUpperCase()
-  };
-
-  if (!body.itemTR) {
-    toast("Informe o ITEM TR");
-    return;
-  }
-
-  overlay(true);
-  try {
-    await apiPost(body);
-    toast("Item salvo!", "", "ok");
-
-    // limpar campos
-    ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant']
-      .forEach(id => $('#' + id).value = '');
-
-    state.editIndex = null;
-
-    await carregarItens();
-
-  } finally {
-    overlay(false);
-  }
-});
-
-/* ==========================
-   IMPORTAÇÃO DE PLANILHA
-========================== */
-
-let previewRows = [];
-
-$('#inpImport').addEventListener('change', async ev => {
-  const file = ev.target.files[0];
-  if (!file) return;
-
-  const data = await file.arrayBuffer();
-  const wb = XLSX.read(data, { type:'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws, { defval:'' });
-
-  previewRows = rows.map(r => ({
-    itemTR: (r['Item do TR'] || r['ITEM TR'] || '').toString(),
-    especificacao: (r['Especificação'] || r['ESPECIFICAÇÃO'] || '').toString(),
-    marca: (r['Marca'] || '').toString(),
-    modelo: (r['Modelo'] || '').toString(),
-    unidade: (r['Unidade'] || '').toString(),
-    quantMax: (r['Quantidade Máxima'] || '').toString(),
-    quantMin: (r['Quantidade Mínima'] || '').toString(),
-    valorUnit: (r['Valor Unitário'] || r['VALOR UNITARIO'] || '').toString(),
-    garantia: (r['Prazo garantia ou validade'] || '').toString()
-  }));
-
-  const tbl = $('#tblPreview');
-
-  const cols = [
-    'itemTR','especificacao','marca','modelo',
-    'unidade','quantMax','quantMin','valorUnit','garantia'
-  ];
-
-  tbl.innerHTML =
-    '<thead><tr>' +
-    cols.map(c => `<th>${c.toUpperCase()}</th>`).join('') +
-    '</tr></thead>' +
-    '<tbody>' +
-    previewRows.map(r =>
-      `<tr>${cols.map(c => `<td>${(r[c] || '').toUpperCase()}</td>`).join('')}</tr>`
-    ).join('') +
-    '</tbody>';
-
-  show('#modalPreview');
-});
-
-$('#btnConfirmImport').addEventListener('click', async () => {
-  if (!previewRows.length) { hide('#modalPreview'); return; }
-
-  overlay(true);
-  try {
-    const rowsFixed = previewRows.map(r => ({
-      'Item do TR': r.itemTR,
-      'Especificação': r.especificacao,
-      'Marca': r.marca,
-      'Modelo': r.modelo,
-      'Unidade': r.unidade,
-      'Quantidade Máxima': r.quantMax,
-      'Quantidade Mínima': r.quantMin,
-      'Valor Unitário': r.valorUnit,
-      'Prazo garantia ou validade': r.garantia
-    }));
-
-    await apiPost({
-      action: 'importItens',
-      codigoLicitacao: state.licAtual,
-      rows: rowsFixed
-    });
-
-    toast("Itens importados com sucesso!", "", "ok");
-    hide('#modalPreview');
-    previewRows = [];
-
-    await carregarItens();
-
-  } finally {
-    overlay(false);
-  }
-});
-
-/* ==========================
-   EXPORTAR CSV & PDF
-========================== */
-document.querySelector('#btnExportar').addEventListener('click', () => {
-  exportarItens(state.licAtual);
-});
-
-async function exportarItens(codigo) {
-  try {
-    const j = await apiGet({ action:'exportItens', codigo });
-    const url = j.url;
-
-    if (!url) {
-      toast("Erro ao gerar exportação");
-      return;
-    }
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-  } catch (e) {
-    toast("Erro ao exportar", e.message);
-  }
-}
-
-document.querySelector('#btnPdf').addEventListener('click', () => {
-  gerarPdf(state.licAtual);
-});
-
-async function gerarPdf(codigo) {
-  try {
-    const j = await apiGet({ action:'gerarPdf', codigo });
-    const url = j.url;
-
-    if (!url) {
-      toast("Erro ao gerar PDF");
-      return;
-    }
-
-    window.open(url, '_blank');
-
-  } catch (e) {
-    toast("Erro ao gerar PDF", e.message);
-  }
-}
-/* ==========================
-   BUSCA / FILTROS
-========================== */
-$('#busca').addEventListener('input', e => {
-  state.busca = e.target.value.toUpperCase();
-  renderLista();
-});
-
-$$('#filtros .chip').forEach(ch =>
-  ch.addEventListener('click', () => {
-    $$('#filtros .chip').forEach(c => c.classList.remove('ativo'));
-    ch.classList.add('ativo');
-
-    state.filtro = ch.dataset.status.toUpperCase();
-    renderLista();
-  })
-);
-
-function formatarValorBR(v) {
-  if (!v) return "-";
-
-  // garante número
-  let n = Number(v.toString().replace(/[^\d.-]/g, ''));
-  if (isNaN(n)) return "-";
-
-  // formata para padrão brasileiro
-  return n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-
-
-
-  
-
-/* ==========================
-   FUNÇÃO FORMATO BONITO
-========================== */
-function formatarDataBonita(iso) {
-  if (!iso) return '-';
+const API = "https://script.google.com/macros/s/AKfycbzJQSSSIHPIIfSmDk4IW1qX3eJKcc39RusKAeaYqiieqdhXy-tNCgqc3ijSgG05QKhl/exec"; // COLOQUE A URL DO GAS
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+let licitacoes = [];
+let filtro = "TODOS";
+let busca = "";
+let editID = null;
+
+// FORMATOS
+function mascaraValor(v){return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});}
+function mascaraData(iso){
   const d = new Date(iso);
-  if (isNaN(d)) return '-';
-
-  const dd = String(d.getDate()).padStart(2,'0');
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const yyyy = d.getFullYear();
-
-  const hh = String(d.getHours()).padStart(2,'0');
-  const min = String(d.getMinutes()).padStart(2,'0');
-
-  return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+  if(isNaN(d))return "-";
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 }
 
-/* ==========================
-   FECHAR MODAIS
-========================== */
-$$('.close').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.dataset.close;
-    if (target) hide(target);
+// RENDER
+function render(){
+  const lista = $('#lista');
+  const dados = licitacoes.filter(l =>
+    (filtro==="TODOS" || l.status===filtro) &&
+    l.instituicao.toUpperCase().includes(busca.toUpperCase())
+  );
+
+  lista.innerHTML = dados.map(l=>`
+    <div class="card">
+      <h3>${l.instituicao}</h3>
+      <small>Código: ${l.codigo}</small>
+
+      <div class="row">
+        <div>Data: ${mascaraData(l.dataSessaoBR)}</div>
+        <div>Valor: R$ ${mascaraValor(l.valorBR)}</div>
+        <div>Critério: ${l.criterio}</div>
+        <div>Modo: ${l.modo}</div>
+      </div>
+
+      <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
+
+      <div style="margin-top:10px">
+        <button class="btn btn-edit" onclick="editar('${l.codigo}')">Editar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// BUSCA
+$('#busca').addEventListener('input',e=>{
+  busca = e.target.value;
+  render();
+});
+
+// FILTRO
+$$('#filtros .chip').forEach(ch=>{
+  ch.addEventListener('click',()=>{
+    $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
+    ch.classList.add('ativo');
+    filtro = ch.dataset.status;
+    render();
   });
 });
 
-$$('.modal').forEach(modal => {
-  modal.addEventListener('click', e => {
-    if (e.target === modal) hide('#' + modal.id);
+// EDITAR
+async function editar(codigo){
+  const l = licitacoes.find(x=>x.codigo===codigo);
+  if(!l)return;
+
+  editID = codigo;
+
+  $('#eInst').value = l.instituicao;
+  $('#eData').value = l.dataSessaoBR;
+  $('#eValor').value = l.valorBR;
+  $('#eStatus').value = l.status;
+
+  $('#modalEdit').style.display = "flex";
+}
+
+$('#btnSalvar').addEventListener('click',async()=>{
+  await fetch(API,{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      action:"updateLicitacao",
+      codigo:editID,
+      instituicao:$('#eInst').value,
+      dataSessaoBR:$('#eData').value,
+      valorBR:$('#eValor').value,
+      status:$('#eStatus').value
+    })
   });
+
+  $('#modalEdit').style.display="none";
+  carregar();
 });
 
-/* ==========================
-   INICIAR SISTEMA
-========================== */
-(async function init() {
-  attachMasks();
-  await carregarEmpresas();
-  await carregarLicitacoes();
-})();
+$('#modalEdit').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) e.currentTarget.style.display='none';
+});
 
+// CARREGAR
+async function carregar(){
+  const r = await fetch(API+"?action=listLicitacoes");
+  const j = await r.json();
+  licitacoes = j.licitacoes;
+  render();
+}
 
+carregar();
 </script>
-
 </body>
 </html>
