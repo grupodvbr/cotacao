@@ -264,10 +264,15 @@ let busca = "";
 
 /* FORMATOS */
 function moeda(v){
-  return Number(v).toLocaleString("pt-BR",{
-    minimumFractionDigits:2
-  });
+  if (v === null || v === undefined || v === "") return "0,00";
+
+  let str = String(v).trim();
+  str = str.replace(',', '.'); // vírgula vira ponto
+  const num = parseFloat(str);
+
+  return num.toFixed(4).replace('.', ',');
 }
+
 function moedaMoney(v){
   if (!v && v !== 0) return "R$ 0,00";
 
@@ -303,7 +308,7 @@ function render(){
 
       <div class="row">
         <div><b>Data:</b> ${dataBR(l.dataSessaoBR)}</div>
-        <div><b>Valor:</b> R$ ${moeda(l.valorBR)}</div>
+       <div><b>Valor:</b> ${moedaMoney(l.valorBR)}</div>
         <div><b>Critério:</b> ${l.criterio}</div>
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
