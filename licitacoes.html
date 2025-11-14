@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Licitações</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================================
+   PALETA CORPORATIVA PREMIUM
+================================ */
+:root {
+  --azul: #0b1e39;
+  --azul-claro: #193055;
+  --dourado: #c9a86c;
+  --bg: #f1f3f7;
+  --card-bg: #ffffff;
+  --shadow: 0 10px 25px rgba(0,0,0,0.15);
+  --text-dark: #1a1a1a;
+  --text-soft: #555;
+}
+
+/* ================================
+   BASE
+================================ */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+body{
+  background:var(--bg);
+  padding:25px;
+}
+
+/* ================================
+   TÍTULO + FILTROS
+================================ */
+#topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+#titulo{
+  font-size:32px;
+  font-weight:700;
+  color:var(--azul);
+}
+
+#searchBar{
+  padding:12px 15px;
+  width:280px;
+  border-radius:10px;
+  border:1px solid #d0d0d0;
+  background:white;
+  font-size:15px;
+}
+
+#filtros{
+  display:flex;
+  gap:12px;
+  margin-top:15px;
+}
+
+.filtro{
+  padding:7px 16px;
+  border-radius:20px;
+  background:#fff;
+  border:1px solid #ccc;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.filtro:hover,
+.filtro.ativo{
+  background:var(--azul);
+  color:white;
+  border-color:var(--azul);
+}
+
+/* ================================
+   GRID DE CARDS
+================================ */
+#cards{
+  margin-top:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:25px;
+}
+
+.card{
+  background:var(--card-bg);
+  padding:20px;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:0.2s;
+  border-left:6px solid var(--azul);
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card h3{
+  font-size:20px;
+  margin-bottom:10px;
+  color:var(--text-dark);
+}
+
+.card small{
+  color:var(--text-soft);
+}
+
+.status{
+  margin-top:12px;
+  font-weight:600;
+  font-size:14px;
+  padding:6px 12px;
+  border-radius:8px;
+  display:inline-block;
+}
+
+/* cores status */
+.st-pendente{ background:#ffedcc; color:#b36b00; }
+.st-futura{ background:#d5e8ff; color:#1d4e89; }
+.st-andamento{ background:#fff3bf; color:#8a6a00; }
+.st-finalizada{ background:#d7f7cf; color:#2f7a27; }
+.st-suspensa{ background:#ffd6d6; color:#a11a1a; }
+
+/* ================================
+   BOTÃO NOVA LICITAÇÃO
+================================ */
+#btnNova{
+  padding:10px 20px;
+  background:var(--azul);
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
+#btnNova:hover{
+  background:var(--azul-claro);
+}
+
+/* ================================
+   MODAL CADASTRO LICITAÇÃO
+================================ */
+#modal,#modalItens{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.45);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-box{
+  background:white;
+  width:95%;
+  max-width:550px;
+  padding:25px;
+  border-radius:14px;
+}
+
+.modal-box h2{
+  margin-bottom:20px;
+  color:var(--azul);
+}
+
+.input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-bottom:12px;
+}
+
+/* botão salvar */
+.btn{
+  background:var(--azul);
+  color:white;
+  padding:12px 18px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+.btn:hover{
+  background:var(--azul-claro);
+}
+
+/* ================================
+   LISTA DE ITENS
+================================ */
+.item-row{
+  background:white;
+  padding:12px;
+  border-radius:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="topo">
+  <div>
+    <h1 id="titulo">Licitações</h1>
+    <div id="filtros">
+      <div class="filtro ativo" data-status="todos">Todos</div>
+      <div class="filtro" data-status="Pendente">Pendente</div>
+      <div class="filtro" data-status="Futura">Futura</div>
+      <div class="filtro" data-status="Em andamento">Em andamento</div>
+      <div class="filtro" data-status="Finalizada">Finalizada</div>
+      <div class="filtro" data-status="Suspensa">Suspensa</div>
+    </div>
+  </div>
+
+  <div>
+    <input id="searchBar" placeholder="Pesquisar...">
+    <button id="btnNova" onclick="abrirModal()">+ Nova Licitação</button>
+  </div>
+</div>
+
+<div id="cards">Carregando...</div>
+
+<!-- ======================
+     MODAL CADASTRO
+====================== -->
+<div id="modal">
+  <div class="modal-box">
+    <h2>Nova Licitação</h2>
+
+    <input id="inst" class="input" placeholder="Instituição">
+    <input id="valor" class="input" placeholder="Valor Total da Contratação">
+    <input id="data" class="input" placeholder="Data da Sessão Pública">
+    <input id="criterio" class="input" placeholder="Critério de Julgamento">
+    <input id="modo" class="input" placeholder="Modo de Disputa">
+    
+    <select id="status" class="input">
+      <option value="Pendente">Pendente</option>
+      <option value="Futura">Futura</option>
+      <option value="Em andamento">Em andamento</option>
+      <option value="Finalizada">Finalizada</option>
+      <option value="Suspensa">Suspensa</option>
+    </select>
+
+    <button class="btn" onclick="salvarLicitacao()">Salvar</button>
+    <button class="btn" style="background:#ccc;color:#000" onclick="fecharModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ======================
+     MODAL ITENS
+====================== -->
+<div id="modalItens">
+  <div class="modal-box">
+    <h2>Itens da Licitação</h2>
+
+    <div id="listaItens">Carregando...</div>
+
+    <h3 style="margin-top:20px;">Adicionar Item</h3>
+
+    <input id="itemTR" class="input" placeholder="Item TR">
+    <input id="espec" class="input" placeholder="Especificação">
+    <input id="marca" class="input" placeholder="Marca">
+    <input id="modelo" class="input" placeholder="Modelo">
+    <input id="unidade" class="input" placeholder="Unidade">
+    <input id="qmax" class="input" placeholder="Quantidade Máxima">
+    <input id="qmin" class="input" placeholder="Quantidade Mínima">
+    <input id="valorUnit" class="input" placeholder="Valor Unitário">
+    <input id="garantia" class="input" placeholder="Garantia">
+
+    <button class="btn" onclick="addItem()">Adicionar</button>
+    <button class="btn" style="background:#ccc;color:#000" onclick="fecharItens()">Fechar</button>
+
+  </div>
+</div>
+
+<script>
+/* ==========================
+   CONFIG API
+========================== */
+const API = "COLE-AQUI-SEU-ENDPOINT-APOS-DESPLEGAR";
+
+/* ==========================
+   ABRIR / FECHAR MODAIS
+========================== */
+function abrirModal(){ modal.style.display="flex"; }
+function fecharModal(){ modal.style.display="none"; }
+function fecharItens(){ modalItens.style.display="none"; }
+
+/* ==========================
+   SALVAR LICITAÇÃO
+========================== */
+async function salvarLicitacao(){
+  const data = {
+    action:"addLicitacao",
+    instituicao:inst.value,
+    valor:valor.value,
+    dataSessao:data.value,
+    criterio:criterio.value,
+    modo:modo.value,
+    status:status.value
+  };
+
+  const req = await fetch(API,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
+  const res = await req.json();
+
+  alert("Licitação cadastrada!");
+  fecharModal();
+  carregar();
+}
+
+/* ==========================
+   LISTAR LICITAÇÕES
+========================== */
+async function carregar(){
+  const req = await fetch(API+"?action=listar");
+  const dados = await req.json();
+
+  renderCards(dados);
+}
+
+function renderCards(lista){
+  const q = searchBar.value.toLowerCase();
+  const filtro = document.querySelector(".filtro.ativo").dataset.status;
+
+  const filtrados = lista.filter(l => 
+    (filtro==="todos" || l.status===filtro) &&
+    (l.instituicao.toLowerCase().includes(q))
+  );
+
+  cards.innerHTML = filtrados.map(l => `
+    <div class="card" onclick="abrirItens('${l.instCode}')">
+      <h3>${l.instituicao}</h3>
+      <small>Código: <b>${l.instCode}</b></small><br>
+      <small>Valor: R$ ${l.valor}</small><br>
+      <small>Data: ${l.dataSessao}</small><br>
+      <div class="status st-${l.status.replace(' ','')}">${l.status}</div>
+    </div>
+  `).join("") || "Nenhuma licitação encontrada.";
+}
+
+/* ==========================
+   FILTROS
+========================== */
+document.querySelectorAll(".filtro").forEach(f=>{
+  f.onclick = ()=>{
+    document.querySelectorAll(".filtro").forEach(x=>x.classList.remove("ativo"));
+    f.classList.add("ativo");
+    carregar();
+  };
+});
+
+/* ==========================
+   ABRIR ITENS
+========================== */
+let instAtual = null;
+
+async function abrirItens(code){
+  instAtual = code;
+  modalItens.style.display="flex";
+
+  const req = await fetch(API+"?action=itens&code="+code);
+  const dados = await req.json();
+
+  listaItens.innerHTML = dados.map(i => `
+    <div class="item-row">
+      <b>${i.itemTR}</b> — ${i.especificacao}
+    </div>
+  `).join("") || "Nenhum item cadastrado.";
+}
+
+/* ==========================
+   ADICIONAR ITEM MANUAL
+========================== */
+async function addItem(){
+  const obj = {
+    action:"addItem",
+    instCode:instAtual,
+    itemTR:itemTR.value,
+    especificacao:espec.value,
+    marca:marca.value,
+    modelo:modelo.value,
+    unidade:unidade.value,
+    quantMax:qmax.value,
+    quantMin:qmin.value,
+    valorUnit:valorUnit.value,
+    garantia:garantia.value
+  };
+
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify(obj)
+  });
+
+  alert("Item cadastrado!");
+
+  abrirItens(instAtual);
+}
+
+/* ==========================
+   PESQUISA
+========================== */
+searchBar.onkeyup = carregar;
+
+/* ==========================
+   INICIALIZAR
+========================== */
+carregar();
+</script>
+
+</body>
+</html>
