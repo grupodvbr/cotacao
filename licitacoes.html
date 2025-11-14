@@ -13,47 +13,45 @@
 ================================ */
 :root {
   --azul: #0b1e39;
-  --azul-claro: #193055;
+  --azul-light: #193055;
   --dourado: #c9a86c;
-  --bg: #f1f3f7;
-  --card-bg: #ffffff;
-  --shadow: 0 10px 25px rgba(0,0,0,0.15);
-  --text-dark: #1a1a1a;
-  --text-soft: #555;
+  --soft: #f2f4f7;
+  --card: #ffffff;
+  --shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 /* ================================
    BASE
 ================================ */
-*{
+* {
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:'Inter',sans-serif;
+  font-family:'Inter', sans-serif;
 }
 
-body{
-  background:var(--bg);
-  padding:25px;
+body {
+  background: var(--soft);
+  padding:30px;
 }
 
 /* ================================
-   TÍTULO + FILTROS
+   TOPO / FILTROS / PESQUISA
 ================================ */
-#topo{
+#topo {
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
+  align-items:center;
   margin-bottom:25px;
 }
 
-#titulo{
+#titulo {
   font-size:32px;
   font-weight:700;
   color:var(--azul);
 }
 
-#searchBar{
+#searchBar {
   padding:12px 15px;
   width:280px;
   border-radius:10px;
@@ -62,101 +60,121 @@ body{
   font-size:15px;
 }
 
-#filtros{
+#filtros {
   display:flex;
-  gap:12px;
+  gap:10px;
   margin-top:15px;
-  flex-wrap:wrap;
 }
 
-.filtro{
-  padding:7px 16px;
-  border-radius:20px;
-  background:#fff;
+.filtro {
+  padding:8px 18px;
+  background:white;
   border:1px solid #ccc;
+  border-radius:20px;
   cursor:pointer;
-  transition:0.2s;
+  transition:.2s;
 }
-
 .filtro:hover,
-.filtro.ativo{
+.filtro.ativo {
   background:var(--azul);
   color:white;
   border-color:var(--azul);
 }
 
 /* ================================
-   GRID DE CARDS
-================================ */
-#cards{
-  margin-top:25px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:25px;
-}
-
-.card{
-  background:var(--card-bg);
-  padding:20px;
-  border-radius:14px;
-  box-shadow:var(--shadow);
-  cursor:pointer;
-  transition:0.2s;
-  border-left:6px solid var(--azul);
-}
-
-.card:hover{
-  transform:translateY(-5px);
-}
-
-.card h3{
-  font-size:20px;
-  margin-bottom:10px;
-  color:var(--text-dark);
-}
-
-.card small{
-  color:var(--text-soft);
-}
-
-.status{
-  margin-top:12px;
-  font-weight:600;
-  font-size:14px;
-  padding:6px 12px;
-  border-radius:8px;
-  display:inline-block;
-}
-
-/* cores status */
-.st-Pendente{ background:#ffedcc; color:#b36b00; }
-.st-Futura{ background:#d5e8ff; color:#1d4e89; }
-.st-Em.andamento{ background:#fff3bf; color:#8a6a00; }
-.st-Finalizada{ background:#d7f7cf; color:#2f7a27; }
-.st-Suspensa{ background:#ffd6d6; color:#a11a1a; }
-
-/* ================================
    BOTÃO NOVA LICITAÇÃO
 ================================ */
-#btnNova{
-  padding:10px 20px;
+#btnNova {
+  padding:11px 20px;
   background:var(--azul);
   color:white;
   border:none;
   border-radius:10px;
   font-weight:600;
   cursor:pointer;
-  transition:0.2s;
-  margin-left:10px;
+  transition:.2s;
 }
-#btnNova:hover{
-  background:var(--azul-claro);
-}
+#btnNova:hover { background:var(--azul-light); }
 
 /* ================================
-   MODAL CADASTRO
+   GRID DE CARDS
 ================================ */
-#modal,#modalItens,#modalUpload{
+#cards {
+  margin-top:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:25px;
+}
+
+.card {
+  background:white;
+  border-radius:14px;
+  padding:22px;
+  box-shadow:var(--shadow);
+  position:relative;
+  cursor:pointer;
+  transition:.2s;
+}
+.card:hover { transform:translateY(-6px); }
+
+.card h3 {
+  font-size:20px;
+  color:#000;
+  margin-bottom:6px;
+}
+
+.card small { color:#555; }
+
+.status {
+  margin-top:12px;
+  padding:6px 12px;
+  border-radius:8px;
+  display:inline-block;
+  font-size:14px;
+  font-weight:600;
+}
+
+/* cores de status */
+.st-Pendente { background:#fde2b3; color:#b56a00; }
+.st-Futura { background:#d7e7ff; color:#2655a4; }
+.st-Em.andamento { background:#fff2a6; color:#9c7a00; }
+.st-Finalizada { background:#c9f5c3; color:#1d7a2f; }
+.st-Suspensa { background:#ffcdcd; color:#a21414; }
+
+/* menu ... */
+.menu-btn {
+  position:absolute;
+  top:10px;
+  right:10px;
+  font-size:22px;
+  cursor:pointer;
+  padding:4px;
+}
+.menu-box {
+  position:absolute;
+  top:35px;
+  right:10px;
+  background:white;
+  border-radius:8px;
+  border:1px solid #ccc;
+  box-shadow:0 5px 20px rgba(0,0,0,0.15);
+  display:none;
+  z-index:99;
+}
+.menu-box div {
+  padding:10px 14px;
+  cursor:pointer;
+  border-bottom:1px solid #eee;
+}
+.menu-box div:hover {
+  background:#f3f3f3;
+}
+.menu-box div:last-child { border-bottom:none; }
+
+/* ================================
+   MODAL PADRÃO
+================================ */
+#modal, #modalItens {
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
@@ -167,20 +185,19 @@ body{
   z-index:999;
 }
 
-.modal-box{
+.modal-box {
   background:white;
   width:95%;
-  max-width:550px;
+  max-width:600px;
   padding:25px;
   border-radius:14px;
+  max-height:90vh;
+  overflow:auto;
 }
 
-.modal-box h2{
-  margin-bottom:20px;
-  color:var(--azul);
-}
+.modal-box h2 { margin-bottom:20px; color:var(--azul); }
 
-.input{
+.input {
   width:100%;
   padding:12px;
   border-radius:10px;
@@ -188,29 +205,37 @@ body{
   margin-bottom:12px;
 }
 
-/* botão salvar */
-.btn{
-  background:var(--azul);
-  color:white;
+/* botões */
+.btn {
   padding:12px 18px;
-  border:none;
   border-radius:10px;
+  background:var(--azul);
+  border:none;
+  color:white;
   font-weight:600;
   cursor:pointer;
-  margin-top:10px;
 }
-.btn:hover{
-  background:var(--azul-claro);
-}
+.btn:hover { background:var(--azul-light); }
 
-/* lista itens */
-.item-row{
+.btn-secondary {
+  margin-left:10px;
+  background:#ccc;
+  color:#000;
+}
+.btn-secondary:hover { background:#b2b2b2; }
+
+/* tabela de itens */
+.item-row {
   background:white;
   padding:12px;
   border-radius:8px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
   margin-bottom:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
+
+/* botão upload */
+#uploadInput { display:none; }
+
 </style>
 </head>
 
@@ -219,34 +244,35 @@ body{
 <div id="topo">
   <div>
     <h1 id="titulo">Licitações</h1>
+
     <div id="filtros">
-      <div class="filtro ativo" data-status="todos">Todos</div>
-      <div class="filtro" data-status="Pendente">Pendente</div>
-      <div class="filtro" data-status="Futura">Futura</div>
-      <div class="filtro" data-status="Em andamento">Em andamento</div>
-      <div class="filtro" data-status="Finalizada">Finalizada</div>
-      <div class="filtro" data-status="Suspensa">Suspensa</div>
+      <div class="filtro ativo" data-filter="todos">Todos</div>
+      <div class="filtro" data-filter="Pendente">Pendente</div>
+      <div class="filtro" data-filter="Futura">Futura</div>
+      <div class="filtro" data-filter="Em andamento">Em andamento</div>
+      <div class="filtro" data-filter="Finalizada">Finalizada</div>
+      <div class="filtro" data-filter="Suspensa">Suspensa</div>
     </div>
   </div>
 
   <div>
-    <input id="searchBar" placeholder="Pesquisar...">
-    <button id="btnNova" onclick="abrirModal()">+ Nova Licitação</button>
+    <input id="searchBar" placeholder="Pesquisar..." />
+    <button id="btnNova" onclick="openModal()">+ Nova Licitação</button>
   </div>
 </div>
 
 <div id="cards">Carregando...</div>
 
-<!-- ======================
-     MODAL CADASTRO
-====================== -->
+<!-- =======================
+     MODAL LICITAÇÃO
+======================= -->
 <div id="modal">
   <div class="modal-box">
-    <h2>Nova Licitação</h2>
+    <h2 id="modalTitulo">Nova Licitação</h2>
 
     <input id="inst" class="input" placeholder="Instituição">
-    <input id="valor" class="input" placeholder="Valor Total da Contratação">
-    <input id="data" class="input" placeholder="Data da Sessão Pública">
+    <input id="valor" class="input" placeholder="Valor Total">
+    <input id="dataSessao" class="input" placeholder="Data da Sessão">
     <input id="criterio" class="input" placeholder="Critério de Julgamento">
     <input id="modo" class="input" placeholder="Modo de Disputa">
 
@@ -258,143 +284,183 @@ body{
       <option value="Suspensa">Suspensa</option>
     </select>
 
-    <button class="btn" onclick="salvarLicitacao()">Salvar</button>
-    <button class="btn" style="background:#ccc;color:#000" onclick="fecharModal()">Cancelar</button>
+    <button class="btn" onclick="saveLicitacao()">Salvar</button>
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
   </div>
 </div>
 
-<!-- ======================
+<!-- =======================
      MODAL ITENS
-====================== -->
+======================= -->
 <div id="modalItens">
   <div class="modal-box">
     <h2>Itens da Licitação</h2>
 
-    <div id="listaItens">Carregando...</div>
+    <div id="listaItens"></div>
 
     <h3 style="margin-top:20px;">Adicionar Item</h3>
 
-    <input id="itemTR" class="input" placeholder="Item TR">
-    <input id="espec" class="input" placeholder="Especificação">
-    <input id="marca" class="input" placeholder="Marca">
-    <input id="modelo" class="input" placeholder="Modelo">
-    <input id="unidade" class="input" placeholder="Unidade">
-    <input id="qmax" class="input" placeholder="Quantidade Máxima">
-    <input id="qmin" class="input" placeholder="Quantidade Mínima">
-    <input id="valorUnit" class="input" placeholder="Valor Unitário">
-    <input id="garantia" class="input" placeholder="Garantia">
+    <input id="i_itemTR" class="input" placeholder="Item TR">
+    <input id="i_espec" class="input" placeholder="Especificação">
+    <input id="i_marca" class="input" placeholder="Marca">
+    <input id="i_modelo" class="input" placeholder="Modelo">
+    <input id="i_unidade" class="input" placeholder="Unidade">
+    <input id="i_qmax" class="input" placeholder="Quantidade Máxima">
+    <input id="i_qmin" class="input" placeholder="Quantidade Mínima">
+    <input id="i_valor" class="input" placeholder="Valor Unitário">
+    <input id="i_garantia" class="input" placeholder="Garantia">
 
-    <button class="btn" onclick="addItem()">Adicionar</button>
+    <button class="btn" onclick="addItem()">Adicionar Item</button>
 
-    <button class="btn" style="background:#555" onclick="abrirModalUpload()">Importar Itens por Planilha</button>
+    <h3 style="margin-top:25px;">Importar Planilha</h3>
 
-    <button class="btn" style="background:#ccc;color:#000" onclick="fecharItens()">Fechar</button>
+    <input type="file" id="uploadInput" onchange="uploadSheet(event)">
+    <button class="btn" onclick="document.getElementById('uploadInput').click()">Upload XLS / CSV</button>
+
+    <br><br>
+    <button class="btn btn-secondary" onclick="closeItens()">Fechar</button>
 
   </div>
 </div>
-
-<!-- ======================
-     MODAL IMPORTAR PLANILHA
-====================== -->
-<div id="modalUpload">
-  <div class="modal-box">
-    <h2>Importar Itens</h2>
-
-    <input type="file" id="fileInput" class="input">
-
-    <button class="btn" onclick="uploadPlanilha()">Importar</button>
-    <button class="btn" style="background:#ccc;color:#000" onclick="fecharUpload()">Cancelar</button>
-  </div>
-</div>
-
-
 
 <script>
-/* ==========================
-   CONFIG API
-========================== */
-const API = "https://script.google.com/macros/s/AKfycbw_PXdiA-4MThYG72x6nFvmVjw03BgTjZWDEpCUWvFubOCTG_---ctT63PzdMSVo0LJ/exec";
+/* ================================
+   CONFIG
+================================ */
+const API = "https://script.google.com/macros/s/AKfycbw8uAkvcy-7bRLFwamJk3ohldgtReshd7ZXUncE2RY_tlZWnTbxGEM3LLJ2A_txxtsJ/exec";
 
-/* ==========================
-   MODAIS
-========================== */
-function abrirModal(){ modal.style.display="flex"; }
-function fecharModal(){ modal.style.display="none"; }
-function fecharItens(){ modalItens.style.display="none"; }
-function abrirModalUpload(){ modalUpload.style.display="flex"; }
-function fecharUpload(){ modalUpload.style.display="none"; }
+let EDITANDO = null;
+let instAtual = null;
 
-/* ==========================
-   SALVAR LICITAÇÃO
-========================== */
-async function salvarLicitacao(){
-  const data = {
-    action:"addLicitacao",
-    instituicao:inst.value,
-    valor:valor.value,
-    dataSessao:data.value,
-    criterio:criterio.value,
-    modo:modo.value,
-    status:status.value
-  };
-
-  const req = await fetch(API,{
-    method:"POST",
-    body:JSON.stringify(data)
-  });
-
-  alert("Licitação cadastrada!");
-  fecharModal();
-  carregar();
-}
-
-/* ==========================
-   LISTAR LICITAÇÕES
-========================== */
+/* ================================
+   CARREGAR LISTA
+================================ */
 async function carregar(){
   const req = await fetch(API+"?action=listar");
-  const dados = await req.json();
-
-  renderCards(dados);
+  const data = await req.json();
+  renderCards(data);
 }
 
+/* ================================
+   RENDERIZAR CARDS
+================================ */
 function renderCards(lista){
-  const q = searchBar.value.toLowerCase();
-  const filtro = document.querySelector(".filtro.ativo").dataset.status;
+  const q = searchBar.value.trim().toLowerCase();
+  const filtro = document.querySelector(".filtro.ativo").dataset.filter;
 
-  const filtrados = lista.filter(l => 
+  let filtrados = lista.filter(l =>
     (filtro==="todos" || l.status===filtro) &&
     (l.instituicao.toLowerCase().includes(q))
   );
 
   cards.innerHTML = filtrados.map(l => `
-    <div class="card" onclick="abrirItens('${l.instCode}')">
-      <h3>${l.instituicao}</h3>
-      <small>Código: <b>${l.instCode}</b></small><br>
-      <small>Valor: R$ ${l.valor}</small><br>
-      <small>Data: ${l.dataSessao}</small><br>
-      <div class="status st-${l.status.replace(' ','')}">${l.status}</div>
+    <div class="card">
+      <div class="menu-btn" onclick="toggleMenu(event,'${l.instCode}')">•••</div>
+
+      <div class="menu-box" id="menu-${l.instCode}">
+        <div onclick="openEdit('${l.instCode}','${l.instituicao}','${l.valor}','${l.dataSessao}','${l.criterio}','${l.modo}','${l.status}')">✏️ Editar</div>
+        <div onclick="delLicitacao('${l.instCode}')">🗑️ Excluir</div>
+        <div onclick="exportarExcel('${l.instCode}')">⬇ Excel</div>
+        <div onclick="gerarPDF('${l.instCode}')">📄 PDF</div>
+      </div>
+
+      <div onclick="openItens('${l.instCode}')">
+        <h3>${l.instituicao}</h3>
+        <small><b>Código:</b> ${l.instCode}</small><br>
+        <small><b>Valor:</b> R$ ${l.valor}</small><br>
+        <small><b>Data:</b> ${l.dataSessao}</small><br>
+
+        <div class="status st-${l.status.replace(' ','.')}">${l.status}</div>
+      </div>
     </div>
   `).join("") || "Nenhuma licitação encontrada.";
 }
 
-/* ==========================
-   FILTROS
-========================== */
-document.querySelectorAll(".filtro").forEach(f=>{
-  f.onclick = ()=>{
-    document.querySelectorAll(".filtro").forEach(x=>x.classList.remove("ativo"));
-    f.classList.add("ativo");
-    carregar();
+/* ================================
+   MENU •••
+================================ */
+function toggleMenu(ev,id){
+  ev.stopPropagation();
+  const box = document.getElementById("menu-"+id);
+  box.style.display = box.style.display==="block" ? "none" : "block";
+}
+
+document.body.onclick = ()=> {
+  document.querySelectorAll(".menu-box").forEach(m=>m.style.display="none");
+};
+
+/* ================================
+   MODAL LICITAÇÃO
+================================ */
+function openModal(){
+  EDITANDO = null;
+  modalTitulo.innerText = "Nova Licitação";
+  inst.value=""; valor.value=""; dataSessao.value="";
+  criterio.value=""; modo.value=""; status.value="Pendente";
+  modal.style.display="flex";
+}
+function closeModal(){ modal.style.display="none"; }
+
+/* ================================
+   SALVAR LICITAÇÃO
+================================ */
+async function saveLicitacao(){
+  const data = {
+    instituicao:inst.value,
+    valor:valor.value,
+    dataSessao:dataSessao.value,
+    criterio:criterio.value,
+    modo:modo.value,
+    status:status.value
   };
-});
 
-/* ==========================
-   ABRIR ITENS
-========================== */
-let instAtual = null;
+  let action = "addLicitacao";
 
-async function abrirItens(code){
+  if(EDITANDO){
+    data.instCode = EDITANDO;
+    action = "editLicitacao";
+  }
+
+  data.action = action;
+
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
+
+  closeModal();
+  carregar();
+}
+
+/* EDITAR */
+function openEdit(id,insti,val,dt,crit,mod,stat){
+  EDITANDO = id;
+  modalTitulo.innerText = "Editar Licitação";
+
+  inst.value = insti;
+  valor.value = val;
+  dataSessao.value = dt;
+  criterio.value = crit;
+  modo.value = mod;
+  status.value = stat;
+
+  modal.style.display="flex";
+}
+
+/* EXCLUIR */
+async function delLicitacao(id){
+  if(!confirm("Excluir definitivamente?")) return;
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"delLicitacao",instCode:id})
+  });
+  carregar();
+}
+
+/* ================================
+   MODAL ITENS
+================================ */
+async function openItens(code){
   instAtual = code;
   modalItens.style.display="flex";
 
@@ -403,84 +469,122 @@ async function abrirItens(code){
 
   listaItens.innerHTML = dados.map(i => `
     <div class="item-row">
-      <b>${i.itemTR}</b> — ${i.especificacao}
+      <b>${i.itemTR}</b> — ${i.especificacao} <br>
+      <small>${i.marca} | ${i.modelo} | ${i.unidade}</small>
     </div>
   `).join("") || "Nenhum item cadastrado.";
 }
 
-/* ==========================
-   ADICIONAR ITEM MANUAL
-========================== */
+function closeItens(){ modalItens.style.display="none"; }
+
+/* ADD ITEM MANUAL */
 async function addItem(){
-  const obj = {
+  const data = {
     action:"addItem",
     instCode:instAtual,
-    itemTR:itemTR.value,
-    especificacao:espec.value,
-    marca:marca.value,
-    modelo:modelo.value,
-    unidade:unidade.value,
-    quantMax:qmax.value,
-    quantMin:qmin.value,
-    valorUnit:valorUnit.value,
-    garantia:garantia.value
+    itemTR:i_itemTR.value,
+    especificacao:i_espec.value,
+    marca:i_marca.value,
+    modelo:i_modelo.value,
+    unidade:i_unidade.value,
+    quantMax:i_qmax.value,
+    quantMin:i_qmin.value,
+    valorUnit:i_valor.value,
+    garantia:i_garantia.value
   };
 
   await fetch(API,{
     method:"POST",
-    body:JSON.stringify(obj)
+    body:JSON.stringify(data)
   });
 
-  alert("Item cadastrado!");
-  abrirItens(instAtual);
+  openItens(instAtual);
 }
 
-/* ==========================
-   IMPORTAR PLANILHA
-========================== */
-async function uploadPlanilha(){
-  let file = fileInput.files[0];
-  if(!file){ alert("Selecione um arquivo!"); return; }
+/* ================================
+   IMPORTAÇÃO DE PLANILHA
+================================ */
+async function uploadSheet(ev){
+  const file = ev.target.files[0];
+  const reader = new FileReader();
 
-  let text = await file.text();
-  let linhas = text.split("\n").map(l => l.split(";"));
+  reader.onload = async function(){
+    let linhas = [];
+    const rows = reader.result.split(/\r?\n/);
 
-  let itens = linhas.map(l => ({
-    itemTR:l[0],
-    especificacao:l[1],
-    marca:l[2],
-    modelo:l[3],
-    unidade:l[4],
-    quantMax:l[5],
-    quantMin:l[6],
-    valorUnit:l[7],
-    garantia:l[8]
-  }));
+    for(let r of rows){
+      const cols = r.split(",");
+      if(cols.length<5) continue;
 
-  await fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"importarItens",
-      instCode:instAtual,
-      itens:itens
-    })
-  });
+      linhas.push({
+        itemTR:cols[0],
+        especificacao:cols[1],
+        marca:cols[2],
+        modelo:cols[3],
+        unidade:cols[4],
+        quantMax:cols[5],
+        quantMin:cols[6],
+        valorUnit:cols[7],
+        garantia:cols[8]
+      });
+    }
 
-  alert("Itens importados!");
-  fecharUpload();
-  abrirItens(instAtual);
+    await fetch(API,{
+      method:"POST",
+      body:JSON.stringify({
+        action:"importarItens",
+        instCode:instAtual,
+        itens:linhas
+      })
+    });
+
+    alert("Itens importados!");
+    openItens(instAtual);
+  };
+
+  reader.readAsText(file);
 }
 
-/* ==========================
-   PESQUISA
-========================== */
+/* ================================
+   EXPORTAR EXCEL
+================================ */
+async function exportarExcel(id){
+  const req = await fetch(API+"?action=exportar&code="+id);
+  const js = await req.json();
+  window.open(js.url,"_blank");
+}
+
+/* ================================
+   GERAR PDF
+================================ */
+async function gerarPDF(id){
+  const req = await fetch(API+"?action=pdf&code="+id);
+  const js = await req.json();
+
+  const link = document.createElement("a");
+  link.href = "data:application/pdf;base64,"+js.pdf;
+  link.download = "Licitacao_"+id+".pdf";
+  link.click();
+}
+
+/* ================================
+   FILTRO E BUSCA
+================================ */
 searchBar.onkeyup = carregar;
 
-/* ==========================
-   INICIAR
-========================== */
-carregar();
-</script>
+document.querySelectorAll(".filtro").forEach(f=>{
+  f.onclick = ()=>{
+    document.querySelectorAll(".filtro").forEach(x=>x.classList.remove("ativo"));
+    f.classList.add("ativo");
+    carregar();
+  };
+});
 
+/* ================================
+   INICIAR
+================================ */
+carregar();
+
+</script>
 </body>
 </html>
