@@ -268,6 +268,15 @@ function moeda(v){
     minimumFractionDigits:2
   });
 }
+function moedaMoney(v){
+  if (!v && v !== 0) return "R$ 0,00";
+
+  let str = String(v).replace(',', '.');
+  const n = parseFloat(str);
+
+  return "R$ " + n.toFixed(4).replace('.', ',');
+}
+
 function dataBR(d){
   if(!d) return "-";
   const dt = new Date(d);
@@ -336,7 +345,11 @@ async function verItens(codigo, nome){
   let totalGeral = 0;
 
   j.itens.forEach(it=>{
-    totalGeral += it.total;
+    const valorUnit = parseFloat(String(it.valorUnit).replace(',', '.'));
+    const quantMin = Number(it.quantMin);
+    const totalItem = valorUnit * quantMin;
+
+    totalGeral += totalItem;
 
     tb.innerHTML += `
       <tr>
@@ -345,16 +358,17 @@ async function verItens(codigo, nome){
         <td>${it.unidade}</td>
         <td>${it.quantMax}</td>
         <td>${it.quantMin}</td>
-        <td>R$ ${moeda(it.valorUnit)}</td>
-        <td><b>R$ ${moeda(it.total)}</b></td>
+        <td>${moedaMoney(valorUnit)}</td>
+        <td><b>${moedaMoney(totalItem)}</b></td>
       </tr>
     `;
   });
 
-  $('#totalGeral').innerHTML = `TOTAL GERAL: R$ ${moeda(totalGeral)}`;
+  $('#totalGeral').innerHTML = `TOTAL GERAL: ${moedaMoney(totalGeral)}`;
 
   $('#modalItens').style.display = "flex";
 }
+
 
 function fecharModal(){ $('#modalItens').style.display = "none"; }
 
