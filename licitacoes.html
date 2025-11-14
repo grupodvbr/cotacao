@@ -464,7 +464,7 @@ function renderLista() {
 
         <div class="row">
           <div class="kv">Data: ${formatarDataBonita(l.dataSessaoBR) || '-'}</div>
-          <div class="kv">Valor: ${l.valorBR || '-'}</div>
+          <div class="kv">Valor: R$ ${formatarValorBR(l.valorBR)}</div>
           <div class="kv">Critério: ${l.criterio || '-'}</div>
           <div class="kv">Modo: ${l.modo || '-'}</div>
         </div>
@@ -915,6 +915,22 @@ $$('#filtros .chip').forEach(ch =>
     renderLista();
   })
 );
+
+function formatarValorBR(v) {
+  if (!v) return "-";
+
+  // garante número
+  let n = Number(v.toString().replace(/[^\d.-]/g, ''));
+  if (isNaN(n)) return "-";
+
+  // formata para padrão brasileiro
+  return n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+
+
+
+  
 
 /* ==========================
    FUNÇÃO FORMATO BONITO
