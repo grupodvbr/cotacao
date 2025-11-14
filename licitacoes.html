@@ -240,10 +240,9 @@ let editID = null;
 function mascaraValor(v){
   return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
 }
-function mascaraData(dt){
-  const d = new Date(dt);
-  if(isNaN(d)) return "-";
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+
+function mascaraDataBR(str){
+  return str || "-"; // agora dataSessaoBR já vem pronta
 }
 
 /* RENDER */
@@ -261,7 +260,7 @@ function render(){
       <small>Código: ${l.codigo}</small>
 
       <div class="row">
-        <div><b>Data:</b> ${mascaraData(l.dataSessaoBR)}</div>
+        <div><b>Data:</b> ${mascaraDataBR(l.dataSessaoBR)}</div>
         <div><b>Valor:</b> R$ ${mascaraValor(l.valorBR)}</div>
         <div><b>Critério:</b> ${l.criterio}</div>
         <div><b>Modo:</b> ${l.modo}</div>
