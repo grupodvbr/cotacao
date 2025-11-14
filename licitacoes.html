@@ -553,12 +553,27 @@ function limpaFormLicit() {
   $('#selStatus').value = 'Pendente';
 }
 
+function limparValor(v) {
+  if (!v) return "";
+  return v
+    .replace("R$", "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .trim();
+}
+
+
+
+
+
+
+  
 function coletaFormLicit() {
   return {
     instCode: $('#selInstituicao').value,
     instituicao: $('#selInstituicao').selectedOptions[0]?.text || '',
     dataSessaoBR: $('#inpData').value.trim(),
-    valorBR: $('#inpValor').value.trim(),
+    valorBR: limparValor($('#inpValor').value),
     criterio: $('#inpCriterio').value.trim().toUpperCase(),
     modo: $('#inpModo').value.trim().toUpperCase(),
     status: $('#selStatus').value
@@ -632,8 +647,9 @@ function editarLicitacao(codigo) {
 
   $('#inpData').value = dataBR;
 
-  // 🔥 FORMATO DE DINHEIRO
-  $('#inpValor').value = l.valorBR || '';
+  // 🔥 FORMATO DE DINHEIRO AO EDITAR
+$('#inpValor').value = l.valorBR ? "R$ " + formatarValorBR(l.valorBR) : '';
+
 
   $('#inpCriterio').value = l.criterio || '';
   $('#inpModo').value = l.modo || '';
@@ -741,7 +757,7 @@ $('#btnSalvarItem').addEventListener('click', async () => {
     unidade: $('#itUnid').value.trim().toUpperCase(),
     quantMax: $('#itQmax').value.trim(),
     quantMin: $('#itQmin').value.trim(),
-    valorUnit: $('#itVlr').value.trim(),
+    valorUnit: limparValor($('#itVlr').value),
     garantia: $('#itGarant').value.trim().toUpperCase()
   };
 
@@ -974,6 +990,7 @@ $$('.modal').forEach(modal => {
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
+
 
 </script>
 
