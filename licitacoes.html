@@ -7,160 +7,134 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
 <style>
+/* Tema */
 :root{
-  --bg:#f3f5f8;
+  --bg:#eef2f5;
   --card:#ffffff;
   --azul:#0b1e39;
-  --muted:#6c7283;
+  --muted:#6d7785;
   --ok:#16a34a;
-  --shadow:0 10px 32px rgba(0,0,0,.12);
-  --radius:18px;
+  --shadow:0 14px 40px rgba(0,0,0,.08);
+  --radius:20px;
 }
 
 body{
+  margin:0;
+  padding:32px;
   background:var(--bg);
-  padding:40px 50px;
   font-family:"Inter",sans-serif;
   color:var(--azul);
 }
 
 /* Título */
 .titulo{
-  font-size:34px;
+  font-size:32px;
   font-weight:700;
-  margin-bottom:25px;
+  margin-bottom:24px;
 }
 
-/* Campo de busca */
-.topo{
-  margin-bottom:20px;
-}
+/* Input */
 .input{
-  width:360px;
+  width:350px;
   padding:14px;
   border-radius:14px;
-  border:1px solid #cfd4dc;
+  border:1px solid #d4d8de;
   font-size:15px;
-  background:#fff;
-  outline:none;
-  transition:.25s;
-}
-.input:focus{
-  border-color:var(--azul);
-  box-shadow:0 0 0 3px rgba(11,30,57,0.12);
 }
 
 /* Filtros */
 .filtros{
   display:flex;
-  gap:12px;
-  margin-bottom:25px;
+  gap:10px;
+  margin:20px 0;
   flex-wrap:wrap;
 }
+
 .chip{
-  padding:8px 20px;
+  padding:8px 16px;
   border-radius:999px;
-  border:1px solid #cfd4dc;
-  background:#ffffff;
-  font-size:14px;
+  border:1px solid #cfd4da;
+  background:#fff;
   cursor:pointer;
-  transition:.2s;
   font-weight:600;
-}
-.chip:hover{
-  background:#eaf0f6;
+  font-size:14px;
 }
 .chip.ativo{
   background:var(--azul);
-  color:#fff;
   border-color:var(--azul);
+  color:#fff;
 }
 
 /* GRID */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
-  gap:25px;
+  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+  gap:22px;
 }
 
-/* SKELETON */
+/* Skeleton */
 .skel{
-  height:200px;
-  background:#e0e3e7;
+  background:#dfe3e8;
+  height:210px;
   border-radius:var(--radius);
   animation:pulse 1.4s infinite alternate;
 }
-@keyframes pulse{
-  from{opacity:.5;} to{opacity:1;}
-}
+@keyframes pulse{from{opacity:.6;}to{opacity:1;}}
 
-/* CARDS */
+/* Card */
 .card{
   background:#fff;
-  padding:24px;
   border-radius:var(--radius);
+  padding:22px;
   box-shadow:var(--shadow);
-  transition:.25s;
 }
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 12px 40px rgba(0,0,0,.15);
-}
-
 .card h3{
+  margin:0 0 4px 0;
   font-size:19px;
-  margin-bottom:5px;
   font-weight:700;
 }
-
-small{
+.card small{
   color:var(--muted);
-  font-size:13px;
 }
 
-/* Informações */
 .row{
-  margin:14px 0;
+  margin-top:12px;
   display:flex;
   flex-direction:column;
   gap:6px;
-  color:#333;
-  font-size:15px;
 }
 
-/* BADGES */
 .badge{
   display:inline-block;
-  padding:7px 14px;
+  padding:8px 14px;
   border-radius:10px;
   font-size:12px;
+  margin-top:14px;
   font-weight:700;
 }
 
-.st-PENDENTE{background:#fff3c4;color:#8f6500;}
-.st-FUTURA{background:#dceafe;color:#1854b3;}
-.st-EM_ANDAMENTO{background:#fde59c;color:#946c00;}
-.st-FINALIZADA{background:#dcfce7;color:#187a42;}
-.st-SUSPENSA{background:#ffd6dc;color:#b61d35;}
+.st-Pendente{background:#fff3cd;color:#8a6d1d;}
+.st-Futura{background:#dceafe;color:#1854b3;}
+.st-Em_andamento{background:#ffe6a3;color:#7e5b00;}
+.st-Finalizada{background:#dcfce7;color:#1f7a47;}
+.st-Suspensa{background:#ffccd5;color:#97233a;}
 
-/* BOTÃO EDITAR */
 .btn{
   margin-top:16px;
-  padding:11px 18px;
-  border-radius:12px;
+  width:100%;
+  padding:12px;
   border:none;
-  cursor:pointer;
-  color:#fff;
+  border-radius:12px;
   background:var(--azul);
-  font-size:14px;
+  color:white;
+  font-size:15px;
   font-weight:600;
-  transition:.25s;
+  cursor:pointer;
+  transition:.2s;
 }
-.btn:hover{
-  opacity:.9;
-}
+.btn:hover{opacity:.85;}
 
-/* MODAL */
+/* MODAL ITENS */
 .modal{
   position:fixed;
   inset:0;
@@ -168,50 +142,60 @@ small{
   display:none;
   justify-content:center;
   align-items:center;
-  z-index:20;
+  padding:20px;
 }
-.modal .box{
-  width:440px;
+
+.modal-box{
+  width:750px;
+  max-height:90vh;
+  overflow-y:auto;
   background:#fff;
-  padding:26px;
-  border-radius:16px;
-  box-shadow:var(--shadow);
-  animation:fade .25s ease;
+  border-radius:18px;
+  padding:24px;
+  animation:zoom .25s;
 }
-@keyframes fade{
+@keyframes zoom{
   from{opacity:0;transform:scale(.95);}
   to{opacity:1;transform:scale(1);}
 }
 
-.field{margin-bottom:18px;}
-label{font-size:12px;font-weight:600;color:var(--muted);}
-input,select{
-  width:100%;padding:12px;
-  border:1px solid #cfd4dc;border-radius:12px;margin-top:5px;
+.modal h2{
+  margin-top:0;
+  font-size:22px;
+  color:var(--azul);
 }
-.btn-save{
-  width:100%;padding:14px;
-  background:var(--ok);border:none;border-radius:12px;
-  color:#fff;font-weight:700;font-size:15px;margin-top:10px;
+
+/* tabela */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:18px;
 }
+th,td{
+  border-bottom:1px solid #e7e7e7;
+  padding:10px;
+  font-size:14px;
+}
+th{
+  background:#f4f6f8;
+  font-weight:600;
+}
+
 </style>
 </head>
-
 <body>
 
 <div class="titulo">LICITAR • Licitações</div>
 
-<div class="topo">
-  <input id="busca" class="input" placeholder="🔎 BUSCAR LICITAÇÃO">
-</div>
+<input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO">
 
 <div class="filtros" id="filtros">
   <div class="chip ativo" data-status="TODOS">Todos</div>
-  <div class="chip" data-status="PENDENTE">Pendente</div>
-  <div class="chip" data-status="FUTURA">Futura</div>
-  <div class="chip" data-status="EM ANDAMENTO">Em andamento</div>
-  <div class="chip" data-status="FINALIZADA">Finalizada</div>
-  <div class="chip" data-status="SUSPENSA">Suspensa</div>
+  <div class="chip" data-status="Pendente">Pendente</div>
+  <div class="chip" data-status="Futura">Futura</div>
+  <div class="chip" data-status="Em andamento">Em andamento</div>
+  <div class="chip" data-status="Finalizada">Finalizada</div>
+  <div class="chip" data-status="Suspensa">Suspensa</div>
 </div>
 
 <div class="grid" id="lista">
@@ -220,8 +204,16 @@ input,select{
   <div class="skel"></div>
 </div>
 
+<!-- MODAL ITENS -->
+<div class="modal" id="modalItens">
+  <div class="modal-box">
+    <h2 id="tituloItens">Itens da Licitação</h2>
+    <div id="tabelaItens">Carregando...</div>
+  </div>
+</div>
+
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwFVk0kmZm0rhthqtVBufO-l0b5dQGHcFvsH4Ke5On3vgXnNZ8sgpgXS_a7vq1XvV4i/exec";
+const API = "https://script.google.com/macros/s/AKfycbxxmYYo5IuDKFu_QmQl7wXk-XMDTKukziOIgyBrHWSVdvqmT7D5Y_nImOv1CAIGoiPC/exec";
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -230,27 +222,26 @@ let licitacoes = [];
 let filtro = "TODOS";
 let busca = "";
 
-/* FORMATAÇÕES */
+/* ------------ FORMATOS ------------ */
 function mascaraValor(v){
   return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
 }
-function mascaraData(v){ return v || "-"; }
+function mascaraData(d){
+  const dt = new Date(d);
+  if(isNaN(dt)) return d;
+  return `${String(dt.getDate()).padStart(2,"0")}/${String(dt.getMonth()+1).padStart(2,"0")}/${dt.getFullYear()}`;
+}
 
-/* RENDERIZAÇÃO */
+/* ------------ RENDER ------------ */
 function render(){
   const lista = $('#lista');
 
   const dados = licitacoes.filter(l =>
-    (filtro==="TODOS" || l.status === filtro) &&
+    (filtro === "TODOS" || l.status === filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
-  if(dados.length === 0){
-    lista.innerHTML = `<p style="color:#888;font-size:15px">Nenhuma licitação encontrada…</p>`;
-    return;
-  }
-
-  lista.innerHTML = dados.map(l=>`
+  lista.innerHTML = dados.map(l => `
     <div class="card">
       <h3>${l.instituicao}</h3>
       <small>Código: ${l.codigo}</small>
@@ -262,50 +253,83 @@ function render(){
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
 
-      <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
+      <div class="badge st-${l.status.replace(" ", "_")}">${l.status}</div>
 
-      <button class="btn" onclick="editar('${l.codigo}')">Editar</button>
+      <button class="btn" onclick="verItens('${l.codigo}','${l.instituicao}')">Ver Itens</button>
     </div>
   `).join('');
 }
 
-/* BUSCA */
+/* ------------ BUSCA ------------ */
 $('#busca').addEventListener('input', e=>{
   busca = e.target.value;
   render();
 });
 
-/* FILTROS */
-$$('#filtros .chip').forEach(ch=>{
-  ch.addEventListener('click',()=>{
+/* ------------ FILTRO ------------ */
+$$('#filtros .chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
     $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
-    ch.classList.add('ativo');
-    filtro = ch.dataset.status;
+    chip.classList.add('ativo');
+    filtro = chip.dataset.status;
     render();
   });
 });
 
-/* EDITAR – MODAL */
-function editar(codigo){
-  alert("Edição será implementada aqui (já está tudo pronto para integrar seu modal).");
+/* ------------ VER ITENS ------------ */
+async function verItens(codigo, nome){
+  $('#modalItens').style.display = "flex";
+  $('#tituloItens').innerHTML = `Itens da Licitação<br><small>${nome}</small>`;
+  $('#tabelaItens').innerHTML = "Carregando...";
+
+  const r = await fetch(`${API}?action=listItens&codigo=${codigo}`);
+  const j = await r.json();
+
+  if(!j.itens || j.itens.length === 0){
+    $('#tabelaItens').innerHTML = "<p>Nenhum item encontrado.</p>";
+    return;
+  }
+
+  const rows = j.itens.map(i=>`
+    <tr>
+      <td>${i.itemTR}</td>
+      <td>${i.especificacao}</td>
+      <td>${i.unidade}</td>
+      <td>${i.quantMax}</td>
+      <td>${i.quantMin}</td>
+      <td>${mascaraValor(i.valorUnit)}</td>
+    </tr>
+  `).join("");
+
+  $('#tabelaItens').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Item TR</th>
+          <th>Descrição</th>
+          <th>Unidade</th>
+          <th>Máx</th>
+          <th>Mín</th>
+          <th>Valor Unit.</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
 }
 
-/* CARREGAR */
+/* -------- FECHAR MODAL -------- */
+$('#modalItens').addEventListener('click',e=>{
+  if(e.target === e.currentTarget){
+    e.currentTarget.style.display = "none";
+  }
+});
+
+/* ------------ CARREGAR ------------ */
 async function carregar(){
-  $('#lista').innerHTML = `
-    <div class="skel"></div>
-    <div class="skel"></div>
-    <div class="skel"></div>
-  `;
-
-  let res = await fetch(API + "?action=listLicitacoes");
-  let dados = await res.json();
-
-  licitacoes = dados.map(l => ({
-    ...l,
-    status: String(l.status).trim().toUpperCase()
-  }));
-
+  const r = await fetch(API+"?action=listLicitacoes");
+  const j = await r.json();
+  licitacoes = j.licitacoes || [];
   render();
 }
 
