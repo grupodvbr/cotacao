@@ -363,15 +363,18 @@ $$('#filtros .chip').forEach(ch=>{
   });
 });
 
-/* BUSCA NO MODAL */
+/* BUSCA NO MODAL — CORRIGIDO */
 $('#buscarItem').addEventListener('input', e=>{
   const termo = e.target.value.toUpperCase();
+
   const filtrado = itensModal.filter(i =>
-    i.especificacao.toUpperCase().includes(termo) ||
-    i.itemTR.toUpperCase().includes(termo)
+    String(i.especificacao).toUpperCase().includes(termo) ||
+    String(i.itemTR).toUpperCase().includes(termo)
   );
+
   renderItensTabela(filtrado);
 });
+
 
 /* VER ITENS */
 async function verItens(codigo,nome){
