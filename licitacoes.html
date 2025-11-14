@@ -13,12 +13,11 @@
   --bg:#f3f5f8;
   --card:#ffffff;
   --azul:#0b1e39;
-  --azul2:#193053;
   --muted:#6f7883;
-  --ok:#16a34a;
   --danger:#dc2626;
-  --radius:20px;
+  --radius:18px;
   --shadow:0 8px 26px rgba(0,0,0,.12);
+  --line:#e5e7eb;
 }
 
 /* BASE */
@@ -30,21 +29,17 @@ body{
   color:var(--azul);
 }
 
-/* Título */
+/* TÍTULO */
 .titulo{
   font-size:34px;
   font-weight:700;
   margin-bottom:22px;
 }
 
-/* Topo */
+/* BUSCA */
 .topo{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:24px;
+  margin-bottom:26px;
 }
-
 .input{
   width:360px;
   padding:14px;
@@ -54,14 +49,13 @@ body{
   font-size:15px;
 }
 
-/* Filtros */
+/* FILTROS */
 .filtros{
   display:flex;
   gap:12px;
-  margin-bottom:22px;
+  margin-bottom:24px;
   flex-wrap:wrap;
 }
-
 .chip{
   padding:10px 20px;
   border-radius:999px;
@@ -94,7 +88,7 @@ body{
 }
 @keyframes pulse{from{opacity:.5} to{opacity:1}}
 
-/* Cards */
+/* CARD */
 .card{
   background:var(--card);
   border-radius:var(--radius);
@@ -103,19 +97,12 @@ body{
   transition:.25s;
 }
 .card:hover{transform:translateY(-5px)}
-
 .card h3{
   font-size:20px;
-  margin-bottom:4px;
+  margin-bottom:6px;
 }
 
-.row{
-  margin:14px 0;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
+/* BADGE */
 .badge{
   padding:7px 14px;
   border-radius:10px;
@@ -130,6 +117,7 @@ body{
 .st-FINALIZADA{background:#dcfce7;color:#187a42;}
 .st-SUSPENSA{background:#ffd8de;color:#b61d35;}
 
+/* BOTÃO */
 .btn{
   padding:12px 18px;
   background:var(--azul);
@@ -142,6 +130,26 @@ body{
   margin-top:16px;
 }
 
+/* OVERLAY */
+#overlayLoad{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:300;
+}
+.loader{
+  border:6px solid #ddd;
+  border-top:6px solid var(--azul);
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{100%{transform:rotate(360deg);}}
+
 /* MODAL */
 .modal{
   position:fixed;
@@ -151,86 +159,90 @@ body{
   justify-content:center;
   align-items:flex-start;
   padding-top:40px;
-  z-index:99;
+  z-index:200;
 }
-
-.modal .box{
-  width:85%;
-  max-width:1100px;
+.box{
+  width:90%;
+  max-width:1200px;
   background:#fff;
   border-radius:18px;
-  padding:26px;
   box-shadow:var(--shadow);
-  animation:fade .22s ease;
-  max-height:84vh;
+  animation:fade .25s ease;
+  max-height:86vh;
+  display:flex;
+  flex-direction:column;
+}
+@keyframes fade{from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)}}
+
+/* CABEÇALHO FIXO */
+.modal-head{
+  padding:20px 26px;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:10;
+}
+
+/* BUSCA ITENS */
+.modal-search{
+  margin-top:12px;
+  padding:10px 14px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  width:260px;
+}
+
+/* CORPO DA TABELA */
+.modal-body{
+  padding:0 26px;
   overflow:auto;
 }
-@keyframes fade{from{opacity:0; transform:scale(.97)} to{opacity:1; transform:scale(1)}}
 
+/* FOOTER FIXO DO TOTAL */
+.modal-foot{
+  padding:18px 26px;
+  border-top:1px solid var(--line);
+  font-size:18px;
+  font-weight:700;
+  text-align:right;
+  background:#fff;
+  position:sticky;
+  bottom:0;
+  z-index:10;
+}
+
+/* TABELA */
 .table{
   width:100%;
   border-collapse:collapse;
-  margin-top:20px;
+  margin-top:16px;
 }
-
 .table th{
-  text-align:left;
   padding:12px;
   background:#f0f2f5;
   font-size:14px;
+  cursor:pointer;
 }
 .table td{
-  padding:10px 12px;
-  font-size:14px;
-  border-bottom:1px solid #e5e7eb;
-}
-
-.total{
-  text-align:right;
-  padding:20px 10px;
-  font-size:18px;
-  font-weight:700;
+  padding:10px;
+  border-bottom:1px solid #eee;
+  font-size:13.8px;
 }
 .closeBtn{
-  float:right;
-  font-size:15px;
-  cursor:pointer;
-  margin-bottom:8px;
   background:var(--danger);
   color:#fff;
-  padding:6px 12px;
-  border-radius:8px;
   border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
 }
-
-/* OVERLAY CARREGANDO ITENS */
-#overlayLoad{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:200;
-}
-
-.loader{
-  border:6px solid #ddd;
-  border-top:6px solid var(--azul);
-  border-radius:50%;
-  width:60px;
-  height:60px;
-  animation:spin .8s linear infinite;
-}
-@keyframes spin{100%{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- OVERLAY DE CARREGAMENTO -->
-<div id="overlayLoad">
-  <div class="loader"></div>
-</div>
+<!-- OVERLAY -->
+<div id="overlayLoad"><div class="loader"></div></div>
 
 <div class="titulo">LICITAR • Licitações</div>
 
@@ -248,39 +260,43 @@ body{
 </div>
 
 <div class="grid" id="lista">
-  <div class="skel"></div>
-  <div class="skel"></div>
-  <div class="skel"></div>
+  <div class="skel"></div><div class="skel"></div><div class="skel"></div>
 </div>
 
-<!-- MODAL ITENS -->
+<!-- MODAL -->
 <div class="modal" id="modalItens">
   <div class="box">
-    <button class="closeBtn" onclick="fecharModal()">Fechar</button>
-    <h2 id="tituloItens"></h2>
-    <h4 id="subItens" style="color:var(--muted); margin-top:-6px"></h4>
 
-    <table class="table" id="tbItens">
-      <thead>
-        <tr>
-          <th>Item TR</th>
-          <th>Descrição</th>
-          <th>Unid.</th>
-          <th>Máx</th>
-          <th>Mín</th>
-          <th>Valor Unit.</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="modal-head">
+      <button class="closeBtn" onclick="fecharModal()">Fechar</button>
+      <h2 id="tituloItens"></h2>
+      <h4 id="subItens" style="color:var(--muted); margin-top:-6px"></h4>
+      <input placeholder="Buscar item..." id="buscarItem" class="modal-search">
+    </div>
 
-    <div class="total" id="totalGeral"></div>
+    <div class="modal-body">
+      <table class="table" id="tbItens">
+        <thead>
+          <tr>
+            <th onclick="ordenar(0)">Item TR</th>
+            <th onclick="ordenar(1)">Descrição</th>
+            <th onclick="ordenar(2)">Unid.</th>
+            <th onclick="ordenar(3)">Máx</th>
+            <th onclick="ordenar(4)">Mín</th>
+            <th onclick="ordenar(5)">Valor Unit.</th>
+            <th onclick="ordenar(6)">Total</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="modal-foot" id="totalGeral"></div>
+
   </div>
 </div>
 
 <script>
-// COLOQUE AQUI A URL DO SEU WEB APP PUBLICADO
 const API = "https://script.google.com/macros/s/AKfycby2TxL0alp4ZeTzuLCVsn0WqNA8ZQ9cqOK5uWKOQecoQV2ccs1Ssib4KjwxAvaDdGXJ/exec";
 
 const $  = s => document.querySelector(s);
@@ -289,25 +305,22 @@ const $$ = s => [...document.querySelectorAll(s)];
 let licitacoes = [];
 let filtro = "TODOS";
 let busca  = "";
+let itensModal = [];
+let ordemAsc = true;
 
-/* FORMATOS */
-function moeda4(v){
-  return parseFloat(v).toFixed(4).replace('.', ',');
-}
-function moedaMoney(v){
-  return "R$ " + parseFloat(v).toFixed(4).replace('.', ',');
-}
-function dataBR(d){
-  if(!d) return "-";
-  const dt = new Date(d);
-  return dt.toLocaleDateString("pt-BR");
+/* FORMATAÇÃO */
+function formatMoney(v){
+  return "R$ " + Number(v).toLocaleString("pt-BR",{
+    minimumFractionDigits:4,
+    maximumFractionDigits:4
+  });
 }
 
-/* RENDER CARDS */
+/* LISTA */
 function render(){
   const lista = $('#lista');
   const dados = licitacoes.filter(l =>
-    (filtro === "TODOS" || l.status === filtro) &&
+    (filtro==="TODOS" || l.status === filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
@@ -322,8 +335,8 @@ function render(){
       <small><b>Código:</b> ${l.codigo}</small>
 
       <div class="row">
-        <div><b>Data:</b> ${dataBR(l.dataSessaoBR)}</div>
-        <div><b>Valor:</b> ${moedaMoney(l.valorBR)}</div>
+        <div><b>Data:</b> ${l.dataSessaoBR}</div>
+        <div><b>Valor:</b> ${formatMoney(l.valorBR)}</div>
         <div><b>Critério:</b> ${l.criterio}</div>
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
@@ -335,41 +348,62 @@ function render(){
   `).join('');
 }
 
-/* BUSCA */
+/* EVENTOS */
 $('#busca').addEventListener('input', e=>{
   busca = e.target.value;
   render();
 });
 
-/* FILTRO */
-$$('#filtros .chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
+$$('#filtros .chip').forEach(ch=>{
+  ch.addEventListener('click',()=>{
     $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
-    chip.classList.add('ativo');
-    filtro = chip.dataset.status;
+    ch.classList.add('ativo');
+    filtro = ch.dataset.status;
     render();
   });
 });
 
-/* VER ITENS */
-async function verItens(codigo, nome){
-  // overlay ligado
-  $('#overlayLoad').style.display = "flex";
+/* BUSCA NO MODAL */
+$('#buscarItem').addEventListener('input', e=>{
+  const termo = e.target.value.toUpperCase();
+  const filtrado = itensModal.filter(i =>
+    i.especificacao.toUpperCase().includes(termo) ||
+    i.itemTR.toUpperCase().includes(termo)
+  );
+  renderItensTabela(filtrado);
+});
 
-  $('#tituloItens').innerText = "Itens da Licitação";
-  $('#subItens').innerText   = nome;
+/* VER ITENS */
+async function verItens(codigo,nome){
+  $('#overlayLoad').style.display="flex";
+
+  $('#tituloItens').innerText="Itens da Licitação";
+  $('#subItens').innerText=nome;
 
   const r = await fetch(`${API}?action=getItens&codigo=${codigo}`);
   const j = await r.json();
 
+  itensModal = j.itens;
+  renderItensTabela(itensModal);
+
+  $('#overlayLoad').style.display="none";
+  $('#modalItens').style.display="flex";
+}
+
+function fecharModal(){
+  $('#modalItens').style.display="none";
+}
+
+/* RENDERIZAR ITENS */
+function renderItensTabela(lista){
   const tb = $('#tbItens tbody');
   tb.innerHTML = "";
 
   let totalGeral = 0;
 
-  j.itens.forEach(it=>{
-    const totalItem = it.valorUnit * it.quantMin;
-    totalGeral += totalItem;
+  lista.forEach(it=>{
+    const total = it.valorUnit * it.quantMin;
+    totalGeral += total;
 
     tb.innerHTML += `
       <tr>
@@ -378,38 +412,36 @@ async function verItens(codigo, nome){
         <td>${it.unidade}</td>
         <td>${it.quantMax}</td>
         <td>${it.quantMin}</td>
-        <td>${moedaMoney(it.valorUnit)}</td>
-        <td><b>${moedaMoney(totalItem)}</b></td>
+        <td>${formatMoney(it.valorUnit)}</td>
+        <td><b>${formatMoney(total)}</b></td>
       </tr>
     `;
   });
 
-  $('#totalGeral').innerHTML = `TOTAL GERAL: ${moedaMoney(totalGeral)}`;
-
-  // desliga overlay e abre modal
-  $('#overlayLoad').style.display = "none";
-  $('#modalItens').style.display  = "flex";
+  $('#totalGeral').innerHTML = `TOTAL: ${formatMoney(totalGeral)}`;
 }
 
-function fecharModal(){
-  $('#modalItens').style.display = "none";
+/* ORDENAR */
+function ordenar(indice){
+  ordemAsc = !ordemAsc;
+  itensModal.sort((a,b)=>{
+    const vA = Object.values(a)[indice];
+    const vB = Object.values(b)[indice];
+    if(typeof vA === "number") return ordemAsc ? vA-vB : vB-vA;
+    return ordemAsc 
+      ? String(vA).localeCompare(String(vB))
+      : String(vB).localeCompare(String(vA));
+  });
+  renderItensTabela(itensModal);
 }
 
-/* CARREGAR LISTA INICIAL */
+/* CARREGAR */
 async function carregar(){
-  $('#lista').innerHTML = `
-    <div class="skel"></div>
-    <div class="skel"></div>
-    <div class="skel"></div>
-  `;
-
   const r = await fetch(`${API}?action=listLicitacoes`);
   const j = await r.json();
-
   licitacoes = j;
   render();
 }
-
 carregar();
 </script>
 
