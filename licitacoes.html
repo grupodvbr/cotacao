@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>LICITAR • Painel de Licitações</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
-  --bg:#f4f6fa; --azul:#0b1e39; --azul2:#193055; --dourado:#c9a86c;
-  --card:#fff; --muted:#64748b; --ok:#16a34a; --danger:#dc2626;
+  --bg:#f4f6fa; --azul:#0b1e39; --azul2:#193055; --card:#fff;
+  --muted:#64748b; --ok:#16a34a; --danger:#dc2626; --warn:#b45309;
   --shadow:0 10px 28px rgba(0,0,0,.10); --radius:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
@@ -51,8 +51,10 @@ body{background:var(--bg);color:#0f172a;padding:28px}
 #overlay .box{background:#fff;padding:22px 26px;border-radius:12px;box-shadow:var(--shadow);font-weight:700;color:var(--azul)}
 
 /* Toast */
-.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:260px}
+.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:280px}
 .toast.ok{border-left-color:var(--ok)}
+.toast.warn{border-left-color:var(--warn)}
+.toast b{display:block;margin-bottom:2px}
 .toast small{display:block;color:#64748b}
 
 /* Modal base */
@@ -81,7 +83,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
   <div class="topo">
     <div class="titulo">LICITAR • Painel de Licitações</div>
     <div class="actions">
-      <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO">
+      <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
       <button class="btn btn-primary" id="btnNova">+ Nova Licitação</button>
     </div>
   </div>
@@ -115,10 +117,10 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
           </div>
           <div class="help">Escolha a empresa. Clique em “+” para cadastrar.</div>
         </div>
-        <div class="col-3 field"><label>DATA DA SESSÃO</label><input id="inpData" placeholder="DD/MM/AAAA" data-mask="date"></div>
-        <div class="col-3 field"><label>VALOR TOTAL</label><input id="inpValor" placeholder="R$ 0,00" data-mask="money"></div>
-        <div class="col-6 field"><label>CRITÉRIO DE JULGAMENTO</label><input id="inpCriterio" placeholder="MAIOR DESCONTO POR ITEM"></div>
-        <div class="col-6 field"><label>MODO DE DISPUTA</label><input id="inpModo" placeholder="ABERTO E FECHADO"></div>
+        <div class="col-3 field"><label>DATA DA SESSÃO</label><input id="inpData" placeholder="DD/MM/AAAA" data-mask="date" /></div>
+        <div class="col-3 field"><label>VALOR TOTAL</label><input id="inpValor" placeholder="R$ 0,00" data-mask="money" /></div>
+        <div class="col-6 field"><label>CRITÉRIO DE JULGAMENTO</label><input id="inpCriterio" placeholder="MAIOR DESCONTO POR ITEM" /></div>
+        <div class="col-6 field"><label>MODO DE DISPUTA</label><input id="inpModo" placeholder="ABERTO E FECHADO" /></div>
         <div class="col-6 field">
           <label>STATUS</label>
           <select id="selStatus">
@@ -138,9 +140,9 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
     <div class="content">
       <div class="header"><h3>Nova Empresa</h3><button class="close" data-close="#modalEmpresa">Fechar</button></div>
       <div class="grid-modal">
-        <div class="col-6 field"><label>RAZÃO SOCIAL</label><input id="empRazao" placeholder="RAZÃO SOCIAL"></div>
-        <div class="col-3 field"><label>CNPJ</label><input id="empCnpj" placeholder="00.000.000/0000-00"></div>
-        <div class="col-3 field"><label>UF</label><input id="empUf" placeholder="BA"></div>
+        <div class="col-6 field"><label>RAZÃO SOCIAL</label><input id="empRazao" placeholder="RAZÃO SOCIAL" /></div>
+        <div class="col-3 field"><label>CNPJ</label><input id="empCnpj" placeholder="00.000.000/0000-00" /></div>
+        <div class="col-3 field"><label>UF</label><input id="empUf" placeholder="BA" /></div>
         <div class="col-12"><button class="btn btn-primary" id="btnSalvarEmpresa">Salvar Empresa</button></div>
       </div>
     </div>
@@ -153,7 +155,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
       <div class="row" style="margin-bottom:10px">
         <button class="btn btn-ok" id="btnAddItem">+ Adicionar Item</button>
         <label class="btn btn-lite" for="inpImport">Importar Planilha</label>
-        <input type="file" id="inpImport" accept=".xlsx,.xls,.csv" style="display:none">
+        <input type="file" id="inpImport" accept=".xlsx,.xls,.csv" style="display:none" />
         <button class="btn btn-ghost" id="btnExportar">Exportar Excel</button>
         <button class="btn btn-ghost" id="btnPdf">Gerar PDF</button>
       </div>
@@ -168,15 +170,15 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
       </div>
       <!-- form rápido -->
       <div class="grid-modal" style="margin-top:12px">
-        <div class="col-2 field"><label>ITEM TR</label><input id="itTR"></div>
-        <div class="col-5 field"><label>ESPECIFICAÇÃO</label><input id="itEsp"></div>
-        <div class="col-2 field"><label>MARCA</label><input id="itMarca"></div>
-        <div class="col-3 field"><label>MODELO</label><input id="itModelo"></div>
-        <div class="col-2 field"><label>UNID</label><input id="itUnid"></div>
-        <div class="col-2 field"><label>QTD MÁX</label><input id="itQmax"></div>
-        <div class="col-2 field"><label>QTD MÍN</label><input id="itQmin"></div>
-        <div class="col-2 field"><label>VLR UNIT</label><input id="itVlr" data-mask="money"></div>
-        <div class="col-2 field"><label>GARANTIA</label><input id="itGarant"></div>
+        <div class="col-2 field"><label>ITEM TR</label><input id="itTR" /></div>
+        <div class="col-5 field"><label>ESPECIFICAÇÃO</label><input id="itEsp" /></div>
+        <div class="col-2 field"><label>MARCA</label><input id="itMarca" /></div>
+        <div class="col-3 field"><label>MODELO</label><input id="itModelo" /></div>
+        <div class="col-2 field"><label>UNID</label><input id="itUnid" /></div>
+        <div class="col-2 field"><label>QTD MÁX</label><input id="itQmax" /></div>
+        <div class="col-2 field"><label>QTD MÍN</label><input id="itQmin" /></div>
+        <div class="col-2 field"><label>VLR UNIT</label><input id="itVlr" data-mask="money" /></div>
+        <div class="col-2 field"><label>GARANTIA</label><input id="itGarant" /></div>
         <div class="col-12"><button class="btn btn-ok" id="btnSalvarItem">Salvar Item</button></div>
       </div>
     </div>
@@ -195,22 +197,23 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
 /* ==========================
    CONFIG / STATE
 ========================== */
-const API = "https://script.google.com/macros/s/AKfycbyLq13ywmyEqiOrY3Zyrzyives6gLxghvW1rBgqgDtMDA_PyahHUJK98aScUvNHikmu/exec";
+const API = "https://script.google.com/macros/s/AKfycbzdA7eRtGBdQdiWGxJ0xI_4_YjB1eMVr7U8uZ4iKH3t9HqeWumbgxph6RT2NAqt0vyr/exec"; // <<< troque por sua URL publicada
 const $ = sel => document.querySelector(sel), $$ = sel => [...document.querySelectorAll(sel)];
 const show = sel => ($(sel).style.display='flex'), hide = sel => ($(sel).style.display='none');
 let state = { filtro:'Todos', busca:'', empresas:[], licitacoes:[], licAtual:null, itens:[], preview:[] };
 
 /* ==========================
-   HELPERS
+   TOAST / OVERLAY / MASKS
 ========================== */
-function toast(msg, ok=false){
+function toast(title, msg='', kind='error'){
   const t = document.createElement('div');
-  t.className = 'toast ' + (ok?'ok':'');
-  t.innerHTML = `<b>${ok?'Sucesso':'Erro'}</b><small>${msg}</small>`;
+  t.className = 'toast ' + (kind==='ok'?'ok':kind==='warn'?'warn':'');
+  t.innerHTML = `<b>${title}</b>${msg?`<small>${msg}</small>`:''}`;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 4200);
+  setTimeout(()=>t.remove(), 6000);
 }
 function overlay(on){ $('#overlay').style.display = on?'flex':'none'; }
+
 function upperizeInputs(){ $$('input,select,textarea').forEach(el=>{
   el.addEventListener('input', ()=>{ if(getComputedStyle(el).textTransform==='uppercase') el.value = el.value.toUpperCase(); });
 }); }
@@ -229,23 +232,39 @@ function maskDate(el){
   else el.value = v;
 }
 function attachMasks(){
-  $$('input[data-mask="money"]').forEach(el=>{ el.addEventListener('input', ()=>maskMoney(el)); });
-  $$('input[data-mask="date"]').forEach(el=>{ el.addEventListener('input', ()=>maskDate(el)); });
+  $$('input[data-mask="money"]').forEach(el=> el.addEventListener('input', ()=>maskMoney(el)));
+  $$('input[data-mask="date"]').forEach(el=> el.addEventListener('input', ()=>maskDate(el)));
 }
+
+/* ==========================
+   FETCH helpers com erro claro
+========================== */
 async function apiGet(qs){
   const url = API + '?' + new URLSearchParams(qs).toString();
-  const r = await fetch(url, {method:'GET'});
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  const ct = r.headers.get('content-type')||'';
-  if(ct.includes('application/json')){ const j = await r.json(); if(j.error) throw new Error(j.error); return j; }
-  return {};
+  try{
+    const r = await fetch(url, {method:'GET'});
+    const text = await r.text(); // tenta decodificar mesmo em erro
+    let j;
+    try{ j = JSON.parse(text); }catch{ j = {raw:text}; }
+    if(!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText} • action=${qs.action} • url=${url} • detalhe=${j.error||j.raw||'sem detalhe'}`);
+    if(j.error) throw new Error(`action=${qs.action} • detalhe=${j.error}`);
+    return j;
+  }catch(e){
+    throw new Error(`GET falhou: ${e.message}`);
+  }
 }
 async function apiPost(body){
-  const r = await fetch(API, {method:'POST', body: JSON.stringify(body)});
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  const j = await r.json();
-  if(j.error) throw new Error(j.error);
-  return j;
+  const url = API;
+  try{
+    const r = await fetch(url, {method:'POST', body: JSON.stringify(body)});
+    const text = await r.text();
+    let j; try{ j = JSON.parse(text); }catch{ j = {raw:text}; }
+    if(!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText} • action=${body.action} • url=${url} • detalhe=${j.error||j.raw||'sem detalhe'}`);
+    if(j.error) throw new Error(`action=${body.action} • detalhe=${j.error}`);
+    return j;
+  }catch(e){
+    throw new Error(`POST falhou: ${e.message}`);
+  }
 }
 
 /* ==========================
@@ -254,7 +273,7 @@ async function apiPost(body){
 function renderLista(){
   const lista = $('#lista');
   const f = state.filtro, b = (state.busca||'').toUpperCase();
-  const dados = state.licitacoes.filter(l =>
+  const dados = (state.licitacoes||[]).filter(l =>
     (f==='Todos' || l.status===f) && (l.instituicao||'').toUpperCase().includes(b)
   );
   if(!dados.length){ lista.innerHTML = '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>'; return; }
@@ -266,7 +285,7 @@ function renderLista(){
       <small>Código: <b>${l.codigo}</b></small>
       <div class="row">
         <div class="kv">Data: ${l.dataSessaoBR||l.dataSessao||'-'}</div>
-        <div class="kv">Valor: ${l.valor||l.valorBR||'-'}</div>
+        <div class="kv">Valor: ${l.valorBR||l.valor||'-'}</div>
         <div class="kv">Critério: ${l.criterio||'-'}</div>
         <div class="kv">Modo: ${l.modo||'-'}</div>
       </div>
@@ -288,50 +307,58 @@ function renderLista(){
 async function carregarEmpresas(){
   try{
     const j = await apiGet({action:'listEmpresas'});
-    state.empresas = j.empresas||j||[];
+    state.empresas = j.empresas||[];
     const sel = $('#selInstituicao');
     sel.innerHTML = state.empresas.map(e=>`<option value="${e.codigo}">${e.nome}</option>`).join('');
-  }catch(e){ toast('Falha ao carregar empresas: '+e.message); }
+  }catch(e){ toast('Falha ao carregar empresas', e.message); }
 }
 async function carregarLicitacoes(){
   try{
     const j = await apiGet({action:'listLicitacoes'});
-    state.licitacoes = j.licitacoes||j||[];
+    state.licitacoes = j.licitacoes||[];
     renderLista();
   }catch(e){
-    $('#lista').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações.</div>';
-    toast('Falha ao carregar licitações: '+e.message);
+    $('#lista').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações. Veja o balão no canto direito.</div>';
+    toast('Falha ao carregar licitações', e.message);
   }
 }
 
 /* ==========================
-   EMPRESA (CRUD SIMPLES)
+   EMPRESA (CRUD)
 ========================== */
 $('#btnNovaEmpresa').addEventListener('click', ()=> show('#modalEmpresa'));
 $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
   const nome=$('#empRazao').value.trim().toUpperCase(),
-        cnpj=$('#empCnpj').value.trim(), uf=$('#empUf').value.trim().toUpperCase();
-  if(!nome){ toast('Informe a RAZÃO SOCIAL'); return; }
+        cnpj=$('#empCnpj').value.trim(),
+        uf=$('#empUf').value.trim().toUpperCase();
+  if(!nome){ toast('Dados incompletos','Informe a RAZÃO SOCIAL','warn'); return; }
   overlay(true);
   try{
     const j = await apiPost({action:'addEmpresa', nome, cnpj, uf});
-    toast('Empresa salva', true);
+    toast('Empresa salva', `Código: ${j.codigo}`, 'ok');
     hide('#modalEmpresa');
     await carregarEmpresas();
-    const sel = $('#selInstituicao');
-    const novo = (j.codigo||j.instCode);
-    if(novo) sel.value = novo;
-  }catch(e){ toast('Erro ao salvar empresa: '+e.message); }
+    // Seleciona a recém criada
+    if(j.codigo) $('#selInstituicao').value = j.codigo;
+  }catch(e){ toast('Erro ao salvar empresa', e.message); }
   finally{ overlay(false); }
 });
 
 /* ==========================
    LICITAÇÃO (ADD/EDIT/DELETE)
 ========================== */
-$('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); state.licAtual=null; $('#tituloModalLicitacao').innerText='Nova Licitação'; show('#modalLicitacao'); });
+$('#btnNova').addEventListener('click', ()=>{
+  limpaFormLicit();
+  $('#tituloModalLicitacao').innerText='Nova Licitação';
+  state.licAtual = null;
+  show('#modalLicitacao');
+});
 $('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 
-function limpaFormLicit(){ $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value=''; $('#inpModo').value=''; $('#selStatus').value='Pendente'; }
+function limpaFormLicit(){
+  $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value='';
+  $('#inpModo').value=''; $('#selStatus').value='Pendente';
+}
 function coletaFormLicit(){
   return {
     instCode: $('#selInstituicao').value,
@@ -345,18 +372,18 @@ function coletaFormLicit(){
 }
 async function salvarLicitacao(){
   const body = coletaFormLicit();
-  if(!body.instCode){ toast('Selecione a INSTITUIÇÃO'); return; }
+  if(!body.instCode){ toast('Selecione a INSTITUIÇÃO','Você precisa cadastrar/selecionar uma empresa','warn'); return; }
   overlay(true);
   try{
-    if(state.licAtual){ // update
+    if(state.licAtual){
       await apiPost({action:'updateLicitacao', codigo: state.licAtual, ...body});
-      toast('Licitação atualizada', true);
-    }else{ // add
-      await apiPost({action:'addLicitacao', ...body});
-      toast('Licitação criada', true);
+      toast('Licitação atualizada','', 'ok');
+    }else{
+      const j = await apiPost({action:'addLicitacao', ...body});
+      toast('Licitação criada', `Código: ${j.codigo}`, 'ok');
     }
     hide('#modalLicitacao'); state.licAtual=null; await carregarLicitacoes();
-  }catch(e){ toast('Erro ao salvar licitação: '+e.message); }
+  }catch(e){ toast('Erro ao salvar licitação', e.message); }
   finally{ overlay(false); }
 }
 function editarLicitacao(codigo){
@@ -366,7 +393,7 @@ function editarLicitacao(codigo){
   $('#tituloModalLicitacao').innerText='Editar Licitação';
   $('#selInstituicao').value = l.instCode;
   $('#inpData').value = (l.dataSessaoBR||l.dataSessao||'');
-  $('#inpValor').value = (l.valor||l.valorBR||'');
+  $('#inpValor').value = (l.valorBR||l.valor||'');
   $('#inpCriterio').value = l.criterio||'';
   $('#inpModo').value = l.modo||'';
   $('#selStatus').value = l.status||'Pendente';
@@ -377,9 +404,9 @@ async function excluirLicitacao(codigo){
   overlay(true);
   try{
     await apiPost({action:'deleteLicitacao', codigo});
-    toast('Licitação excluída', true);
+    toast('Licitação excluída','', 'ok');
     await carregarLicitacoes();
-  }catch(e){ toast('Erro ao excluir: '+e.message); }
+  }catch(e){ toast('Erro ao excluir', e.message); }
   finally{ overlay(false); }
 }
 
@@ -395,7 +422,7 @@ async function abrirItens(codigo){
 async function carregarItens(){
   try{
     const j = await apiGet({action:'listItens', codigo: state.licAtual});
-    state.itens = j.itens||j||[];
+    state.itens = j.itens||[];
     const tb = $('#tblItens tbody');
     tb.innerHTML = state.itens.map(i=>`
       <tr>
@@ -403,10 +430,10 @@ async function carregarItens(){
         <td>${i.modelo||''}</td><td>${i.unidade||''}</td>
         <td>${i.quantMax||''}</td><td>${i.quantMin||''}</td>
         <td>${i.valorUnit||''}</td><td>${i.garantia||''}</td>
-        <td></td>
+        <td><button class="btn btn-lite" disabled>Editar</button></td>
       </tr>
     `).join('');
-  }catch(e){ toast('Erro ao carregar itens: '+e.message); }
+  }catch(e){ toast('Erro ao carregar itens', e.message); }
 }
 $('#btnSalvarItem').addEventListener('click', async ()=>{
   const body = {
@@ -419,14 +446,14 @@ $('#btnSalvarItem').addEventListener('click', async ()=>{
     quantMax: $('#itQmax').value.trim(), quantMin: $('#itQmin').value.trim(),
     valorUnit: $('#itVlr').value.trim(), garantia: $('#itGarant').value.trim().toUpperCase()
   };
-  if(!body.itemTR){ toast('Informe o ITEM TR'); return; }
+  if(!body.itemTR){ toast('Informe o ITEM TR','', 'warn'); return; }
   overlay(true);
   try{
     await apiPost(body);
-    toast('Item adicionado', true);
+    toast('Item adicionado','', 'ok');
     ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant'].forEach(id=>$('#'+id).value='');
     await carregarItens();
-  }catch(e){ toast('Erro ao salvar item: '+e.message); }
+  }catch(e){ toast('Erro ao salvar item', e.message); }
   finally{ overlay(false); }
 });
 
@@ -438,7 +465,6 @@ $('#inpImport').addEventListener('change', async (ev)=>{
   const wb = XLSX.read(data, {type:'array'});
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-  // Mapeia colunas do seu modelo
   previewRows = rows.map(r=>({
     itemTR: (r['Item do TR']||r['ITEM TR']||r['ITEM']||'').toString(),
     especificacao: (r['Especificação']||r['ESPECIFICAÇÃO']||r['Especificacao']||'').toString(),
@@ -450,7 +476,6 @@ $('#inpImport').addEventListener('change', async (ev)=>{
     valorUnit: (r['Valor Unitário']||r['VALOR UNITARIO']||r['VLR UNIT']||'').toString(),
     garantia: (r['Prazo garantia ou validade']||r['GARANTIA']||'').toString()
   }));
-  // Prévia
   const tbl = $('#tblPreview');
   const cols = ['itemTR','especificacao','marca','modelo','unidade','quantMax','quantMin','valorUnit','garantia'];
   tbl.innerHTML =
@@ -463,22 +488,25 @@ $('#btnConfirmImport').addEventListener('click', async ()=>{
   overlay(true);
   try{
     await apiPost({action:'importItens', codigoLicitacao: state.licAtual, rows: previewRows});
-    toast('Itens importados', true);
-    hide('#modalPreview');
-    previewRows = [];
+    toast('Itens importados', `Total: ${previewRows.length}`, 'ok');
+    hide('#modalPreview'); previewRows = [];
     await carregarItens();
-  }catch(e){ toast('Erro ao importar: '+e.message); }
+  }catch(e){ toast('Erro ao importar', e.message); }
   finally{ overlay(false); }
 });
 
-/* Export / PDF via GET direto do GAS */
-function exportarItens(codigo){
-  // o seu GAS devolve o CSV diretamente — abrimos a própria rota:
-  window.open(API+'?action=exportItens&codigo='+encodeURIComponent(codigo),'_blank');
+/* Export / PDF */
+async function exportarItens(codigo){
+  try{
+    const j = await apiGet({action:'exportItens', codigo});
+    if(j.url) window.open(j.url, '_blank'); else toast('Exportação indisponível');
+  }catch(e){ toast('Erro ao exportar', e.message); }
 }
-function gerarPdf(codigo){
-  // idem para o PDF
-  window.open(API+'?action=gerarPdf&codigo='+encodeURIComponent(codigo),'_blank');
+async function gerarPdf(codigo){
+  try{
+    const j = await apiGet({action:'gerarPdf', codigo});
+    if(j.url) window.open(j.url, '_blank'); else toast('PDF indisponível');
+  }catch(e){ toast('Erro ao gerar PDF', e.message); }
 }
 
 /* ==========================
@@ -491,16 +519,21 @@ $$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
 }));
 upperizeInputs(); attachMasks();
 
-/* Fechar modais por atributo data-close */
+/* ==========================
+   Fechar modais pelo botão
+========================== */
 document.addEventListener('click', (e)=>{
-  const sel = e.target.getAttribute && e.target.getAttribute('data-close');
-  if(sel) hide(sel);
+  const target = e.target;
+  const sel = target.getAttribute && target.getAttribute('data-close');
+  if(sel){ hide(sel); }
 });
 
 /* ==========================
    Boot
 ========================== */
 (async function init(){
+  // checagem rápida de URL para ajudar debug
+  if(!API.includes('/exec')) toast('Atenção', 'Defina a URL do Apps Script (termina com /exec)', 'warn');
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
