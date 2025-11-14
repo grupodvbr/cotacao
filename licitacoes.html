@@ -90,12 +90,13 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
 
   <!-- Filtros -->
   <div class="filtros" id="filtros">
-    <div class="chip ativo" data-status="Todos">Todos</div>
-    <div class="chip" data-status="Pendente">Pendente</div>
-    <div class="chip" data-status="Futura">Futura</div>
-    <div class="chip" data-status="Em andamento">Em andamento</div>
-    <div class="chip" data-status="Finalizada">Finalizada</div>
-    <div class="chip" data-status="Suspensa">Suspensa</div>
+<div class="chip ativo" data-status="TODOS">Todos</div>
+<div class="chip" data-status="PENDENTE">Pendente</div>
+<div class="chip" data-status="FUTURA">Futura</div>
+<div class="chip" data-status="EM ANDAMENTO">Em andamento</div>
+<div class="chip" data-status="FINALIZADA">Finalizada</div>
+<div class="chip" data-status="SUSPENSA">Suspensa</div>
+
   </div>
 
   <!-- Lista -->
@@ -247,7 +248,12 @@ function maskDate(el){
   else el.value = v;
 }
 function attachMasks(){
-  $$('input[data-mask="money"]').forEach(el=> el.addEventListener('input', ()=>maskMoney(el)));
+  $$('input[data-mask="money"]').forEach(el=>{
+  el.addEventListener('input', ()=>{
+    if (!el.value.startsWith('R$ ')) maskMoney(el);
+  });
+});
+
   $$('input[data-mask="date"]').forEach(el=> el.addEventListener('input', ()=>maskDate(el)));
 }
 
@@ -293,14 +299,23 @@ function renderLista(){
   const lista = $('#lista');
   const f = state.filtro, b = (state.busca||'').toUpperCase();
   const dados = state.licitacoes.filter(l =>
-    (f==='Todos' || l.status===f) && (l.instituicao||'').toUpperCase().includes(b)
+    (f==='TODOS' || l.status === f) && (l.instituicao||'').toUpperCase().includes(b)
   );
   if(!dados.length){
     lista.innerHTML = '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>'; 
     return; 
   }
   lista.innerHTML = dados.map(l=>{
-    const stClass = 'st-' + l.status.replace(/ /g,'\\ ');
+    const statusUI = l.status
+  .toUpperCase()
+  .replace('PENDENTE','Pendente')
+  .replace('FUTURA','Futura')
+  .replace('EM ANDAMENTO','Em andamento')
+  .replace('FINALIZADA','Finalizada')
+  .replace('SUSPENSA','Suspensa');
+
+const stClass = 'st-' + statusUI.replace(/ /g,'\\ ');
+
     return `
     <div class="card">
       <h3>${l.instituicao}</h3>
@@ -311,7 +326,7 @@ function renderLista(){
         <div class="kv">Critério: ${l.criterio||'-'}</div>
         <div class="kv">Modo: ${l.modo||'-'}</div>
       </div>
-      <div class="status ${stClass}">${l.status}</div>
+      <div class="status ${stClass}">${statusUI}</div>
       <div class="card-actions">
         <button class="btn btn-ok" onclick="abrirItens('${l.codigo}')">Ver Itens</button>
         <button class="btn btn-lite" onclick="editarLicitacao('${l.codigo}')">Editar</button>
@@ -406,7 +421,19 @@ function editarLicitacao(codigo){
   $('#inpValor').value = (l.valorBR||l.valor||'');
   $('#inpCriterio').value = l.criterio||'';
   $('#inpModo').value = l.modo||'';
-  $('#selStatus').value = l.status||'Pendente';
+ const s = l.status.replace(/\s+/g,' ').trim().toUpperCase();
+
+const statusUI =
+  s === 'PENDENTE' ? 'Pendente' :
+  s === 'FUTURA' ? 'Futura' :
+  s === 'EM ANDAMENTO' ? 'Em andamento' :
+  s === 'FINALIZADA' ? 'Finalizada' :
+  s === 'SUSPENSA' ? 'Suspensa' :
+  'Pendente';
+
+$('#selStatus').value = statusUI;
+
+
   show('#modalLicitacao');
 }
 async function excluirLicitacao(codigo){
@@ -495,7 +522,24 @@ $('#btnConfirmImport').addEventListener('click', async ()=>{
   if(!previewRows.length){ hide('#modalPreview'); return; }
   overlay(true);
   try{
-    await apiPost({action:'importItens', codigoLicitacao: state.licAtual, rows: previewRows});
+    const rowsFixed = previewRows.map(r=>({
+  'Item do TR': r.itemTR,
+  'Especificação': r.especificacao,
+  'Marca': r.marca,
+  'Modelo': r.modelo,
+  'Unidade': r.unidade,
+  'Quantidade Máxima': r.quantMax,
+  'Quantidade Mínima': r.quantMin,
+  'Valor Unitário': r.valorUnit, 
+  'Prazo garantia ou validade': r.garantia,
+}));
+
+await apiPost({
+  action:'importItens',
+  codigoLicitacao: state.licAtual,
+  rows: rowsFixed
+});
+
     toast('Itens importados', '', 'ok');
     hide('#modalPreview'); previewRows = [];
     await carregarItens();
@@ -506,15 +550,25 @@ $('#btnConfirmImport').addEventListener('click', async ()=>{
 async function exportarItens(codigo){
   try{
     const j = await apiGet({action:'exportItens', codigo});
-    const url = j.url||j.link||j.download;
-    if(url) window.open(url, '_blank'); else toast('Exportação indisponível');
+    const url = j.url || j.link || j.download;
+    if (!url) return toast('Exportação indisponível');
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
   }catch(e){}
 }
+
 async function gerarPdf(codigo){
   try{
     const j = await apiGet({action:'gerarPdf', codigo});
     const url = j.url||j.link;
-    if(url) window.open(url, '_blank'); else toast('PDF indisponível');
+    if (!url) return toast('PDF indisponível');
+window.open(url, '_blank');
   }catch(e){}
 }
 
@@ -524,7 +578,8 @@ async function gerarPdf(codigo){
 $('#busca').addEventListener('input', e=>{ state.busca = e.target.value.toUpperCase(); renderLista(); });
 $$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
   $$('#filtros .chip').forEach(c=>c.classList.remove('ativo')); ch.classList.add('ativo');
-  state.filtro = ch.dataset.status; renderLista();
+  state.filtro = ch.dataset.status.toUpperCase();
+ renderLista();
 }));
 upperizeInputs(); attachMasks();
 
@@ -535,6 +590,8 @@ upperizeInputs(); attachMasks();
   // Primeiro tenta empresas; se falhar, o toast mostra a URL exata e possíveis causas
   await carregarEmpresas();
   await carregarLicitacoes();
+state.itens = [];
+
 })();
 </script>
 </body>
