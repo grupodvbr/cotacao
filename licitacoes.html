@@ -8,8 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
-  --bg:#f4f6fa; --azul:#0b1e39; --azul2:#193055; --card:#fff;
-  --muted:#64748b; --ok:#16a34a; --danger:#dc2626; --warn:#b45309;
+  --bg:#f4f6fa; --azul:#0b1e39; --azul2:#193055; --dourado:#c9a86c;
+  --card:#fff; --muted:#64748b; --ok:#16a34a; --danger:#dc2626; --warn:#b45309;
   --shadow:0 10px 28px rgba(0,0,0,.10); --radius:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
@@ -51,11 +51,11 @@ body{background:var(--bg);color:#0f172a;padding:28px}
 #overlay .box{background:#fff;padding:22px 26px;border-radius:12px;box-shadow:var(--shadow);font-weight:700;color:var(--azul)}
 
 /* Toast */
-.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:280px}
+.toast{position:fixed;right:16px;bottom:16px;z-index:99999;background:#fff;border-left:6px solid var(--danger);padding:12px 14px;border-radius:10px;box-shadow:var(--shadow);min-width:280px;max-width:420px}
 .toast.ok{border-left-color:var(--ok)}
 .toast.warn{border-left-color:var(--warn)}
 .toast b{display:block;margin-bottom:2px}
-.toast small{display:block;color:#64748b}
+.toast small{display:block;color:#64748b;white-space:pre-wrap;word-break:break-word}
 
 /* Modal base */
 .modal{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;z-index:9998;padding:16px}
@@ -100,6 +100,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
 
   <!-- Lista -->
   <div class="grid" id="lista">Carregando…</div>
+  <div id="erroTela" style="color:#b91c1c;margin-top:8px"></div>
 
   <!-- Modal Licitação -->
   <div class="modal" id="modalLicitacao">
@@ -197,23 +198,56 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
 /* ==========================
    CONFIG / STATE
 ========================== */
-const API = "https://script.google.com/macros/s/AKfycbzdA7eRtGBdQdiWGxJ0xI_4_YjB1eMVr7U8uZ4iKH3t9HqeWumbgxph6RT2NAqt0vyr/exec"; // <<< troque por sua URL publicada
+// TROQUE AQUI pela URL do seu Web App do GAS (a mesma do botão "Abrir URL" da implantação)
+const API = "https://script.google.com/macros/s/AKfycbzdA7eRtGBdQdiWGxJ0xI_4_YjB1eMVr7U8uZ4iKH3t9HqeWumbgxph6RT2NAqt0vyr/exec";
+
 const $ = sel => document.querySelector(sel), $$ = sel => [...document.querySelectorAll(sel)];
 const show = sel => ($(sel).style.display='flex'), hide = sel => ($(sel).style.display='none');
 let state = { filtro:'Todos', busca:'', empresas:[], licitacoes:[], licAtual:null, itens:[], preview:[] };
 
 /* ==========================
-   TOAST / OVERLAY / MASKS
+   TOAST + OVERLAY + ERROS
 ========================== */
-function toast(title, msg='', kind='error'){
+function toast(titulo, msg='', tipo='erro'){
   const t = document.createElement('div');
-  t.className = 'toast ' + (kind==='ok'?'ok':kind==='warn'?'warn':'');
-  t.innerHTML = `<b>${title}</b>${msg?`<small>${msg}</small>`:''}`;
+  t.className = 'toast ' + (tipo==='ok'?'ok':tipo==='warn'?'warn':'');
+  t.innerHTML = `<b>${titulo}</b><small>${msg}</small>`;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 6000);
+  setTimeout(()=>t.remove(), 7000);
 }
 function overlay(on){ $('#overlay').style.display = on?'flex':'none'; }
 
+async function smartFetch(method, url, body){
+  try{
+    const opt = { method, headers: {}, redirect:'follow' };
+    if(method==='POST'){ opt.body = JSON.stringify(body||{}); }
+    const r = await fetch(url, opt);
+    const text = await r.text(); // tentamos ler sempre
+    let data = null;
+    try{ data = text ? JSON.parse(text) : null; }catch(_){}
+    if(!r.ok || (data && data.error)){
+      const msg = [
+        `Método: ${method}`,
+        `URL: ${url}`,
+        `HTTP: ${r.status} ${r.statusText||''}`,
+        data && data.error ? `Erro: ${data.error}` : (text ? `Corpo: ${text.slice(0,400)}` : '')
+      ].filter(Boolean).join('\n');
+      throw new Error(msg);
+    }
+    return data ?? {};
+  }catch(err){
+    // Falha de rede/CORS/etc
+    const dica = (String(err).includes('TypeError: Failed to fetch')||String(err).includes('Failed to fetch'))
+      ? '\nPossíveis causas: URL incorreta, app não implantado, versão desatualizada ou permissão do Web App (precisa “Qualquer pessoa”).'
+      : '';
+    const full = `${err.message||err}${dica}`;
+    throw new Error(full);
+  }
+}
+
+/* ==========================
+   HELPERS VISUAIS
+========================== */
 function upperizeInputs(){ $$('input,select,textarea').forEach(el=>{
   el.addEventListener('input', ()=>{ if(getComputedStyle(el).textTransform==='uppercase') el.value = el.value.toUpperCase(); });
 }); }
@@ -232,39 +266,19 @@ function maskDate(el){
   else el.value = v;
 }
 function attachMasks(){
-  $$('input[data-mask="money"]').forEach(el=> el.addEventListener('input', ()=>maskMoney(el)));
-  $$('input[data-mask="date"]').forEach(el=> el.addEventListener('input', ()=>maskDate(el)));
+  $$('input[data-mask="money"]').forEach(el=>{ el.addEventListener('input', ()=>maskMoney(el)); });
+  $$('input[data-mask="date"]').forEach(el=>{ el.addEventListener('input', ()=>maskDate(el)); });
 }
 
 /* ==========================
-   FETCH helpers com erro claro
+   API WRAPPERS (compatível com seu GAS)
 ========================== */
 async function apiGet(qs){
   const url = API + '?' + new URLSearchParams(qs).toString();
-  try{
-    const r = await fetch(url, {method:'GET'});
-    const text = await r.text(); // tenta decodificar mesmo em erro
-    let j;
-    try{ j = JSON.parse(text); }catch{ j = {raw:text}; }
-    if(!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText} • action=${qs.action} • url=${url} • detalhe=${j.error||j.raw||'sem detalhe'}`);
-    if(j.error) throw new Error(`action=${qs.action} • detalhe=${j.error}`);
-    return j;
-  }catch(e){
-    throw new Error(`GET falhou: ${e.message}`);
-  }
+  return smartFetch('GET', url);
 }
 async function apiPost(body){
-  const url = API;
-  try{
-    const r = await fetch(url, {method:'POST', body: JSON.stringify(body)});
-    const text = await r.text();
-    let j; try{ j = JSON.parse(text); }catch{ j = {raw:text}; }
-    if(!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText} • action=${body.action} • url=${url} • detalhe=${j.error||j.raw||'sem detalhe'}`);
-    if(j.error) throw new Error(`action=${body.action} • detalhe=${j.error}`);
-    return j;
-  }catch(e){
-    throw new Error(`POST falhou: ${e.message}`);
-  }
+  return smartFetch('POST', API, body);
 }
 
 /* ==========================
@@ -273,7 +287,7 @@ async function apiPost(body){
 function renderLista(){
   const lista = $('#lista');
   const f = state.filtro, b = (state.busca||'').toUpperCase();
-  const dados = (state.licitacoes||[]).filter(l =>
+  const dados = state.licitacoes.filter(l =>
     (f==='Todos' || l.status===f) && (l.instituicao||'').toUpperCase().includes(b)
   );
   if(!dados.length){ lista.innerHTML = '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>'; return; }
@@ -310,7 +324,10 @@ async function carregarEmpresas(){
     state.empresas = j.empresas||[];
     const sel = $('#selInstituicao');
     sel.innerHTML = state.empresas.map(e=>`<option value="${e.codigo}">${e.nome}</option>`).join('');
-  }catch(e){ toast('Falha ao carregar empresas', e.message); }
+  }catch(e){
+    $('#erroTela').textContent = 'Erro ao carregar empresas. Veja o balão no canto direito.';
+    toast('Falha ao carregar empresas', e.message);
+  }
 }
 async function carregarLicitacoes(){
   try{
@@ -318,7 +335,8 @@ async function carregarLicitacoes(){
     state.licitacoes = j.licitacoes||[];
     renderLista();
   }catch(e){
-    $('#lista').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações. Veja o balão no canto direito.</div>';
+    $('#lista').innerHTML = '';
+    $('#erroTela').textContent = 'Erro ao carregar licitações. Veja o balão no canto direito.';
     toast('Falha ao carregar licitações', e.message);
   }
 }
@@ -329,8 +347,7 @@ async function carregarLicitacoes(){
 $('#btnNovaEmpresa').addEventListener('click', ()=> show('#modalEmpresa'));
 $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
   const nome=$('#empRazao').value.trim().toUpperCase(),
-        cnpj=$('#empCnpj').value.trim(),
-        uf=$('#empUf').value.trim().toUpperCase();
+        cnpj=$('#empCnpj').value.trim(), uf=$('#empUf').value.trim().toUpperCase();
   if(!nome){ toast('Dados incompletos','Informe a RAZÃO SOCIAL','warn'); return; }
   overlay(true);
   try{
@@ -338,8 +355,8 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
     toast('Empresa salva', `Código: ${j.codigo}`, 'ok');
     hide('#modalEmpresa');
     await carregarEmpresas();
-    // Seleciona a recém criada
-    if(j.codigo) $('#selInstituicao').value = j.codigo;
+    const sel = $('#selInstituicao');
+    if(j.codigo) sel.value = j.codigo;
   }catch(e){ toast('Erro ao salvar empresa', e.message); }
   finally{ overlay(false); }
 });
@@ -347,18 +364,10 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
 /* ==========================
    LICITAÇÃO (ADD/EDIT/DELETE)
 ========================== */
-$('#btnNova').addEventListener('click', ()=>{
-  limpaFormLicit();
-  $('#tituloModalLicitacao').innerText='Nova Licitação';
-  state.licAtual = null;
-  show('#modalLicitacao');
-});
+$('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); $('#tituloModalLicitacao').innerText='Nova Licitação'; show('#modalLicitacao'); });
 $('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 
-function limpaFormLicit(){
-  $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value='';
-  $('#inpModo').value=''; $('#selStatus').value='Pendente';
-}
+function limpaFormLicit(){ $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value=''; $('#inpModo').value=''; $('#selStatus').value='Pendente'; }
 function coletaFormLicit(){
   return {
     instCode: $('#selInstituicao').value,
@@ -372,15 +381,15 @@ function coletaFormLicit(){
 }
 async function salvarLicitacao(){
   const body = coletaFormLicit();
-  if(!body.instCode){ toast('Selecione a INSTITUIÇÃO','Você precisa cadastrar/selecionar uma empresa','warn'); return; }
+  if(!body.instCode){ toast('Dados incompletos','Selecione a INSTITUIÇÃO','warn'); return; }
   overlay(true);
   try{
     if(state.licAtual){
       await apiPost({action:'updateLicitacao', codigo: state.licAtual, ...body});
       toast('Licitação atualizada','', 'ok');
     }else{
-      const j = await apiPost({action:'addLicitacao', ...body});
-      toast('Licitação criada', `Código: ${j.codigo}`, 'ok');
+      const r = await apiPost({action:'addLicitacao', ...body});
+      toast('Licitação criada', `Código: ${r.codigo}`, 'ok');
     }
     hide('#modalLicitacao'); state.licAtual=null; await carregarLicitacoes();
   }catch(e){ toast('Erro ao salvar licitação', e.message); }
@@ -431,8 +440,7 @@ async function carregarItens(){
         <td>${i.quantMax||''}</td><td>${i.quantMin||''}</td>
         <td>${i.valorUnit||''}</td><td>${i.garantia||''}</td>
         <td><button class="btn btn-lite" disabled>Editar</button></td>
-      </tr>
-    `).join('');
+      </tr>`).join('');
   }catch(e){ toast('Erro ao carregar itens', e.message); }
 }
 $('#btnSalvarItem').addEventListener('click', async ()=>{
@@ -487,53 +495,43 @@ $('#btnConfirmImport').addEventListener('click', async ()=>{
   if(!previewRows.length){ hide('#modalPreview'); return; }
   overlay(true);
   try{
-    await apiPost({action:'importItens', codigoLicitacao: state.licAtual, rows: previewRows});
-    toast('Itens importados', `Total: ${previewRows.length}`, 'ok');
+    const r = await apiPost({action:'importItens', codigoLicitacao: state.licAtual, rows: previewRows});
+    toast('Itens importados', `Total: ${r.total||previewRows.length}`, 'ok');
     hide('#modalPreview'); previewRows = [];
     await carregarItens();
   }catch(e){ toast('Erro ao importar', e.message); }
   finally{ overlay(false); }
 });
 
-/* Export / PDF */
+/* Export / PDF (links gerados pelo GAS) */
 async function exportarItens(codigo){
   try{
     const j = await apiGet({action:'exportItens', codigo});
-    if(j.url) window.open(j.url, '_blank'); else toast('Exportação indisponível');
+    if(j.url) window.open(j.url,'_blank'); else toast('Exportação indisponível');
   }catch(e){ toast('Erro ao exportar', e.message); }
 }
 async function gerarPdf(codigo){
   try{
     const j = await apiGet({action:'gerarPdf', codigo});
-    if(j.url) window.open(j.url, '_blank'); else toast('PDF indisponível');
+    if(j.url) window.open(j.url,'_blank'); else toast('PDF indisponível');
   }catch(e){ toast('Erro ao gerar PDF', e.message); }
 }
 
 /* ==========================
-   Busca / filtros / masks
+   Busca / filtros / masks / modais
 ========================== */
 $('#busca').addEventListener('input', e=>{ state.busca = e.target.value.toUpperCase(); renderLista(); });
 $$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
   $$('#filtros .chip').forEach(c=>c.classList.remove('ativo')); ch.classList.add('ativo');
   state.filtro = ch.dataset.status; renderLista();
 }));
+document.addEventListener('click', (ev)=>{ const sel=ev.target.getAttribute?.('data-close'); if(sel) hide(sel); });
 upperizeInputs(); attachMasks();
-
-/* ==========================
-   Fechar modais pelo botão
-========================== */
-document.addEventListener('click', (e)=>{
-  const target = e.target;
-  const sel = target.getAttribute && target.getAttribute('data-close');
-  if(sel){ hide(sel); }
-});
 
 /* ==========================
    Boot
 ========================== */
 (async function init(){
-  // checagem rápida de URL para ajudar debug
-  if(!API.includes('/exec')) toast('Atenção', 'Defina a URL do Apps Script (termina com /exec)', 'warn');
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
