@@ -508,13 +508,13 @@ async function carregarLicitacoes() {
 /* ==========================
    ABRIR POPUP
 ========================== */
-function abrirNovaLicitacao() {
-  window.open(
-    'novalicitacao.html',
-    'popupNovaLicitacao',
-    'width=980,height=700,top=50,left=50,scrollbars=yes'
-  );
+function abrirNovaLicitacao(){
+  state.licAtual = null;              // nova licitação
+  limpaFormLicit();                   // limpa o formulário
+  $('#tituloModalLicitacao').innerText = "Nova Licitação";
+  show('#modalLicitacao');            // abre o pop-up interno
 }
+
 /* ==========================
    EMPRESA (CRUD)
 ========================== */
@@ -603,7 +603,7 @@ async function salvarLicitacao() {
     overlay(false);
   }
 }
-
+$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 function editarLicitacao(codigo) {
   const l = state.licitacoes.find(x => x.codigo === codigo);
   if (!l) return;
@@ -862,6 +862,17 @@ $$('#filtros .chip').forEach(ch =>
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
+/* ==========================
+   FECHAR MODAIS
+========================== */
+
+$$('.close').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const sel = btn.dataset.close;
+    if (sel) hide(sel);
+  });
+});
+
 </script>
 
 </body>
