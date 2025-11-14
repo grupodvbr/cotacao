@@ -118,7 +118,7 @@ th{background:#f8fafc;position:sticky;top:0}
         <label>INSTITUIÇÃO</label>
         <div style="display:flex;gap:8px;align-items:center">
           <select id="selInstituicao" style="flex:1"></select>
-          <button class="btn btn-lite" onclick="abrirNovaEmpresa()">+</button>
+          <button class="btn btn-lite" id="btnNovaEmpresa">+</button>
         </div>
         <div class="help">Escolha a empresa. Clique em “+” para cadastrar.</div>
       </div>
@@ -494,24 +494,6 @@ async function carregarEmpresas() {
   } catch {}
 }
 
-async function abrirNovaEmpresa() {
-  show('#modalEmpresa');
-  const content = document.querySelector('#modalEmpresa .content');
-
-  overlay(true);
-
-  try {
-    const page = await fetch("novaempresa.html").then(r => r.text());
-    content.innerHTML = page;
-    attachMasks();
-  } catch (e) {
-    toast("Erro ao carregar empresa", e.message);
-  }
-
-  overlay(false);
-}
-
-
 async function carregarLicitacoes() {
   try {
     const j = await apiGet({ action: 'listLicitacoes' });
@@ -526,13 +508,13 @@ async function carregarLicitacoes() {
 /* ==========================
    ABRIR POPUP
 ========================== */
-function abrirNovaLicitacao(){
-  state.licAtual = null;              // nova licitação
-  limpaFormLicit();                   // limpa o formulário
-  $('#tituloModalLicitacao').innerText = "Nova Licitação";
-  show('#modalLicitacao');            // abre o pop-up interno
+function abrirNovaLicitacao() {
+  window.open(
+    'novalicitacao.html',
+    'popupNovaLicitacao',
+    'width=980,height=700,top=50,left=50,scrollbars=yes'
+  );
 }
-
 /* ==========================
    EMPRESA (CRUD)
 ========================== */
@@ -621,7 +603,7 @@ async function salvarLicitacao() {
     overlay(false);
   }
 }
-$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
+
 function editarLicitacao(codigo) {
   const l = state.licitacoes.find(x => x.codigo === codigo);
   if (!l) return;
@@ -880,49 +862,6 @@ $$('#filtros .chip').forEach(ch =>
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
-/* ==========================
-   FECHAR MODAIS
-========================== */
-
-$$('.close').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const sel = btn.dataset.close;
-    if (sel) hide(sel);
-  });
-});
-async function abrirNovaLicitacao() {
-  state.licAtual = null;
-
-  show('#modalLicitacao');
-  $('#tituloModalLicitacao').innerText = "Nova Licitação";
-
-  const container = document.querySelector('#modalLicitacao .grid-modal');
-
-  overlay(true);
-
-  try {
-    const page = await fetch("novalicitacao.html").then(r => r.text());
-
-    // insere o formulário DENTRO da grid sem remover o header
-    container.innerHTML = page;
-
-    // reativa máscaras
-    attachMasks();
-
-    // reativa botão SALVAR dentro do HTML carregado
-    const btn = document.querySelector('#btnSalvarLicitacao');
-    if (btn) {
-      btn.addEventListener('click', salvarLicitacao);
-    }
-
-  } catch (e) {
-    toast("Erro ao carregar formulário", e.message);
-  }
-
-  overlay(false);
-}
-
-
 </script>
 
 </body>
