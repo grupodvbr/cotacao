@@ -84,7 +84,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
     <div class="titulo">LICITAR • Painel de Licitações</div>
     <div class="actions">
       <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
-      <button class="btn btn-primary" id="btnNova">+ Nova Licitação</button>
+      <button class="btn btn-primary" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
     </div>
   </div>
 
@@ -378,11 +378,7 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
   }finally{ overlay(false); }
 });
 
-/* ==========================
-   LICITAÇÃO (ADD/EDIT/DEL)
-========================== */
-$('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); $('#tituloModalLicitacao').innerText='Nova Licitação'; state.licAtual=null; show('#modalLicitacao'); });
-$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
+
 
 function limpaFormLicit(){ $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value=''; $('#inpModo').value=''; $('#selStatus').value='Pendente'; }
 function coletaFormLicit(){
@@ -591,6 +587,11 @@ upperizeInputs(); attachMasks();
   await carregarEmpresas();
   await carregarLicitacoes();
 state.itens = [];
+function abrirNovaLicitacao(){
+  window.open('novalicitacao.html', 'popupNovaLicitacao',
+    'width=980,height=700,top=50,left=50,scrollbars=yes');
+}
+
 
 })();
 </script>
