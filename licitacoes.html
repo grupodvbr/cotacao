@@ -88,7 +88,7 @@ th{background:#f8fafc;position:sticky;top:0}
   <div class="titulo">LICITAR • Painel de Licitações</div>
   <div class="actions">
     <input id="busca" class="input" placeholder="BUSCAR LICITAÇÃO" />
-    <button class="btn btn-primary" onclick="abrirModalLicitacao()">+ Nova Licitação</button>
+    <button class="btn btn-primary" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
   </div>
 </div>
 
@@ -104,21 +104,13 @@ th{background:#f8fafc;position:sticky;top:0}
 
 <!-- Lista -->
 <div class="grid" id="lista">Carregando…</div>
-
-
-
-
-
-<!-- ================================
-     MODAL – LICITAÇÃO
-================================ -->
+<!-- Modal Licitação -->
 <div class="modal" id="modalLicitacao">
   <div class="content">
     <div class="header">
       <h3 id="tituloModalLicitacao">Nova Licitação</h3>
       <button class="close" data-close="#modalLicitacao">Fechar</button>
     </div>
-
     <div class="grid-modal">
 
       <div class="col-6 field">
@@ -127,27 +119,27 @@ th{background:#f8fafc;position:sticky;top:0}
           <select id="selInstituicao" style="flex:1"></select>
           <button class="btn btn-lite" id="btnNovaEmpresa">+</button>
         </div>
-        <div class="help">Clique em "+" para cadastrar empresa.</div>
+        <div class="help">Escolha a empresa. Clique em “+” para cadastrar.</div>
       </div>
 
       <div class="col-3 field">
         <label>DATA DA SESSÃO</label>
-        <input id="inpData" data-mask="date" placeholder="DD/MM/AAAA">
+        <input id="inpData" placeholder="DD/MM/AAAA" data-mask="date" />
       </div>
 
       <div class="col-3 field">
         <label>VALOR TOTAL</label>
-        <input id="inpValor" data-mask="money" placeholder="R$ 0,00">
+        <input id="inpValor" placeholder="R$ 0,00" data-mask="money" />
       </div>
 
       <div class="col-6 field">
-        <label>CRITÉRIO</label>
-        <input id="inpCriterio" placeholder="MENOR PREÇO GLOBAL">
+        <label>CRITÉRIO DE JULGAMENTO</label>
+        <input id="inpCriterio" placeholder="MAIOR DESCONTO POR ITEM" />
       </div>
 
       <div class="col-6 field">
-        <label>MODO</label>
-        <input id="inpModo" placeholder="ABERTO">
+        <label>MODO DE DISPUTA</label>
+        <input id="inpModo" placeholder="ABERTO E FECHADO" />
       </div>
 
       <div class="col-6 field">
@@ -161,60 +153,47 @@ th{background:#f8fafc;position:sticky;top:0}
         </select>
       </div>
 
-      <div class="col-12">
-        <button class="btn btn-primary" id="btnSalvarLicitacao">SALVAR</button>
+      <div class="col-12" style="margin-top:8px">
+        <button class="btn btn-primary" id="btnSalvarLicitacao">Salvar</button>
       </div>
 
     </div>
   </div>
 </div>
 
-
-
-
-
-<!-- ================================
-     MODAL – EMPRESA
-================================ -->
+<!-- Modal Empresa -->
 <div class="modal" id="modalEmpresa">
   <div class="content">
     <div class="header">
       <h3>Nova Empresa</h3>
       <button class="close" data-close="#modalEmpresa">Fechar</button>
     </div>
-
     <div class="grid-modal">
 
       <div class="col-6 field">
         <label>RAZÃO SOCIAL</label>
-        <input id="empRazao">
+        <input id="empRazao" placeholder="RAZÃO SOCIAL" />
       </div>
 
       <div class="col-3 field">
         <label>CNPJ</label>
-        <input id="empCnpj">
+        <input id="empCnpj" placeholder="00.000.000/0000-00" />
       </div>
 
       <div class="col-3 field">
         <label>UF</label>
-        <input id="empUf">
+        <input id="empUf" placeholder="BA" />
       </div>
 
       <div class="col-12">
-        <button class="btn btn-primary" id="btnSalvarEmpresa">SALVAR EMPRESA</button>
+        <button class="btn btn-primary" id="btnSalvarEmpresa">Salvar Empresa</button>
       </div>
 
     </div>
   </div>
 </div>
 
-
-
-
-
-<!-- ================================
-     MODAL – ITENS
-================================ -->
+<!-- Modal Itens -->
 <div class="modal" id="modalItens">
   <div class="content">
     <div class="header">
@@ -225,7 +204,7 @@ th{background:#f8fafc;position:sticky;top:0}
     <div class="row" style="margin-bottom:10px">
       <button class="btn btn-ok" id="btnAddItem">+ Adicionar Item</button>
       <label class="btn btn-lite" for="inpImport">Importar Planilha</label>
-      <input id="inpImport" type="file" accept=".xlsx,.csv,.xls" style="display:none">
+      <input type="file" id="inpImport" accept=".xlsx,.xls,.csv" style="display:none" />
       <button class="btn btn-ghost" id="btnExportar">Exportar Excel</button>
       <button class="btn btn-ghost" id="btnPdf">Gerar PDF</button>
     </div>
@@ -234,14 +213,14 @@ th{background:#f8fafc;position:sticky;top:0}
       <table id="tblItens">
         <thead>
           <tr>
-            <th>ITEM</th>
+            <th>ITEM TR</th>
             <th>ESPECIFICAÇÃO</th>
             <th>MARCA</th>
             <th>MODELO</th>
             <th>UNID</th>
-            <th>QTD MAX</th>
-            <th>QTD MIN</th>
-            <th>VALOR</th>
+            <th>QTD MÁX</th>
+            <th>QTD MÍN</th>
+            <th>VLR UNIT</th>
             <th>GARANTIA</th>
             <th>AÇÕES</th>
           </tr>
@@ -250,69 +229,62 @@ th{background:#f8fafc;position:sticky;top:0}
       </table>
     </div>
 
-    <div class="grid-modal" style="margin-top:10px">
+    <div class="grid-modal" style="margin-top:12px">
 
       <div class="col-2 field">
-        <label>ITEM</label>
-        <input id="itTR">
+        <label>ITEM TR</label>
+        <input id="itTR" />
       </div>
 
       <div class="col-5 field">
         <label>ESPECIFICAÇÃO</label>
-        <input id="itEsp">
+        <input id="itEsp" />
       </div>
 
       <div class="col-2 field">
         <label>MARCA</label>
-        <input id="itMarca">
+        <input id="itMarca" />
       </div>
 
       <div class="col-3 field">
         <label>MODELO</label>
-        <input id="itModelo">
+        <input id="itModelo" />
       </div>
 
       <div class="col-2 field">
-        <label>UNID.</label>
-        <input id="itUnid">
+        <label>UNID</label>
+        <input id="itUnid" />
       </div>
 
       <div class="col-2 field">
         <label>QTD MÁX</label>
-        <input id="itQmax">
+        <input id="itQmax" />
       </div>
 
       <div class="col-2 field">
-        <label>QTD MIN</label>
-        <input id="itQmin">
+        <label>QTD MÍN</label>
+        <input id="itQmin" />
       </div>
 
       <div class="col-2 field">
-        <label>VALOR</label>
-        <input id="itVlr" data-mask="money">
+        <label>VLR UNIT</label>
+        <input id="itVlr" data-mask="money" />
       </div>
 
       <div class="col-2 field">
         <label>GARANTIA</label>
-        <input id="itGarant">
+        <input id="itGarant" />
       </div>
 
       <div class="col-12">
-        <button id="btnSalvarItem" class="btn btn-ok">SALVAR ITEM</button>
+        <button class="btn btn-ok" id="btnSalvarItem">Salvar Item</button>
       </div>
 
     </div>
-
   </div>
 </div>
 
-
-
-
-
-<!-- ================================
-     MODAL – PRÉVIA IMPORTAÇÃO
-================================ -->
+<!-- Modal Prévia Importação -->
 <div class="modal" id="modalPreview">
   <div class="content">
     <div class="header">
@@ -325,423 +297,634 @@ th{background:#f8fafc;position:sticky;top:0}
     </div>
 
     <div class="row" style="margin-top:10px">
-      <button id="btnConfirmImport" class="btn btn-primary">Confirmar Importação</button>
+      <button class="btn btn-primary" id="btnConfirmImport">Confirmar Importação</button>
     </div>
   </div>
 </div>
 
-
-
-
-
-
-<!-- ================================
-     SCRIPT COMPLETO
-================================ -->
 <script>
+/* ==========================
+   CONFIG / STATE
+========================== */
+const DEFAULT_API =
+  "https://script.google.com/macros/s/AKfycbzLqY1HuUmjB5noK7ajeevm_YsVA30-y1Dv0_yBGZNbKr37_WTXfts68Q4H7R-D7UMJ/exec";
 
-const API = "SEU_WEBAPP_AQUI";  // <-- coloque o link do GAS
+const API = new URLSearchParams(location.search).get('api') || DEFAULT_API;
 
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-
-const show = s => $(s).style.display = "flex";
-const hide = s => $(s).style.display = "none";
+const $ = sel => document.querySelector(sel);
+const $$ = sel => [...document.querySelectorAll(sel)];
+const show = sel => ($(sel).style.display = 'flex');
+const hide = sel => ($(sel).style.display = 'none');
 
 let state = {
+  filtro: 'Todos',
+  busca: '',
   empresas: [],
   licitacoes: [],
   licAtual: null,
   itens: [],
-  editIndex: null,
-  preview: []
+  preview: [],
+  editIndex: null
 };
 
-
-
-/* =============================
-   TOAST
-=============================*/
-function toast(msg, det="", type="err") {
-  const t = document.createElement("div");
-  t.className = "toast" + (type==="ok"?" ok":type==="warn"?" warn":"");
-  t.innerHTML = `<b>${msg}</b>${det?`<small>${det}</small>`:""}`;
+/* ==========================
+   TOASTS / OVERLAY / MASKS
+========================== */
+function toast(title, details = '', type = 'err') {
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'ok' ? ' ok' : type === 'warn' ? ' warn' : '');
+  t.innerHTML = `<b>${title}</b>${details ? `<small>${details}</small>` : ''}`;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(),6000);
+  setTimeout(() => t.remove(), 6500);
 }
 
-
-
-/* =============================
-   MASKS
-=============================*/
-function maskMoney(el){
-  let v = el.value.replace(/[^\d]/g,"");
-  if(v===""){ el.value=""; return; }
-  v = v.padStart(3,"0");
-  el.value = "R$ " + v.slice(0,-2).replace(/\B(?=(\d{3})+(?!\d))/g,".") + "," + v.slice(-2);
+function overlay(on) {
+  $('#overlay').style.display = on ? 'flex' : 'none';
 }
 
-function maskDate(el){
-  let v = el.value.replace(/\D/g,"").slice(0,8);
-  if(v.length>=5) el.value = v.slice(0,2)+"/"+v.slice(2,4)+"/"+v.slice(4);
-  else if(v.length>=3) el.value = v.slice(0,2)+"/"+v.slice(2);
-  else el.value = v;
-}
-
-function attachMasks(){
-  $$('input[data-mask="money"]').forEach(el=>{
-    el.addEventListener("input",()=>maskMoney(el));
-  });
-  $$('input[data-mask="date"]').forEach(el=>{
-    el.addEventListener("input",()=>maskDate(el));
-  });
-}
-
-
-
-/* =============================
-   API HELPERS
-=============================*/
-async function apiGet(params){
-  const url = API + "?" + new URLSearchParams(params);
-  const r = await fetch(url);
-  return await r.json();
-}
-
-async function apiPost(body){
-  const r = await fetch(API,{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-  return await r.json();
-}
-
-
-
-/* =============================
-   EMPRESAS
-=============================*/
-async function carregarEmpresas(){
-  const j = await apiGet({action:"listEmpresas"});
-  state.empresas = j.empresas || [];
-  $("#selInstituicao").innerHTML =
-    state.empresas.map(e=>`<option value="${e.codigo}">${e.nome}</option>`).join("");
-}
-
-$("#btnNovaEmpresa").onclick = ()=> show("#modalEmpresa");
-
-$("#btnSalvarEmpresa").onclick = async()=>{
-  const nome = $("#empRazao").value.trim().toUpperCase();
-  if(!nome){ toast("Preencha a razão social"); return; }
-
-  const j = await apiPost({
-    action:"addEmpresa",
-    nome,
-    cnpj: $("#empCnpj").value,
-    uf: $("#empUf").value.toUpperCase()
-  });
-
-  toast("Empresa cadastrada!", "", "ok");
-  hide("#modalEmpresa");
-  await carregarEmpresas();
-};
-
-
-
-
-/* =============================
-   LICITAÇÕES
-=============================*/
-async function carregarLicitacoes(){
-  const j = await apiGet({action:"listLicitacoes"});
-  state.licitacoes = j.licitacoes || [];
-  renderLista();
-}
-
-function renderLista(){
-  const filtro = $("#busca").value.toUpperCase();
-  const list = $("#lista");
-
-  const dados = state.licitacoes.filter(l =>
-    l.instituicao.toUpperCase().includes(filtro)
-  );
-
-  if(!dados.length){
-    list.innerHTML = "<div style='grid-column:1/-1;color:#64748b'>Nenhuma licitação encontrada.</div>";
+function maskMoney(el) {
+  let v = el.value.replace(/[^\d]/g, '');
+  if (!v) {
+    el.value = '';
     return;
   }
 
-  list.innerHTML = dados.map(l=>{
-    const stUI = l.status;
-    const stClass = "st-" + stUI.replace(/ /g,"\\ ");
+  v = v.padStart(3, '0');
+  let cents = v.slice(-2);
+  let ints = v.slice(0, -2);
 
-    return `
+  ints = ints.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  el.value = `R$ ${ints},${cents}`;
+}
+
+function maskDate(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 8);
+  if (v.length >= 5) el.value = `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`;
+  else if (v.length >= 3) el.value = `${v.slice(0, 2)}/${v.slice(2)}`;
+  else el.value = v;
+}
+
+function attachMasks() {
+  $$('input[data-mask="money"]').forEach(el => {
+    el.addEventListener('input', () => maskMoney(el));
+  });
+
+  $$('input[data-mask="date"]').forEach(el =>
+    el.addEventListener('input', () => maskDate(el))
+  );
+}
+
+/* ==========================
+   API HELPERS
+========================== */
+async function apiGet(qs) {
+  const url = API + '?' + new URLSearchParams(qs).toString();
+
+  try {
+    const ctrl = new AbortController();
+    const tm = setTimeout(() => ctrl.abort(), 15000);
+
+    const r = await fetch(url, { method: 'GET', signal: ctrl.signal });
+    clearTimeout(tm);
+
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+
+    return j;
+  } catch (e) {
+    toast("Erro de comunicação", e.message, "warn");
+    throw e;
+  }
+}
+
+async function apiPost(body) {
+  try {
+    const ctrl = new AbortController();
+    const tm = setTimeout(() => ctrl.abort(), 20000);
+
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+
+    clearTimeout(tm);
+
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+
+    return j;
+  } catch (e) {
+    toast("Erro no envio", e.message, "warn");
+    throw e;
+  }
+}
+/* ==========================
+   RENDER LISTA
+========================== */
+function renderLista() {
+  const lista = $('#lista');
+
+  const filtro = state.filtro.toUpperCase();
+  const busca = state.busca.toUpperCase();
+
+  const dados = state.licitacoes.filter(l =>
+    (filtro === 'TODOS' || (l.status || '').toUpperCase() === filtro) &&
+    (l.instituicao || '').toUpperCase().includes(busca)
+  );
+
+  if (!dados.length) {
+    lista.innerHTML =
+      '<div style="grid-column:1/-1;color:#64748b">Nenhuma licitação encontrada.</div>';
+    return;
+  }
+
+  lista.innerHTML = dados
+    .map(l => {
+      const statusUI = l.status
+        .toUpperCase()
+        .replace('PENDENTE', 'Pendente')
+        .replace('FUTURA', 'Futura')
+        .replace('EM ANDAMENTO', 'Em andamento')
+        .replace('FINALIZADA', 'Finalizada')
+        .replace('SUSPENSA', 'Suspensa');
+
+      const stClass = 'st-' + statusUI.replace(/ /g, '\\ ');
+
+      return `
       <div class="card">
         <h3>${l.instituicao}</h3>
         <small>Código: <b>${l.codigo}</b></small>
 
         <div class="row">
-          <div class="kv">Data: ${l.dataSessaoBR}</div>
-          <div class="kv">Valor: ${l.valorBR}</div>
-          <div class="kv">Critério: ${l.criterio}</div>
-          <div class="kv">Modo: ${l.modo}</div>
+          <div class="kv">Data: ${formatarDataBonita(l.dataSessaoBR) || '-'}</div>
+          <div class="kv">Valor: ${l.valorBR || '-'}</div>
+          <div class="kv">Critério: ${l.criterio || '-'}</div>
+          <div class="kv">Modo: ${l.modo || '-'}</div>
         </div>
 
-        <div class="status ${stClass}">${stUI}</div>
+        <div class="status ${stClass}">${statusUI}</div>
 
         <div class="card-actions">
-          <button class="btn btn-ok" onclick="abrirItens('${l.codigo}')">Itens</button>
+          <button class="btn btn-ok" onclick="abrirItens('${l.codigo}')">Ver Itens</button>
           <button class="btn btn-lite" onclick="editarLicitacao('${l.codigo}')">Editar</button>
           <button class="btn btn-danger" onclick="excluirLicitacao('${l.codigo}')">Excluir</button>
         </div>
-      </div>
-    `;
-  }).join("");
+      </div>`;
+    })
+    .join('');
 }
 
+/* ==========================
+   CARREGAMENTO INICIAL
+========================== */
+async function carregarEmpresas() {
+  try {
+    const j = await apiGet({ action: 'listEmpresas' });
+    state.empresas = j.empresas || [];
 
-
-function abrirModalLicitacao(){
-  state.licAtual = null;
-  $("#tituloModalLicitacao").innerText = "Nova Licitação";
-  $("#inpData").value = "";
-  $("#inpValor").value = "";
-  $("#inpCriterio").value = "";
-  $("#inpModo").value = "";
-  $("#selStatus").value = "Pendente";
-  show("#modalLicitacao");
+    $('#selInstituicao').innerHTML =
+      state.empresas
+        .map(e => `<option value="${e.codigo}">${e.nome}</option>`)
+        .join('');
+  } catch (e) {
+    toast('Erro ao carregar empresas', e.message, 'warn');
+  }
 }
 
+async function carregarLicitacoes() {
+  try {
+    const j = await apiGet({ action:'listLicitacoes' });
+    state.licitacoes = j.licitacoes || [];
+    renderLista();
+  } catch (e) {
+    $('#lista').innerHTML =
+      '<div style="grid-column:1/-1;color:#b91c1c">Erro ao carregar licitações.</div>';
+  }
+}
 
-$("#btnSalvarLicitacao").onclick = async()=>{
+/* ==========================
+   EMPRESA (CRUD)
+========================== */
+$('#btnNovaEmpresa').addEventListener('click', () => show('#modalEmpresa'));
 
-  const body = {
-    instCode: $("#selInstituicao").value,
-    instituicao: $("#selInstituicao").selectedOptions[0].text,
-    dataSessaoBR: $("#inpData").value,
-    valorBR: $("#inpValor").value,
-    criterio: $("#inpCriterio").value.toUpperCase(),
-    modo: $("#inpModo").value.toUpperCase(),
-    status: $("#selStatus").value
-  };
+$('#btnSalvarEmpresa').addEventListener('click', async () => {
+  const nome = $('#empRazao').value.trim().toUpperCase();
+  const cnpj = $('#empCnpj').value.trim();
+  const uf = $('#empUf').value.trim().toUpperCase();
 
-  let r;
-  if(state.licAtual){
-    r = await apiPost({action:"updateLicitacao", codigo:state.licAtual, ...body});
-    toast("Licitação atualizada!", "", "ok");
-  }else{
-    r = await apiPost({action:"addLicitacao", ...body});
-    toast("Licitação criada!", `Código: ${r.codigo}`, "ok");
+  if (!nome) {
+    toast('Informe a RAZÃO SOCIAL');
+    return;
   }
 
-  hide("#modalLicitacao");
-  carregarLicitacoes();
-};
+  overlay(true);
+  try {
+    const j = await apiPost({
+      action: 'addEmpresa',
+      nome, cnpj, uf
+    });
 
+    toast('Empresa salva!', `Código: ${j.codigo}`, 'ok');
+    hide('#modalEmpresa');
 
-function editarLicitacao(codigo){
-  const l = state.licitacoes.find(x=>x.codigo===codigo);
-  if(!l) return;
+    await carregarEmpresas();
+    if (j.codigo) $('#selInstituicao').value = j.codigo;
+
+  } finally {
+    overlay(false);
+  }
+});
+
+/* ==========================
+   LICITAÇÃO — ADD / EDIT / DELETE
+========================== */
+function limpaFormLicit() {
+  $('#inpData').value = '';
+  $('#inpValor').value = '';
+  $('#inpCriterio').value = '';
+  $('#inpModo').value = '';
+  $('#selStatus').value = 'Pendente';
+}
+
+function coletaFormLicit() {
+  return {
+    instCode: $('#selInstituicao').value,
+    instituicao: $('#selInstituicao').selectedOptions[0]?.text || '',
+    dataSessaoBR: $('#inpData').value.trim(),
+    valorBR: $('#inpValor').value.trim(),
+    criterio: $('#inpCriterio').value.trim().toUpperCase(),
+    modo: $('#inpModo').value.trim().toUpperCase(),
+    status: $('#selStatus').value
+  };
+}
+
+async function salvarLicitacao() {
+  const body = coletaFormLicit();
+
+  if (!body.instCode) {
+    toast('Selecione a INSTITUIÇÃO');
+    return;
+  }
+
+  overlay(true);
+  try {
+    if (state.licAtual) {
+      await apiPost({ action:'updateLicitacao', codigo:state.licAtual, ...body });
+      toast('Licitação atualizada!', '', 'ok');
+    } else {
+      const r = await apiPost({ action:'addLicitacao', ...body });
+      toast('Licitação criada!', `Código: ${r.codigo}`, 'ok');
+    }
+
+    hide('#modalLicitacao');
+    state.licAtual = null;
+    await carregarLicitacoes();
+
+  } finally {
+    overlay(false);
+  }
+}
+
+function editarLicitacao(codigo) {
+  const l = state.licitacoes.find(x => x.codigo === codigo);
+  if (!l) return;
 
   state.licAtual = codigo;
 
-  $("#tituloModalLicitacao").innerText = "Editar Licitação";
-  $("#selInstituicao").value = l.instCode;
-  $("#inpData").value = l.dataSessaoBR;
-  $("#inpValor").value = l.valorBR;
-  $("#inpCriterio").value = l.criterio;
-  $("#inpModo").value = l.modo;
-  $("#selStatus").value = l.status;
+  $('#tituloModalLicitacao').innerText = 'Editar Licitação';
+  $('#selInstituicao').value = l.instCode;
 
-  show("#modalLicitacao");
+  $('#inpData').value = l.dataSessaoBR || '';
+  $('#inpValor').value = l.valorBR || '';
+  $('#inpCriterio').value = l.criterio || '';
+  $('#inpModo').value = l.modo || '';
+
+  const s = l.status.toUpperCase();
+  $('#selStatus').value =
+    s === 'PENDENTE' ? 'Pendente' :
+    s === 'FUTURA' ? 'Futura' :
+    s === 'EM ANDAMENTO' ? 'Em andamento' :
+    s === 'FINALIZADA' ? 'Finalizada' :
+    s === 'SUSPENSA' ? 'Suspensa' : 'Pendente';
+
+  show('#modalLicitacao');
 }
 
+async function excluirLicitacao(codigo) {
+  if (!confirm('Deseja excluir esta licitação?')) return;
 
-
-async function excluirLicitacao(codigo){
-  if(!confirm("Excluir licitação?")) return;
-  await apiPost({action:"deleteLicitacao", codigo});
-  toast("Licitação excluída!", "", "ok");
-  carregarLicitacoes();
+  overlay(true);
+  try {
+    await apiPost({ action:'deleteLicitacao', codigo });
+    toast('Licitação excluída!', '', 'ok');
+    await carregarLicitacoes();
+  } finally {
+    overlay(false);
+  }
 }
-
-
-
-
-/* =============================
-   ITENS
-=============================*/
-
-async function abrirItens(codigo){
+/* ==========================
+   ITENS DA LICITAÇÃO
+========================== */
+async function abrirItens(codigo) {
   state.licAtual = codigo;
-  $("#infoCodigo").innerText = "• " + codigo;
+  $('#infoCodigo').innerText = '• ' + codigo;
+
+  show('#modalItens');
   await carregarItens();
-  show("#modalItens");
 }
 
-async function carregarItens(){
-  const j = await apiGet({action:"listItens", codigo:state.licAtual});
-  state.itens = j.itens || [];
+async function carregarItens() {
+  try {
+    const j = await apiGet({ action:'listItens', codigo:state.licAtual });
+    state.itens = j.itens || [];
 
-  $("#tblItens tbody").innerHTML = state.itens.map((i, idx)=>`
-    <tr>
-      <td>${i.itemTR}</td>
-      <td>${i.especificacao}</td>
-      <td>${i.marca}</td>
-      <td>${i.modelo}</td>
-      <td>${i.unidade}</td>
-      <td>${i.quantMax}</td>
-      <td>${i.quantMin}</td>
-      <td>${i.valorUnit}</td>
-      <td>${i.garantia}</td>
-      <td>
-         <button class="btn btn-lite" onclick="editarItem(${idx})">Editar</button>
-      </td>
-    </tr>
-  `).join("");
+    const tb = $('#tblItens tbody');
+
+    tb.innerHTML = state.itens
+      .map((i, idx) => `
+        <tr>
+          <td>${i.itemTR || ''}</td>
+          <td>${i.especificacao || ''}</td>
+          <td>${i.marca || ''}</td>
+          <td>${i.modelo || ''}</td>
+          <td>${i.unidade || ''}</td>
+          <td>${i.quantMax || ''}</td>
+          <td>${i.quantMin || ''}</td>
+          <td>${i.valorUnit || ''}</td>
+          <td>${i.garantia || ''}</td>
+          <td>
+            <button class="btn btn-lite" onclick="editarItem(${idx})">Editar</button>
+          </td>
+        </tr>
+      `)
+      .join('');
+  } catch (e) {
+    toast("Erro ao carregar itens", e.message, "warn");
+  }
 }
 
-function editarItem(i){
-  const x = state.itens[i];
-  state.editIndex = i;
+/* ==========================
+   EDITAR ITEM
+========================== */
+function editarItem(index) {
+  const it = state.itens[index];
+  if (!it) return;
 
-  $("#itTR").value = x.itemTR;
-  $("#itEsp").value = x.especificacao;
-  $("#itMarca").value = x.marca;
-  $("#itModelo").value = x.modelo;
-  $("#itUnid").value = x.unidade;
-  $("#itQmax").value = x.quantMax;
-  $("#itQmin").value = x.quantMin;
-  $("#itVlr").value = x.valorUnit;
-  $("#itGarant").value = x.garantia;
+  $('#itTR').value     = it.itemTR || '';
+  $('#itEsp').value    = it.especificacao || '';
+  $('#itMarca').value  = it.marca || '';
+  $('#itModelo').value = it.modelo || '';
+  $('#itUnid').value   = it.unidade || '';
+  $('#itQmax').value   = it.quantMax || '';
+  $('#itQmin').value   = it.quantMin || '';
+  $('#itVlr').value    = it.valorUnit || '';
+  $('#itGarant').value = it.garantia || '';
 
-  toast("Editando item...", "", "warn");
+  state.editIndex = index;
+  toast("Editando item…", '', 'warn');
 }
 
-
-
-$("#btnSalvarItem").onclick = async()=>{
+/* ==========================
+   SALVAR ITEM (ADD / EDIT)
+========================== */
+$('#btnSalvarItem').addEventListener('click', async () => {
 
   const body = {
-    action: state.editIndex!=null ? "updateItem" : "addItem",
+    action: state.editIndex != null ? 'updateItem' : 'addItem',
     codigoLicitacao: state.licAtual,
     index: state.editIndex,
-    itemTR: $("#itTR").value,
-    especificacao: $("#itEsp").value.toUpperCase(),
-    marca: $("#itMarca").value,
-    modelo: $("#itModelo").value,
-    unidade: $("#itUnid").value,
-    quantMax: $("#itQmax").value,
-    quantMin: $("#itQmin").value,
-    valorUnit: $("#itVlr").value,
-    garantia: $("#itGarant").value
+    itemTR: $('#itTR').value.trim().toUpperCase(),
+    especificacao: $('#itEsp').value.trim().toUpperCase(),
+    marca: $('#itMarca').value.trim().toUpperCase(),
+    modelo: $('#itModelo').value.trim().toUpperCase(),
+    unidade: $('#itUnid').value.trim().toUpperCase(),
+    quantMax: $('#itQmax').value.trim(),
+    quantMin: $('#itQmin').value.trim(),
+    valorUnit: $('#itVlr').value.trim(),
+    garantia: $('#itGarant').value.trim().toUpperCase()
   };
 
-  await apiPost(body);
-  toast("Item salvo!", "", "ok");
-  state.editIndex = null;
+  if (!body.itemTR) {
+    toast("Informe o ITEM TR");
+    return;
+  }
 
-  ["itTR","itEsp","itMarca","itModelo","itUnid","itQmax","itQmin","itVlr","itGarant"]
-    .forEach(id=>$("#"+id).value="");
+  overlay(true);
+  try {
+    await apiPost(body);
+    toast("Item salvo!", "", "ok");
 
-  carregarItens();
-};
+    // limpar campos
+    ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant']
+      .forEach(id => $('#' + id).value = '');
 
+    state.editIndex = null;
 
+    await carregarItens();
 
+  } finally {
+    overlay(false);
+  }
+});
 
+/* ==========================
+   IMPORTAÇÃO DE PLANILHA
+========================== */
 
-/* =============================
-   IMPORTAÇÃO
-=============================*/
-$("#inpImport").onchange = async(ev)=>{
+let previewRows = [];
+
+$('#inpImport').addEventListener('change', async ev => {
   const file = ev.target.files[0];
+  if (!file) return;
+
   const data = await file.arrayBuffer();
-  const wb = XLSX.read(data,{type:"array"});
+  const wb = XLSX.read(data, { type:'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(ws,{defval:""});
+  const rows = XLSX.utils.sheet_to_json(ws, { defval:'' });
 
-  state.preview = rows;
-  montarPreview();
-  show("#modalPreview");
-};
+  previewRows = rows.map(r => ({
+    itemTR: (r['Item do TR'] || r['ITEM TR'] || '').toString(),
+    especificacao: (r['Especificação'] || r['ESPECIFICAÇÃO'] || '').toString(),
+    marca: (r['Marca'] || '').toString(),
+    modelo: (r['Modelo'] || '').toString(),
+    unidade: (r['Unidade'] || '').toString(),
+    quantMax: (r['Quantidade Máxima'] || '').toString(),
+    quantMin: (r['Quantidade Mínima'] || '').toString(),
+    valorUnit: (r['Valor Unitário'] || r['VALOR UNITARIO'] || '').toString(),
+    garantia: (r['Prazo garantia ou validade'] || '').toString()
+  }));
 
-function montarPreview(){
-  const cols = Object.keys(state.preview[0] || {});
-  $("#tblPreview").innerHTML =
-    "<thead><tr>"+cols.map(c=>`<th>${c}</th>`).join("")+"</tr></thead>" +
-    "<tbody>" +
-    state.preview.map(r=>"<tr>"+cols.map(c=>`<td>${r[c]}</td>`).join("")+"</tr>").join("") +
-    "</tbody>";
+  const tbl = $('#tblPreview');
+
+  const cols = [
+    'itemTR','especificacao','marca','modelo',
+    'unidade','quantMax','quantMin','valorUnit','garantia'
+  ];
+
+  tbl.innerHTML =
+    '<thead><tr>' +
+    cols.map(c => `<th>${c.toUpperCase()}</th>`).join('') +
+    '</tr></thead>' +
+    '<tbody>' +
+    previewRows.map(r =>
+      `<tr>${cols.map(c => `<td>${(r[c] || '').toUpperCase()}</td>`).join('')}</tr>`
+    ).join('') +
+    '</tbody>';
+
+  show('#modalPreview');
+});
+
+$('#btnConfirmImport').addEventListener('click', async () => {
+  if (!previewRows.length) { hide('#modalPreview'); return; }
+
+  overlay(true);
+  try {
+    const rowsFixed = previewRows.map(r => ({
+      'Item do TR': r.itemTR,
+      'Especificação': r.especificacao,
+      'Marca': r.marca,
+      'Modelo': r.modelo,
+      'Unidade': r.unidade,
+      'Quantidade Máxima': r.quantMax,
+      'Quantidade Mínima': r.quantMin,
+      'Valor Unitário': r.valorUnit,
+      'Prazo garantia ou validade': r.garantia
+    }));
+
+    await apiPost({
+      action: 'importItens',
+      codigoLicitacao: state.licAtual,
+      rows: rowsFixed
+    });
+
+    toast("Itens importados com sucesso!", "", "ok");
+    hide('#modalPreview');
+    previewRows = [];
+
+    await carregarItens();
+
+  } finally {
+    overlay(false);
+  }
+});
+
+/* ==========================
+   EXPORTAR CSV & PDF
+========================== */
+document.querySelector('#btnExportar').addEventListener('click', () => {
+  exportarItens(state.licAtual);
+});
+
+async function exportarItens(codigo) {
+  try {
+    const j = await apiGet({ action:'exportItens', codigo });
+    const url = j.url;
+
+    if (!url) {
+      toast("Erro ao gerar exportação");
+      return;
+    }
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+  } catch (e) {
+    toast("Erro ao exportar", e.message);
+  }
 }
 
-$("#btnConfirmImport").onclick = async()=>{
-  await apiPost({
-    action:"importItens",
-    codigoLicitacao:state.licAtual,
-    rows:state.preview
+document.querySelector('#btnPdf').addEventListener('click', () => {
+  gerarPdf(state.licAtual);
+});
+
+async function gerarPdf(codigo) {
+  try {
+    const j = await apiGet({ action:'gerarPdf', codigo });
+    const url = j.url;
+
+    if (!url) {
+      toast("Erro ao gerar PDF");
+      return;
+    }
+
+    window.open(url, '_blank');
+
+  } catch (e) {
+    toast("Erro ao gerar PDF", e.message);
+  }
+}
+/* ==========================
+   BUSCA / FILTROS
+========================== */
+$('#busca').addEventListener('input', e => {
+  state.busca = e.target.value.toUpperCase();
+  renderLista();
+});
+
+$$('#filtros .chip').forEach(ch =>
+  ch.addEventListener('click', () => {
+    $$('#filtros .chip').forEach(c => c.classList.remove('ativo'));
+    ch.classList.add('ativo');
+
+    state.filtro = ch.dataset.status.toUpperCase();
+    renderLista();
+  })
+);
+
+/* ==========================
+   FUNÇÃO FORMATO BONITO
+========================== */
+function formatarDataBonita(iso) {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  if (isNaN(d)) return '-';
+
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+
+  const hh = String(d.getHours()).padStart(2,'0');
+  const min = String(d.getMinutes()).padStart(2,'0');
+
+  return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+}
+
+/* ==========================
+   FECHAR MODAIS
+========================== */
+$$('.close').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.close;
+    if (target) hide(target);
   });
-
-  toast("Itens importados!", "", "ok");
-  hide("#modalPreview");
-  carregarItens();
-};
-
-
-
-/* =============================
-   EXPORTAÇÃO E PDF
-=============================*/
-$("#btnExportar").onclick = async()=>{
-  const j = await apiGet({action:"exportItens", codigo:state.licAtual});
-  if(!j.url){ toast("Não disponível"); return; }
-  window.open(j.url);
-};
-
-$("#btnPdf").onclick = async()=>{
-  const j = await apiGet({action:"gerarPdf", codigo:state.licAtual});
-  if(!j.url){ toast("Não disponível"); return; }
-  window.open(j.url);
-};
-
-
-
-
-
-/* =============================
-   FILTRO E BUSCA
-=============================*/
-$("#busca").oninput = ()=> renderLista();
-
-
-
-
-/* =============================
-   FECHAR MODAL
-=============================*/
-$$(".close").forEach(btn=>{
-  btn.onclick = ()=> hide(btn.dataset.close);
 });
 
-$$(".modal").forEach(md=>{
-  md.onclick = e=>{
-    if(e.target===md) hide("#"+md.id);
-  };
+$$('.modal').forEach(modal => {
+  modal.addEventListener('click', e => {
+    if (e.target === modal) hide('#' + modal.id);
+  });
 });
 
-
-
-
-/* =============================
-   INICIALIZAÇÃO
-=============================*/
-(async function init(){
+/* ==========================
+   INICIAR SISTEMA
+========================== */
+(async function init() {
   attachMasks();
   await carregarEmpresas();
   await carregarLicitacoes();
 })();
+
 </script>
 
 </body>
