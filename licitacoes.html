@@ -19,8 +19,11 @@
   --danger:#dc2626;
   --radius:20px;
   --shadow:0 8px 26px rgba(0,0,0,.12);
+
+  --overlay-bg:rgba(0,0,0,.55);
 }
 
+/* BASE */
 body{
   margin:0;
   padding:32px;
@@ -145,12 +148,12 @@ body{
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.55);
+  background:var(--overlay-bg);
   display:none;
   justify-content:center;
   align-items:flex-start;
   padding-top:40px;
-  z-index:99;
+  z-index:999;
 }
 
 .modal .box{
@@ -190,6 +193,7 @@ body{
   font-size:18px;
   font-weight:700;
 }
+
 .closeBtn{
   float:right;
   font-size:15px;
@@ -201,9 +205,35 @@ body{
   border-radius:8px;
   border:none;
 }
+
+/* OVERLAY LOADING */
+#overlayLoad{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.loader{
+  border:6px solid #ddd;
+  border-top:6px solid var(--azul);
+  border-radius:50%;
+  width:60px;
+  height:60px;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{100%{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+
+<!-- OVERLAY DE CARREGAMENTO -->
+<div id="overlayLoad">
+  <div class="loader"></div>
+</div>
 
 <div class="titulo">LICITAR • Licitações</div>
 
@@ -253,7 +283,8 @@ body{
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxXMPl-z812afJW96a2JFpO1WE-F3Fa0Q2lbDq5_f71U9QpKYqI_S41n6-U1F-1dWMy/exec"; // <<< TROCAR AQUI
+// TROCAR PARA SUA WEB APP FINAL
+const API = "https://script.google.com/macros/s/AKfycbzpAsKA9kzco9FwRboLCi2jOL4sMOX9hQtqehYn2cVthyirP7spXZc9ZMNS_pFX8LDg/exec";
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -262,24 +293,13 @@ let licitacoes = [];
 let filtro = "TODOS";
 let busca = "";
 
-/* FORMATOS */
-function moeda(v){
-  if (v === null || v === undefined || v === "") return "0,00";
-
-  let str = String(v).trim();
-  str = str.replace(',', '.'); // vírgula vira ponto
-  const num = parseFloat(str);
-
-  return num.toFixed(4).replace('.', ',');
+/* FORMATADORES */
+function moeda4(v){
+  return parseFloat(v).toFixed(4).replace('.', ',');
 }
 
 function moedaMoney(v){
-  if (!v && v !== 0) return "R$ 0,00";
-
-  let str = String(v).replace(',', '.');
-  const n = parseFloat(str);
-
-  return "R$ " + n.toFixed(4).replace('.', ',');
+  return "R$ " + parseFloat(v).toFixed(4).replace('.', ',');
 }
 
 function dataBR(d){
@@ -292,7 +312,7 @@ function dataBR(d){
 function render(){
   const lista = $('#lista');
   const dados = licitacoes.filter(l =>
-    (filtro==="TODOS" || l.status === filtro) &&
+    (filtro === "TODOS" || l.status === filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
@@ -308,7 +328,7 @@ function render(){
 
       <div class="row">
         <div><b>Data:</b> ${dataBR(l.dataSessaoBR)}</div>
-       <div><b>Valor:</b> ${moedaMoney(l.valorBR)}</div>
+        <div><b>Valor:</b> ${moedaMoney(l.valorBR)}</div>
         <div><b>Critério:</b> ${l.criterio}</div>
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
@@ -326,18 +346,21 @@ $('#busca').addEventListener('input', e=>{
   render();
 });
 
-/* FILTRO */
-$$('#filtros .chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
-    chip.classList.add('ativo');
-    filtro = chip.dataset.status;
+/* FILTROS */
+$$('#filtros .chip').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    filtro = btn.dataset.status;
     render();
   });
 });
 
 /* VER ITENS */
 async function verItens(codigo, nome){
+
+  $('#overlayLoad').style.display = "flex"; // overlay ON
+
   $('#tituloItens').innerText = "Itens da Licitação";
   $('#subItens').innerText = nome;
 
@@ -350,10 +373,7 @@ async function verItens(codigo, nome){
   let totalGeral = 0;
 
   j.itens.forEach(it=>{
-    const valorUnit = parseFloat(String(it.valorUnit).replace(',', '.'));
-    const quantMin = Number(it.quantMin);
-    const totalItem = valorUnit * quantMin;
-
+    const totalItem = it.valorUnit * it.quantMin;
     totalGeral += totalItem;
 
     tb.innerHTML += `
@@ -363,7 +383,7 @@ async function verItens(codigo, nome){
         <td>${it.unidade}</td>
         <td>${it.quantMax}</td>
         <td>${it.quantMin}</td>
-        <td>${moedaMoney(valorUnit)}</td>
+        <td>${moedaMoney(it.valorUnit)}</td>
         <td><b>${moedaMoney(totalItem)}</b></td>
       </tr>
     `;
@@ -371,13 +391,15 @@ async function verItens(codigo, nome){
 
   $('#totalGeral').innerHTML = `TOTAL GERAL: ${moedaMoney(totalGeral)}`;
 
+  $('#overlayLoad').style.display = "none"; // overlay OFF
   $('#modalItens').style.display = "flex";
 }
 
+function fecharModal(){
+  $('#modalItens').style.display = "none";
+}
 
-function fecharModal(){ $('#modalItens').style.display = "none"; }
-
-/* CARREGAR */
+/* CARREGAR LISTA */
 async function carregar(){
   $('#lista').innerHTML = `
     <div class="skel"></div>
