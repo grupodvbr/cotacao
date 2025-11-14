@@ -567,7 +567,6 @@ function coletaFormLicit() {
 
 async function salvarLicitacao() {
   const body = coletaFormLicit();
-
   if (!body.instCode) {
     toast('Selecione a INSTITUIÇÃO');
     return;
@@ -591,6 +590,9 @@ async function salvarLicitacao() {
     overlay(false);
   }
 }
+
+/* 👇 ESTA LINHA FALTAVA */
+$('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 
 function editarLicitacao(codigo) {
   const l = state.licitacoes.find(x => x.codigo === codigo);
