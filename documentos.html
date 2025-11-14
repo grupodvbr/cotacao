@@ -376,10 +376,13 @@ function mostrarPasta(id){
     } else {
       const thumb = gerarThumbnail(item.url,item.nome);
       html += `
-      <div class="item" onclick="abrirArquivo('${item.nome}','${item.url}')">
-        ${thumb}
-        <div class="itemNome">${item.nome}</div>
-      </div>`;
+      <div class="item"
+     draggable="true"
+     ondragstart="dragArquivo(event, '${item.nome}', '${item.url}')"
+     onclick="abrirArquivo('${item.nome}','${item.url}')">
+    ${thumb}
+    <div class="itemNome">${item.nome}</div>
+</div>`;
     }
   });
 
@@ -618,6 +621,33 @@ function pesquisar(){
 
   document.getElementById("breadcrumbs").innerHTML = "🔍 Resultados da busca global";
 }
+
+async function dragArquivo(ev, nome, url){
+  ev.preventDefault();
+
+  // Extrai ID do arquivo
+  let idMatch = url.match(/\/d\/(.*?)\//) || url.match(/id=(.*?)(&|$)/);
+  let fileId = idMatch ? (idMatch[1] || idMatch[2]) : null;
+
+  if (!fileId) return;
+
+  // Gera link de download direto
+  let downloadURL = "https://drive.google.com/uc?export=download&id=" + fileId;
+
+  // Baixa o arquivo como blob para poder arrastar
+  const response = await fetch(downloadURL);
+  const blob = await response.blob();
+  const file = new File([blob], nome, { type: blob.type });
+
+  // Anexa o arquivo real ao drag
+  ev.dataTransfer.clearData();
+  ev.dataTransfer.effectAllowed = "copy";
+  ev.dataTransfer.setData("DownloadURL", `${blob.type}:${nome}:${downloadURL}`);
+  ev.dataTransfer.items.add(file);
+
+  console.log("Arrastando arquivo:", nome);
+}
+
 
 
 </script>
