@@ -43,7 +43,7 @@ body{
 #topo{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-start;
   margin-bottom:25px;
 }
 
@@ -66,6 +66,7 @@ body{
   display:flex;
   gap:12px;
   margin-top:15px;
+  flex-wrap:wrap;
 }
 
 .filtro{
@@ -130,7 +131,7 @@ body{
 /* cores status */
 .st-Pendente{ background:#ffedcc; color:#b36b00; }
 .st-Futura{ background:#d5e8ff; color:#1d4e89; }
-.st-Emandamento{ background:#fff3bf; color:#8a6a00; }
+.st-Em.andamento{ background:#fff3bf; color:#8a6a00; }
 .st-Finalizada{ background:#d7f7cf; color:#2f7a27; }
 .st-Suspensa{ background:#ffd6d6; color:#a11a1a; }
 
@@ -146,15 +147,16 @@ body{
   font-weight:600;
   cursor:pointer;
   transition:0.2s;
+  margin-left:10px;
 }
 #btnNova:hover{
   background:var(--azul-claro);
 }
 
 /* ================================
-   MODAIS
+   MODAL CADASTRO
 ================================ */
-#modal,#modalEditar,#modalItens{
+#modal,#modalItens,#modalUpload{
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
@@ -186,6 +188,7 @@ body{
   margin-bottom:12px;
 }
 
+/* botão salvar */
 .btn{
   background:var(--azul);
   color:white;
@@ -200,6 +203,7 @@ body{
   background:var(--azul-claro);
 }
 
+/* lista itens */
 .item-row{
   background:white;
   padding:12px;
@@ -207,21 +211,6 @@ body{
   box-shadow:0 4px 10px rgba(0,0,0,0.1);
   margin-bottom:10px;
 }
-
-.item-actions{
-  display:flex;
-  gap:15px;
-  margin-top:8px;
-}
-
-.action{
-  cursor:pointer;
-  color:var(--azul);
-  font-size:14px;
-}
-
-.action.del{ color:#a11a1a; }
-
 </style>
 </head>
 
@@ -248,7 +237,9 @@ body{
 
 <div id="cards">Carregando...</div>
 
-<!-- =============== MODAL CADASTRO =============== -->
+<!-- ======================
+     MODAL CADASTRO
+====================== -->
 <div id="modal">
   <div class="modal-box">
     <h2>Nova Licitação</h2>
@@ -272,14 +263,16 @@ body{
   </div>
 </div>
 
-<!-- =============== MODAL ITENS =============== -->
+<!-- ======================
+     MODAL ITENS
+====================== -->
 <div id="modalItens">
   <div class="modal-box">
     <h2>Itens da Licitação</h2>
 
     <div id="listaItens">Carregando...</div>
 
-    <br><h3>Adicionar Item</h3>
+    <h3 style="margin-top:20px;">Adicionar Item</h3>
 
     <input id="itemTR" class="input" placeholder="Item TR">
     <input id="espec" class="input" placeholder="Especificação">
@@ -291,27 +284,45 @@ body{
     <input id="valorUnit" class="input" placeholder="Valor Unitário">
     <input id="garantia" class="input" placeholder="Garantia">
 
-    <button class="btn" onclick="addItem()">Adicionar Item</button>
+    <button class="btn" onclick="addItem()">Adicionar</button>
 
-    <h3>Importar Planilha de Itens</h3>
-    <input id="fileImport" type="file" accept=".csv,.xlsx">
+    <button class="btn" style="background:#555" onclick="abrirModalUpload()">Importar Itens por Planilha</button>
 
     <button class="btn" style="background:#ccc;color:#000" onclick="fecharItens()">Fechar</button>
+
   </div>
 </div>
+
+<!-- ======================
+     MODAL IMPORTAR PLANILHA
+====================== -->
+<div id="modalUpload">
+  <div class="modal-box">
+    <h2>Importar Itens</h2>
+
+    <input type="file" id="fileInput" class="input">
+
+    <button class="btn" onclick="uploadPlanilha()">Importar</button>
+    <button class="btn" style="background:#ccc;color:#000" onclick="fecharUpload()">Cancelar</button>
+  </div>
+</div>
+
+
 
 <script>
 /* ==========================
    CONFIG API
 ========================== */
-const API = "https://script.google.com/macros/s/AKfycbyGAQAMHUuNqgHiFDEIvX5AkXzZkwsxe1baHMaRd9-N-hxydrNX0GoDzVaY9QMEzMP4/exec";
+const API = "https://script.google.com/macros/s/AKfycbw_PXdiA-4MThYG72x6nFvmVjw03BgTjZWDEpCUWvFubOCTG_---ctT63PzdMSVo0LJ/exec";
 
 /* ==========================
-   ABRIR / FECHAR MODAIS
+   MODAIS
 ========================== */
 function abrirModal(){ modal.style.display="flex"; }
 function fecharModal(){ modal.style.display="none"; }
 function fecharItens(){ modalItens.style.display="none"; }
+function abrirModalUpload(){ modalUpload.style.display="flex"; }
+function fecharUpload(){ modalUpload.style.display="none"; }
 
 /* ==========================
    SALVAR LICITAÇÃO
@@ -327,11 +338,12 @@ async function salvarLicitacao(){
     status:status.value
   };
 
-  await fetch(API,{
+  const req = await fetch(API,{
     method:"POST",
     body:JSON.stringify(data)
   });
 
+  alert("Licitação cadastrada!");
   fecharModal();
   carregar();
 }
@@ -397,7 +409,7 @@ async function abrirItens(code){
 }
 
 /* ==========================
-   ADICIONAR ITEM
+   ADICIONAR ITEM MANUAL
 ========================== */
 async function addItem(){
   const obj = {
@@ -419,6 +431,43 @@ async function addItem(){
     body:JSON.stringify(obj)
   });
 
+  alert("Item cadastrado!");
+  abrirItens(instAtual);
+}
+
+/* ==========================
+   IMPORTAR PLANILHA
+========================== */
+async function uploadPlanilha(){
+  let file = fileInput.files[0];
+  if(!file){ alert("Selecione um arquivo!"); return; }
+
+  let text = await file.text();
+  let linhas = text.split("\n").map(l => l.split(";"));
+
+  let itens = linhas.map(l => ({
+    itemTR:l[0],
+    especificacao:l[1],
+    marca:l[2],
+    modelo:l[3],
+    unidade:l[4],
+    quantMax:l[5],
+    quantMin:l[6],
+    valorUnit:l[7],
+    garantia:l[8]
+  }));
+
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"importarItens",
+      instCode:instAtual,
+      itens:itens
+    })
+  });
+
+  alert("Itens importados!");
+  fecharUpload();
   abrirItens(instAtual);
 }
 
