@@ -272,30 +272,6 @@ body{
   </div>
 </div>
 
-<!-- =============== MODAL EDITAR LICITAÇÃO =============== -->
-<div id="modalEditar">
-  <div class="modal-box">
-    <h2>Editar Licitação</h2>
-
-    <input id="edit_inst" class="input" placeholder="Instituição">
-    <input id="edit_valor" class="input" placeholder="Valor Total da Contratação">
-    <input id="edit_data" class="input" placeholder="Data da Sessão Pública">
-    <input id="edit_criterio" class="input" placeholder="Critério de Julgamento">
-    <input id="edit_modo" class="input" placeholder="Modo de Disputa">
-
-    <select id="edit_status" class="input">
-      <option value="Pendente">Pendente</option>
-      <option value="Futura">Futura</option>
-      <option value="Em andamento">Em andamento</option>
-      <option value="Finalizada">Finalizada</option>
-      <option value="Suspensa">Suspensa</option>
-    </select>
-
-    <button class="btn" onclick="salvarEdicao()">Salvar Alterações</button>
-    <button class="btn" style="background:#ccc;color:#000" onclick="fecharEditar()">Cancelar</button>
-  </div>
-</div>
-
 <!-- =============== MODAL ITENS =============== -->
 <div id="modalItens">
   <div class="modal-box">
@@ -324,7 +300,138 @@ body{
   </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+/* ==========================
+   CONFIG API
+========================== */
+const API = "https://script.google.com/macros/s/AKfycbyGAQAMHUuNqgHiFDEIvX5AkXzZkwsxe1baHMaRd9-N-hxydrNX0GoDzVaY9QMEzMP4/exec";
+
+/* ==========================
+   ABRIR / FECHAR MODAIS
+========================== */
+function abrirModal(){ modal.style.display="flex"; }
+function fecharModal(){ modal.style.display="none"; }
+function fecharItens(){ modalItens.style.display="none"; }
+
+/* ==========================
+   SALVAR LICITAÇÃO
+========================== */
+async function salvarLicitacao(){
+  const data = {
+    action:"addLicitacao",
+    instituicao:inst.value,
+    valor:valor.value,
+    dataSessao:data.value,
+    criterio:criterio.value,
+    modo:modo.value,
+    status:status.value
+  };
+
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
+
+  fecharModal();
+  carregar();
+}
+
+/* ==========================
+   LISTAR LICITAÇÕES
+========================== */
+async function carregar(){
+  const req = await fetch(API+"?action=listar");
+  const dados = await req.json();
+
+  renderCards(dados);
+}
+
+function renderCards(lista){
+  const q = searchBar.value.toLowerCase();
+  const filtro = document.querySelector(".filtro.ativo").dataset.status;
+
+  const filtrados = lista.filter(l => 
+    (filtro==="todos" || l.status===filtro) &&
+    (l.instituicao.toLowerCase().includes(q))
+  );
+
+  cards.innerHTML = filtrados.map(l => `
+    <div class="card" onclick="abrirItens('${l.instCode}')">
+      <h3>${l.instituicao}</h3>
+      <small>Código: <b>${l.instCode}</b></small><br>
+      <small>Valor: R$ ${l.valor}</small><br>
+      <small>Data: ${l.dataSessao}</small><br>
+      <div class="status st-${l.status.replace(' ','')}">${l.status}</div>
+    </div>
+  `).join("") || "Nenhuma licitação encontrada.";
+}
+
+/* ==========================
+   FILTROS
+========================== */
+document.querySelectorAll(".filtro").forEach(f=>{
+  f.onclick = ()=>{
+    document.querySelectorAll(".filtro").forEach(x=>x.classList.remove("ativo"));
+    f.classList.add("ativo");
+    carregar();
+  };
+});
+
+/* ==========================
+   ABRIR ITENS
+========================== */
+let instAtual = null;
+
+async function abrirItens(code){
+  instAtual = code;
+  modalItens.style.display="flex";
+
+  const req = await fetch(API+"?action=itens&code="+code);
+  const dados = await req.json();
+
+  listaItens.innerHTML = dados.map(i => `
+    <div class="item-row">
+      <b>${i.itemTR}</b> — ${i.especificacao}
+    </div>
+  `).join("") || "Nenhum item cadastrado.";
+}
+
+/* ==========================
+   ADICIONAR ITEM
+========================== */
+async function addItem(){
+  const obj = {
+    action:"addItem",
+    instCode:instAtual,
+    itemTR:itemTR.value,
+    especificacao:espec.value,
+    marca:marca.value,
+    modelo:modelo.value,
+    unidade:unidade.value,
+    quantMax:qmax.value,
+    quantMin:qmin.value,
+    valorUnit:valorUnit.value,
+    garantia:garantia.value
+  };
+
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify(obj)
+  });
+
+  abrirItens(instAtual);
+}
+
+/* ==========================
+   PESQUISA
+========================== */
+searchBar.onkeyup = carregar;
+
+/* ==========================
+   INICIAR
+========================== */
+carregar();
+</script>
 
 </body>
 </html>
