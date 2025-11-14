@@ -1,458 +1,195 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Licitações</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-/* ================================
-   PALETA CORPORATIVA PREMIUM
-================================ */
-:root {
-  --azul: #0b1e39;
-  --azul-claro: #193055;
-  --dourado: #c9a86c;
-  --bg: #f1f3f7;
-  --card-bg: #ffffff;
-  --shadow: 0 10px 25px rgba(0,0,0,0.15);
-  --text-dark: #1a1a1a;
-  --text-soft: #555;
-}
-
-/* ================================
-   BASE
-================================ */
-*{
-  margin:0; padding:0;
-  box-sizing:border-box;
-  font-family:'Inter',sans-serif;
-}
-
-body{
-  background:var(--bg);
-  padding:25px;
-  user-select:none;
-}
-
-/* ================================
-   OVERLAY PREMIUM
-================================ */
-#overlay {
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(11, 30, 57, 0.85);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999999;
-  display:none;
-}
-
-.spinner {
-  width:80px;
-  height:80px;
-  border:6px solid rgba(255,255,255,0.2);
-  border-top-color:var(--dourado);
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform:rotate(360deg); }
-}
-
-/* ================================
-   TÍTULO + FILTROS
-================================ */
-#topo{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:25px;
-}
-
-#titulo{
-  font-size:32px;
-  font-weight:700;
-  color:var(--azul);
-}
-
-#searchBar{
-  padding:12px 15px;
-  width:280px;
-  border-radius:10px;
-  border:1px solid #d0d0d0;
-  background:white;
-  font-size:15px;
-}
-
-#filtros{
-  display:flex;
-  gap:12px;
-  margin-top:15px;
-}
-
-.filtro{
-  padding:7px 16px;
-  border-radius:20px;
-  background:#fff;
-  border:1px solid #ccc;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.filtro:hover,
-.filtro.ativo{
-  background:var(--azul);
-  color:white;
-  border-color:var(--azul);
-}
-
-/* ================================
-   GRID DE CARDS
-================================ */
-#cards{
-  margin-top:25px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:25px;
-}
-
-.card{
-  position:relative;
-  background:var(--card-bg);
-  padding:20px;
-  border-radius:14px;
-  box-shadow:var(--shadow);
-  cursor:pointer;
-  transition:0.2s;
-  border-left:6px solid var(--azul);
-}
-
-.card:hover{
-  transform:translateY(-5px);
-}
-
-/* MENU ••• */
-.menuBtn {
-  position:absolute;
-  top:10px;
-  right:12px;
-  font-size:22px;
-  cursor:pointer;
-}
-
-.menuBox {
-  position:absolute;
-  top:40px;
-  right:12px;
-  background:white;
-  border-radius:10px;
-  box-shadow:var(--shadow);
-  display:none;
-  flex-direction:column;
-  min-width:140px;
-  z-index:50;
-}
-
-.menuItem{
-  padding:10px 12px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-.menuItem:hover{
-  background:#f5f5f5;
-}
-
-/* STATUS */
-.status{
-  margin-top:12px;
-  font-weight:600;
-  font-size:14px;
-  padding:6px 12px;
-  border-radius:8px;
-  display:inline-block;
-}
-
-.st-Pendente{ background:#ffedcc; color:#b36b00; }
-.st-Futura{ background:#d5e8ff; color:#1d4e89; }
-.st-EmAndamento{ background:#fff3bf; color:#8a6a00; }
-.st-Finalizada{ background:#d7f7cf; color:#2f7a27; }
-.st-Suspensa{ background:#ffd6d6; color:#a11a1a; }
-
-/* MODAIS */
-#modal,#modalItens,#modalEditar{
-  position:fixed; top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.45);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
-}
-
-.modal-box{
-  background:white;
-  width:95%;
-  max-width:550px;
-  padding:25px;
-  border-radius:14px;
-}
-
-.modal-box h2{
-  margin-bottom:20px;
-  color:var(--azul);
-}
-
-.input{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  margin-bottom:12px;
-  text-transform:uppercase;
-}
-
-/* BOTÕES */
-.btn{
-  background:var(--azul);
-  color:white;
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:10px;
-}
-.btn:hover{
-  background:var(--azul-claro);
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LICITAR • Painel de Licitações</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --azul: #0b1e39;
+      --azul-claro: #25416e;
+      --dourado: #c9a86c;
+      --card: #ffffff;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: var(--bg);
+      padding: 30px;
+    }
+    h1 {
+      font-size: 28px;
+      color: var(--azul);
+      margin-bottom: 20px;
+    }
+    .input {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+    .btn {
+      background: var(--azul);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    .btn:hover {
+      background: var(--azul-claro);
+    }
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      display: none;
+    }
+    #overlay div {
+      background: white;
+      padding: 30px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      font-weight: bold;
+      color: var(--azul);
+    }
+    .topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #search {
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+    }
+    .filtros {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+    .filtro {
+      background: white;
+      padding: 6px 14px;
+      border: 1px solid #aaa;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .filtro.ativo {
+      background: var(--azul);
+      color: white;
+      border-color: var(--azul);
+    }
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      border-left: 5px solid var(--azul);
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .st-Pendente { background: #fff1cc; color: #b36b00; }
+    .st-Futura { background: #d5e8ff; color: #1d4e89; }
+    .st-Em\ andamento { background: #fff3bf; color: #8a6a00; }
+    .st-Finalizada { background: #d7f7cf; color: #2f7a27; }
+    .st-Suspensa { background: #ffd6d6; color: #a11a1a; }
+  </style>
 </head>
-
 <body>
 
-<!-- OVERLAY -->
-<div id="overlay"><div class="spinner"></div></div>
+<div id="overlay"><div>Enviando dados...</div></div>
 
-<div id="topo">
+<div class="topo">
+  <h1>LICITAR • Painel de Licitações</h1>
   <div>
-    <h1 id="titulo">Licitações</h1>
-    <div id="filtros">
-      <div class="filtro ativo" data-status="todos">Todos</div>
-      <div class="filtro" data-status="Pendente">Pendente</div>
-      <div class="filtro" data-status="Futura">Futura</div>
-      <div class="filtro" data-status="Em andamento">Em andamento</div>
-      <div class="filtro" data-status="Finalizada">Finalizada</div>
-      <div class="filtro" data-status="Suspensa">Suspensa</div>
-    </div>
-  </div>
-
-  <div>
-    <input id="searchBar" placeholder="Pesquisar...">
-    <button id="btnNova" class="btn" onclick="abrirModal()">+ Nova Licitação</button>
+    <input id="search" placeholder="Buscar licitação">
+    <button class="btn" onclick="abrirNovaLicitacao()">+ Nova Licitação</button>
   </div>
 </div>
 
-<div id="cards">Carregando...</div>
-
-<!-- ======================
-     MODAL CADASTRO
-====================== -->
-<div id="modal">
-  <div class="modal-box">
-    <h2>Nova Licitação</h2>
-
-    <input id="inst" class="input" placeholder="Instituição">
-    <input id="valor" class="input" placeholder="Valor Total">
-    <input id="data" class="input" placeholder="Data da Sessão (DD/MM/AAAA)">
-    <input id="criterio" class="input" placeholder="Critério de Julgamento">
-    <input id="modo" class="input" placeholder="Modo de Disputa">
-    
-    <select id="status" class="input">
-      <option value="Pendente">Pendente</option>
-      <option value="Futura">Futura</option>
-      <option value="Em andamento">Em andamento</option>
-      <option value="Finalizada">Finalizada</option>
-      <option value="Suspensa">Suspensa</option>
-    </select>
-
-    <button class="btn" onclick="salvarLicitacao()">Salvar</button>
-    <button class="btn" style="background:#ccc;color:#000" onclick="fecharModal()">Cancelar</button>
-  </div>
+<div class="filtros">
+  <div class="filtro ativo" onclick="filtrar('Todos')">Todos</div>
+  <div class="filtro" onclick="filtrar('Pendente')">Pendente</div>
+  <div class="filtro" onclick="filtrar('Futura')">Futura</div>
+  <div class="filtro" onclick="filtrar('Em andamento')">Em andamento</div>
+  <div class="filtro" onclick="filtrar('Finalizada')">Finalizada</div>
+  <div class="filtro" onclick="filtrar('Suspensa')">Suspensa</div>
 </div>
 
-<!-- MODAL ITENS -->
-<div id="modalItens">
-  <div class="modal-box">
-    <h2>Itens da Licitação</h2>
-    <div id="listaItens">Carregando...</div>
-    <button class="btn" style="background:#ccc;color:#000" onclick="fecharItens()">Fechar</button>
-  </div>
-</div>
+<div id="cards">Carregando licitações...</div>
 
 <script>
-/* ===============================
-   API
-================================ */
-const API = "https://script.google.com/macros/s/AKfycbw8uAkvcy-7bRLFwamJk3ohldgtReshd7ZXUncE2RY_tlZWnTbxGEM3LLJ2A_txxtsJ/exec";
+const API = "https://script.google.com/macros/s/AKfycbwNeqwU6_oqB6q0IlOhSOY8JL9HxMxbocog4Ls93EF0wO4Vw9-LZ0g0Y2kkaiveEmoZ/exec";
+let dados = [], filtroAtual = 'Todos';
 
-/* ===============================
-   OVERLAY
-================================ */
-function showLoad(){ overlay.style.display="flex"; }
-function hideLoad(){ overlay.style.display="none"; }
-
-/* ===============================
-   MODAIS
-================================ */
-function abrirModal(){ modal.style.display="flex"; }
-function fecharModal(){ modal.style.display="none"; }
-function fecharItens(){ modalItens.style.display="none"; }
-
-/* ===============================
-   MÁSCARA DE DINHEIRO
-================================ */
-valor.addEventListener("input", e => {
-  let v = e.target.value.replace(/\D/g,"");
-  v = (v/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  e.target.value = v.toUpperCase();
-});
-
-/* ===============================
-   MÁSCARA DE DATA
-================================ */
-data.addEventListener("input", e=>{
-  let v = e.target.value.replace(/\D/g,"");
-  if(v.length>=3) v = v.replace(/(\d{2})(\d)/,"$1/$2");
-  if(v.length>=6) v = v.replace(/(\d{2})(\d)/,"$1/$2");
-  e.target.value = v.toUpperCase();
-});
-
-/* ===============================
-   SALVAR LICITAÇÃO
-================================ */
-async function salvarLicitacao(){
-
-  showLoad();
-
-  try{
-    const payload = {
-      action:"addLicitacao",
-      instituicao:inst.value,
-      valor:valor.value,
-      dataSessao:data.value,
-      criterio:criterio.value,
-      modo:modo.value,
-      status:status.value
-    };
-
-    const req = await fetch(API,{
-      method:"POST",
-      body:JSON.stringify(payload)
-    });
-
-    const res = await req.json();
-
-    alert("Licitação cadastrada!");
-
-    fecharModal();
-    carregar();
-
-  } catch(err){
-    alert("Erro ao salvar: "+err);
-  }
-
-  hideLoad();
+function filtrar(status) {
+  filtroAtual = status;
+  document.querySelectorAll('.filtro').forEach(f => f.classList.remove('ativo'));
+  [...document.querySelectorAll('.filtro')].find(f => f.innerText === status).classList.add('ativo');
+  renderizar();
 }
 
-/* ===============================
-   LISTAR LICITAÇÕES
-================================ */
-async function carregar(){
-  showLoad();
-
-  try{
-    const req = await fetch(API+"?action=listar");
-    const dados = await req.json();
-    renderCards(dados);
-  } catch(e){
-    alert("Erro ao carregar licitações!");
-  }
-
-  hideLoad();
-}
-
-/* ===============================
-   MONTAR CARDS
-================================ */
-function renderCards(lista){
-  const q = searchBar.value.toLowerCase();
-  const filtro = document.querySelector(".filtro.ativo").dataset.status;
-
-  const filtrados = lista.filter(l =>
-    (filtro==="todos" || l.status===filtro) &&
-    (l.instituicao.toLowerCase().includes(q))
+function renderizar() {
+  const q = document.getElementById("search").value.toLowerCase();
+  const cards = document.getElementById("cards");
+  const filtrados = dados.filter(l =>
+    (filtroAtual === 'Todos' || l.status === filtroAtual) &&
+    l.instituicao.toLowerCase().includes(q)
   );
-
-  cards.innerHTML =
-    filtrados.map(l => `
-      <div class="card">
-
-        <div class="menuBtn" onclick="abrirMenu(event,'${l.instCode}')">•••</div>
-
-        <div class="menuBox" id="menu-${l.instCode}">
-          <div class="menuItem" onclick="editarLicitacao('${l.instCode}')">✏️ Editar</div>
-          <div class="menuItem" onclick="excluirLicitacao('${l.instCode}')">🗑️ Excluir</div>
-          <div class="menuItem" onclick="gerarPDF('${l.instCode}')">📄 PDF</div>
-          <div class="menuItem" onclick="exportExcel('${l.instCode}')">⬇ Excel</div>
-        </div>
-
-        <h3>${l.instituicao}</h3>
-        <small>Código: <b>${l.instCode}</b></small><br>
-        <small>Valor: ${l.valor}</small><br>
-        <small>Data: ${l.dataSessao}</small><br>
-        <div class="status st-${l.status.replace(' ','')}">${l.status}</div>
-
-      </div>
-    `).join("") || "Nenhuma licitação encontrada.";
+  cards.innerHTML = filtrados.map(l => `
+    <div class="card">
+      <h3>${l.instituicao}</h3>
+      <small>Código: ${l.codigo}</small><br>
+      <small>Data: ${l.data}</small><br>
+      <small>Valor: R$ ${l.valor}</small><br>
+      <div class="status st-${l.status.replace(/ /g,'\\ ')}">${l.status}</div>
+    </div>
+  `).join("") || "Nenhuma licitação encontrada.";
 }
 
-/* MENUS */
-function abrirMenu(ev,id){
-  ev.stopPropagation();
-  document.querySelectorAll(".menuBox").forEach(m=>m.style.display="none");
-  document.getElementById("menu-"+id).style.display="flex";
+document.getElementById("search").addEventListener("input", renderizar);
+
+async function carregar() {
+  const req = await fetch(API + "?action=listar");
+  dados = await req.json();
+  renderizar();
 }
-
-document.body.onclick = ()=> 
-  document.querySelectorAll(".menuBox").forEach(m=>m.style.display="none");
-
-/* FILTROS */
-document.querySelectorAll(".filtro").forEach(f=>{
-  f.onclick = ()=>{
-    document.querySelectorAll(".filtro").forEach(x=>x.classList.remove("ativo"));
-    f.classList.add("ativo");
-    carregar();
-  };
-});
-
-searchBar.onkeyup = carregar;
-
-/* ===============================
-   PLACEHOLDERS
-================================ */
-function editarLicitacao(id){ alert("➡ Vai editar "+id); }
-function excluirLicitacao(id){ alert("➡ Vai excluir "+id); }
-function gerarPDF(id){ alert("➡ Gerar PDF "+id); }
-function exportExcel(id){ alert("➡ Exportar Excel "+id); }
 
 carregar();
-</script>
 
+function abrirNovaLicitacao() {
+  alert("Função de abrir nova licitação ainda não implementada.");
+}
+</script>
 </body>
 </html>
