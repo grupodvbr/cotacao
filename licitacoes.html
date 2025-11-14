@@ -612,24 +612,26 @@ function editarLicitacao(codigo) {
 
   $('#tituloModalLicitacao').innerText = 'Editar Licitação';
   $('#selInstituicao').value = l.instCode;
-  $('#inpData').value = l.dataSessaoBR || l.dataSessao || '';
-  $('#inpValor').value = l.valorBR || l.valor || '';
+
+  // CORREÇÃO AQUI:
+  $('#inpData').value = l.dataSessaoBR || '';
+  $('#inpValor').value = l.valorBR || '';
   $('#inpCriterio').value = l.criterio || '';
   $('#inpModo').value = l.modo || '';
 
-  const s = l.status.toUpperCase().trim();
+  const s = l.status.toUpperCase();
   const ui =
     s === 'PENDENTE' ? 'Pendente' :
     s === 'FUTURA' ? 'Futura' :
     s === 'EM ANDAMENTO' ? 'Em andamento' :
     s === 'FINALIZADA' ? 'Finalizada' :
-    s === 'SUSPENSA' ? 'Suspensa' :
-    'Pendente';
+    s === 'SUSPENSA' ? 'Suspensa' : 'Pendente';
 
   $('#selStatus').value = ui;
 
   show('#modalLicitacao');
 }
+
 
 async function excluirLicitacao(codigo) {
   if (!confirm('Deseja excluir esta licitação?')) return;
