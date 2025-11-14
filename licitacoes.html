@@ -664,8 +664,9 @@ async function carregarItens() {
 
     const tb = $('#tblItens tbody');
     tb.innerHTML = state.itens
-  .map((i, idx) => ` `
+  .map((i, idx) => `
       <tr>
+
         <td>${i.itemTR || ''}</td>
         <td>${i.especificacao || ''}</td>
         <td>${i.marca || ''}</td>
