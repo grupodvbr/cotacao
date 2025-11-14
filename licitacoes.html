@@ -7,9 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
 <style>
-/* ===========================================
-   ESTILO GERAL
-=========================================== */
 :root{
   --bg:#f3f5f8;
   --card:#ffffff;
@@ -18,39 +15,30 @@
   --muted:#697487;
   --ok:#16a34a;
   --danger:#dc2626;
-  --warn:#d97706;
 
   --shadow:0 10px 32px rgba(0,0,0,.10);
   --radius:18px;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Inter",sans-serif;
-}
-
 body{
   background:var(--bg);
   padding:30px;
+  font-family:"Inter",sans-serif;
   color:var(--azul);
 }
 
-/* ===========================================
-   TÍTULO E TOPO
-=========================================== */
+/* Título */
 .titulo{
   font-size:32px;
   font-weight:700;
   margin-bottom:20px;
 }
 
+/* Topo */
 .topo{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
+  margin-bottom:20px;
 }
 
 .input{
@@ -58,40 +46,32 @@ body{
   padding:14px;
   border-radius:14px;
   border:1px solid #d4d8de;
-  background:#fff;
-  font-size:15px;
 }
 
-/* ===========================================
-   FILTROS
-=========================================== */
+/* Filtros */
 .filtros{
   display:flex;
   gap:10px;
-  flex-wrap:wrap;
   margin-bottom:20px;
+  flex-wrap:wrap;
 }
 
 .chip{
   padding:8px 18px;
-  background:#fff;
-  border:1px solid #d4d8de;
   border-radius:999px;
+  border:1px solid #d4d8de;
+  background:#fff;
   cursor:pointer;
-  font-weight:600;
   transition:.2s;
+  font-weight:600;
 }
 
-.chip:hover{background:#eef2f7;}
 .chip.ativo{
   background:var(--azul);
   color:#fff;
-  border-color:var(--azul);
 }
 
-/* ===========================================
-   GRID / SKELETON LOADING
-=========================================== */
+/* Grid */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
@@ -100,119 +80,91 @@ body{
 
 /* Skeleton */
 .skel{
-  background:#e4e7eb;
-  height:170px;
+  height:180px;
   border-radius:var(--radius);
+  background:#e4e7eb;
   animation:pulse 1.2s infinite alternate;
 }
-
 @keyframes pulse{
-  from{opacity:.5;}
-  to{opacity:1;}
+  from{opacity:.5;} to{opacity:1;}
 }
 
-/* ===========================================
-   CARD DE LICITAÇÃO
-=========================================== */
+/* Cards */
 .card{
-  background:var(--card);
-  padding:20px;
+  background:#fff;
   border-radius:var(--radius);
+  padding:20px;
   box-shadow:var(--shadow);
-  transition:.25s;
 }
 
-.card:hover{
-  transform:translateY(-4px);
-}
-
-.card small{color:var(--muted);}
+.card h3{font-size:18px;margin-bottom:4px}
 
 .row{
-  margin:12px 0;
   display:flex;
   flex-direction:column;
-  gap:5px;
-  color:#333;
+  gap:4px;
+  margin:12px 0;
 }
 
-/* BADGES */
 .badge{
-  display:inline-block;
-  padding:7px 14px;
-  font-size:12px;
-  font-weight:700;
+  padding:6px 12px;
   border-radius:10px;
+  font-weight:700;
+  font-size:12px;
+  display:inline-block;
 }
 
-.st-Pendente{background:#fff7cc;color:#875f00;}
+.st-Pendente{background:#fff7cc;color:#8a5e00;}
 .st-Futura{background:#dceafe;color:#1854b3;}
-.st-Em_andamento{background:#fff2b3;color:#987000;}
-.st-Finalizada{background:#dcfce7;color:#1e7a42;}
-.st-Suspensa{background:#ffd9df;color:#9f1c32;}
+.st-Em_andamento{background:#fde99a;color:#946c00;}
+.st-Finalizada{background:#dcfce7;color:#187a42;}
+.st-Suspensa{background:#ffd6dc;color:#b61d35;}
 
-/* Botões */
 .btn{
-  border:none;
   padding:10px 16px;
-  border-radius:12px;
+  background:var(--azul);
+  color:#fff;
+  border:none;
+  border-radius:10px;
   cursor:pointer;
   font-size:14px;
   font-weight:600;
 }
 
-.btn-edit{background:var(--azul);color:#fff;}
-.btn-del{background:var(--danger);color:#fff;margin-left:8px;}
-
-/* ===========================================
-   MODAL
-=========================================== */
+/* Modal */
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.50);
+  background:rgba(0,0,0,.5);
   display:none;
   justify-content:center;
   align-items:center;
-  z-index:10;
 }
 
 .modal .box{
   background:#fff;
-  padding:24px;
   width:420px;
-  border-radius:16px;
+  padding:24px;
+  border-radius:14px;
   box-shadow:var(--shadow);
-  animation:fadeIn .25s ease;
 }
 
-@keyframes fadeIn{
-  from{opacity:0; transform:scale(.97);}
-  to{opacity:1; transform:scale(1);}
-}
-
-.field{margin-bottom:14px;}
-label{font-size:12px;font-weight:600;color:var(--muted);}
+.field{margin-bottom:14px}
 input,select{
   width:100%;
   padding:12px;
-  margin-top:4px;
-  border-radius:12px;
-  border:1px solid #cdd3db;
-  background:#fff;
+  border-radius:10px;
+  border:1px solid #d4d8de;
 }
 
 .btn-save{
   width:100%;
-  padding:14px;
   background:var(--ok);
   color:#fff;
-  font-size:15px;
-  font-weight:700;
+  padding:14px;
   border-radius:12px;
-  margin-top:10px;
+  font-weight:700;
 }
-
 </style>
 </head>
 
@@ -233,7 +185,6 @@ input,select{
   <div class="chip" data-status="Suspensa">Suspensa</div>
 </div>
 
-<!-- GRID -->
 <div class="grid" id="lista">
   <div class="skel"></div>
   <div class="skel"></div>
@@ -243,21 +194,21 @@ input,select{
 <!-- MODAL -->
 <div class="modal" id="modalEdit">
   <div class="box">
-    <h3 style="margin-bottom:12px;color:var(--azul)">Editar Licitação</h3>
+    <h3 style="margin-bottom:14px;color:var(--azul)">Editar Licitação</h3>
 
     <div class="field">
       <label>Instituição</label>
-      <input id="eInst" />
+      <input id="eInst">
     </div>
 
     <div class="field">
       <label>Data da Sessão</label>
-      <input id="eData" />
+      <input id="eData">
     </div>
 
     <div class="field">
       <label>Valor Total</label>
-      <input id="eValor" />
+      <input id="eValor">
     </div>
 
     <div class="field">
@@ -276,32 +227,26 @@ input,select{
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzASrGlnB80KiowF0pUuqV95Jwyx0EUoAGFTdzssB1VH3AWHWfLSodU8r4Xm6dBZtbQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbwkmJBR9YZMKj3MIxwNThZc2LXASb5vbbDr4yZ6N0oiT3RPqOAjGfdmzh5EJpTctx_C/exec";
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-
 let licitacoes = [];
 let filtro = "TODOS";
 let busca = "";
 let editID = null;
 
-/* ============================
-   FORMATAÇÕES
-============================ */
+/* FORMATAÇÃO */
 function mascaraValor(v){
   return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
 }
-
-function mascaraData(iso){
-  const d = new Date(iso);
-  if(isNaN(d))return "-";
+function mascaraData(dt){
+  const d = new Date(dt);
+  if(isNaN(d)) return "-";
   return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 }
 
-/* ============================
-   RENDERIZAÇÃO DOS CARDS
-============================ */
+/* RENDER */
 function render(){
   const lista = $('#lista');
 
@@ -310,14 +255,9 @@ function render(){
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
 
-  if(dados.length === 0){
-    lista.innerHTML = `<div style="color:#667085">Nenhuma licitação encontrada…</div>`;
-    return;
-  }
-
   lista.innerHTML = dados.map(l=>`
     <div class="card">
-      <h3 style="font-size:18px;margin-bottom:4px">${l.instituicao}</h3>
+      <h3>${l.instituicao}</h3>
       <small>Código: ${l.codigo}</small>
 
       <div class="row">
@@ -329,24 +269,18 @@ function render(){
 
       <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
 
-      <div style="margin-top:14px">
-        <button class="btn btn-edit" onclick="editar('${l.codigo}')">Editar</button>
-      </div>
+      <button class="btn" style="margin-top:14px" onclick="editar('${l.codigo}')">Editar</button>
     </div>
   `).join('');
 }
 
-/* ============================
-   BUSCA
-============================ */
-$('#busca').addEventListener('input',e=>{
+/* BUSCA */
+$('#busca').addEventListener('input', e=>{
   busca = e.target.value;
   render();
 });
 
-/* ============================
-   FILTRO
-============================ */
+/* FILTROS */
 $$('#filtros .chip').forEach(ch=>{
   ch.addEventListener('click',()=>{
     $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
@@ -356,13 +290,9 @@ $$('#filtros .chip').forEach(ch=>{
   });
 });
 
-/* ============================
-   EDITAR LICITAÇÃO
-============================ */
+/* EDITAR */
 async function editar(codigo){
   const l = licitacoes.find(x=>x.codigo===codigo);
-  if(!l)return;
-
   editID = codigo;
 
   $('#eInst').value = l.instituicao;
@@ -370,7 +300,7 @@ async function editar(codigo){
   $('#eValor').value = l.valorBR;
   $('#eStatus').value = l.status;
 
-  $('#modalEdit').style.display = "flex";
+  $('#modalEdit').style.display="flex";
 }
 
 $('#btnSalvar').addEventListener('click',async()=>{
@@ -392,14 +322,12 @@ $('#btnSalvar').addEventListener('click',async()=>{
   carregar();
 });
 
-/* Fechar modal clicando fora */
+/* FECHAR MODAL */
 $('#modalEdit').addEventListener('click',e=>{
   if(e.target===e.currentTarget) e.currentTarget.style.display='none';
 });
 
-/* ============================
-   CARREGAR DADOS
-============================ */
+/* CARREGAR */
 async function carregar(){
   $('#lista').innerHTML = `
     <div class="skel"></div>
