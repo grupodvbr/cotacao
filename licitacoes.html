@@ -11,10 +11,8 @@
   --bg:#f3f5f8;
   --card:#ffffff;
   --azul:#0b1e39;
-  --azul2:#193053;
   --muted:#697487;
   --ok:#16a34a;
-  --danger:#dc2626;
 
   --shadow:0 10px 32px rgba(0,0,0,.10);
   --radius:18px;
@@ -27,143 +25,60 @@ body{
   color:var(--azul);
 }
 
-/* Título */
-.titulo{
-  font-size:32px;
-  font-weight:700;
-  margin-bottom:20px;
-}
+/* título */
+.titulo{font-size:32px;font-weight:700;margin-bottom:20px}
 
-/* Topo */
-.topo{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:20px;
-}
-
+/* topo */
+.topo{display:flex;margin-bottom:20px}
 .input{
-  width:340px;
-  padding:14px;
-  border-radius:14px;
+  width:340px;padding:14px;border-radius:14px;
   border:1px solid #d4d8de;
 }
 
-/* Filtros */
+/* filtros */
 .filtros{
-  display:flex;
-  gap:10px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
+  display:flex;gap:10px;margin-bottom:20px;
 }
-
 .chip{
-  padding:8px 18px;
-  border-radius:999px;
-  border:1px solid #d4d8de;
-  background:#fff;
-  cursor:pointer;
-  transition:.2s;
-  font-weight:600;
+  padding:8px 18px;border-radius:999px;border:1px solid #d4d8de;
+  background:#fff;cursor:pointer;font-weight:600;
 }
+.chip.ativo{background:var(--azul);color:#fff}
 
-.chip.ativo{
-  background:var(--azul);
-  color:#fff;
-}
-
-/* Grid */
+/* grid */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
   gap:20px;
 }
 
-/* Skeleton */
+/* skeleton */
 .skel{
-  height:180px;
-  border-radius:var(--radius);
+  height:180px;border-radius:var(--radius);
   background:#e4e7eb;
   animation:pulse 1.2s infinite alternate;
 }
-@keyframes pulse{
-  from{opacity:.5;} to{opacity:1;}
-}
+@keyframes pulse{from{opacity:.5;} to{opacity:1;}}
 
-/* Cards */
+/* cards */
 .card{
-  background:#fff;
-  border-radius:var(--radius);
-  padding:20px;
+  background:#fff;padding:20px;border-radius:var(--radius);
   box-shadow:var(--shadow);
 }
-
 .card h3{font-size:18px;margin-bottom:4px}
+.row{margin:12px 0;display:flex;flex-direction:column;gap:4px}
 
-.row{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  margin:12px 0;
-}
-
-.badge{
-  padding:6px 12px;
-  border-radius:10px;
-  font-weight:700;
-  font-size:12px;
-  display:inline-block;
-}
-
-.st-Pendente{background:#fff7cc;color:#8a5e00;}
-.st-Futura{background:#dceafe;color:#1854b3;}
-.st-Em_andamento{background:#fde99a;color:#946c00;}
-.st-Finalizada{background:#dcfce7;color:#187a42;}
-.st-Suspensa{background:#ffd6dc;color:#b61d35;}
+.badge{padding:6px 12px;font-weight:700;border-radius:10px;font-size:12px}
+.st-PENDENTE{background:#fff7cc;color:#8a5e00}
+.st-FUTURA{background:#dceafe;color:#1854b3}
+.st-EM_ANDAMENTO{background:#fde99a;color:#946c00}
+.st-FINALIZADA{background:#dcfce7;color:#187a42}
+.st-SUSPENSA{background:#ffd6dc;color:#b61d35}
 
 .btn{
-  padding:10px 16px;
-  background:var(--azul);
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:14px;
-  font-weight:600;
-}
-
-/* Modal */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.modal .box{
-  background:#fff;
-  width:420px;
-  padding:24px;
-  border-radius:14px;
-  box-shadow:var(--shadow);
-}
-
-.field{margin-bottom:14px}
-input,select{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #d4d8de;
-}
-
-.btn-save{
-  width:100%;
-  background:var(--ok);
-  color:#fff;
-  padding:14px;
-  border-radius:12px;
-  font-weight:700;
+  padding:10px 16px;background:var(--azul);
+  color:#fff;border:none;border-radius:10px;
+  font-size:14px;font-weight:600;margin-top:14px;
 }
 </style>
 </head>
@@ -178,11 +93,11 @@ input,select{
 
 <div class="filtros" id="filtros">
   <div class="chip ativo" data-status="TODOS">Todos</div>
-  <div class="chip" data-status="Pendente">Pendente</div>
-  <div class="chip" data-status="Futura">Futura</div>
-  <div class="chip" data-status="Em andamento">Em andamento</div>
-  <div class="chip" data-status="Finalizada">Finalizada</div>
-  <div class="chip" data-status="Suspensa">Suspensa</div>
+  <div class="chip" data-status="PENDENTE">Pendente</div>
+  <div class="chip" data-status="FUTURA">Futura</div>
+  <div class="chip" data-status="EM ANDAMENTO">Em andamento</div>
+  <div class="chip" data-status="FINALIZADA">Finalizada</div>
+  <div class="chip" data-status="SUSPENSA">Suspensa</div>
 </div>
 
 <div class="grid" id="lista">
@@ -191,68 +106,36 @@ input,select{
   <div class="skel"></div>
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modalEdit">
-  <div class="box">
-    <h3 style="margin-bottom:14px;color:var(--azul)">Editar Licitação</h3>
-
-    <div class="field">
-      <label>Instituição</label>
-      <input id="eInst">
-    </div>
-
-    <div class="field">
-      <label>Data da Sessão</label>
-      <input id="eData">
-    </div>
-
-    <div class="field">
-      <label>Valor Total</label>
-      <input id="eValor">
-    </div>
-
-    <div class="field">
-      <label>Status</label>
-      <select id="eStatus">
-        <option>Pendente</option>
-        <option>Futura</option>
-        <option>Em andamento</option>
-        <option>Finalizada</option>
-        <option>Suspensa</option>
-      </select>
-    </div>
-
-    <button class="btn-save" id="btnSalvar">Salvar</button>
-  </div>
-</div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwFVk0kmZm0rhthqtVBufO-l0b5dQGHcFvsH4Ke5On3vgXnNZ8sgpgXS_a7vq1XvV4i/exec";
 
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
+const $ = sel => document.querySelector(sel);
+const $$ = sel => [...document.querySelectorAll(sel)];
+
 let licitacoes = [];
 let filtro = "TODOS";
 let busca = "";
-let editID = null;
 
-/* FORMATAÇÃO */
-function mascaraValor(v){
-  return Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
-}
+/* formatar valores */
+const mascaraValor = v =>
+  Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2});
 
-function mascaraDataBR(str){
-  return str || "-"; // agora dataSessaoBR já vem pronta
-}
+/* data já vem BR — não alterar */
+const mascaraData = d => d || "-";
 
-/* RENDER */
+/* render */
 function render(){
   const lista = $('#lista');
 
   const dados = licitacoes.filter(l =>
-    (filtro==="TODOS" || l.status===filtro) &&
+    (filtro==="TODOS" || l.status === filtro) &&
     l.instituicao.toUpperCase().includes(busca.toUpperCase())
   );
+
+  if(dados.length === 0){
+    lista.innerHTML = "<p style='color:#999'>Nenhuma licitação encontrada…</p>";
+    return;
+  }
 
   lista.innerHTML = dados.map(l=>`
     <div class="card">
@@ -260,73 +143,34 @@ function render(){
       <small>Código: ${l.codigo}</small>
 
       <div class="row">
-        <div><b>Data:</b> ${mascaraDataBR(l.dataSessaoBR)}</div>
+        <div><b>Data:</b> ${mascaraData(l.dataSessaoBR)}</div>
         <div><b>Valor:</b> R$ ${mascaraValor(l.valorBR)}</div>
         <div><b>Critério:</b> ${l.criterio}</div>
         <div><b>Modo:</b> ${l.modo}</div>
       </div>
 
       <div class="badge st-${l.status.replace(" ","_")}">${l.status}</div>
-
-      <button class="btn" style="margin-top:14px" onclick="editar('${l.codigo}')">Editar</button>
     </div>
   `).join('');
 }
 
-/* BUSCA */
+/* busca */
 $('#busca').addEventListener('input', e=>{
   busca = e.target.value;
   render();
 });
 
-/* FILTROS */
+/* filtros */
 $$('#filtros .chip').forEach(ch=>{
   ch.addEventListener('click',()=>{
-    $$('#filtros .chip').forEach(x=>x.classList.remove('ativo'));
+    $$('#filtros .chip').forEach(c=>c.classList.remove('ativo'));
     ch.classList.add('ativo');
     filtro = ch.dataset.status;
     render();
   });
 });
 
-/* EDITAR */
-async function editar(codigo){
-  const l = licitacoes.find(x=>x.codigo===codigo);
-  editID = codigo;
-
-  $('#eInst').value = l.instituicao;
-  $('#eData').value = l.dataSessaoBR;
-  $('#eValor').value = l.valorBR;
-  $('#eStatus').value = l.status;
-
-  $('#modalEdit').style.display="flex";
-}
-
-$('#btnSalvar').addEventListener('click',async()=>{
-
-  await fetch(API,{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      action:"updateLicitacao",
-      codigo:editID,
-      instituicao:$('#eInst').value,
-      dataSessaoBR:$('#eData').value,
-      valorBR:$('#eValor').value,
-      status:$('#eStatus').value
-    })
-  });
-
-  $('#modalEdit').style.display="none";
-  carregar();
-});
-
-/* FECHAR MODAL */
-$('#modalEdit').addEventListener('click',e=>{
-  if(e.target===e.currentTarget) e.currentTarget.style.display='none';
-});
-
-/* CARREGAR */
+/* carregar */
 async function carregar(){
   $('#lista').innerHTML = `
     <div class="skel"></div>
@@ -335,9 +179,13 @@ async function carregar(){
   `;
 
   const r = await fetch(API+"?action=listLicitacoes");
-  const j = await r.json();
+  const dados = await r.json();
 
-  licitacoes = j.licitacoes;
+  licitacoes = dados.map(l => ({
+    ...l,
+    status: String(l.status).trim().toUpperCase()
+  }));
+
   render();
 }
 
