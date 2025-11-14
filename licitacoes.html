@@ -684,9 +684,11 @@ async function carregarItens() {
 }
 
 $('#btnSalvarItem').addEventListener('click', async () => {
+
   const body = {
-    action:'addItem',
+    action: state.editIndex != null ? 'updateItem' : 'addItem',
     codigoLicitacao: state.licAtual,
+    index: state.editIndex,
     itemTR: $('#itTR').value.trim().toUpperCase(),
     especificacao: $('#itEsp').value.trim().toUpperCase(),
     marca: $('#itMarca').value.trim().toUpperCase(),
@@ -698,16 +700,21 @@ $('#btnSalvarItem').addEventListener('click', async () => {
     garantia: $('#itGarant').value.trim().toUpperCase()
   };
 
-  if (!body.itemTR) { toast('Informe o ITEM TR'); return; }
+  if (!body.itemTR) {
+    toast('Informe o ITEM TR');
+    return;
+  }
 
   overlay(true);
 
   try {
     await apiPost(body);
-    toast('Item adicionado!', '', 'ok');
+    toast('Item salvo!', '', 'ok');
 
     ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant']
       .forEach(id => $('#' + id).value = '');
+
+    state.editIndex = null;
 
     await carregarItens();
 
@@ -715,6 +722,7 @@ $('#btnSalvarItem').addEventListener('click', async () => {
     overlay(false);
   }
 });
+
 
 
 /* ==========================
