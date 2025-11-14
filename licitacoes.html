@@ -663,7 +663,8 @@ async function carregarItens() {
     state.itens = j.itens || [];
 
     const tb = $('#tblItens tbody');
-    tb.innerHTML = state.itens.map(i => `
+    tb.innerHTML = state.itens
+  .map((i, idx) => ` `
       <tr>
         <td>${i.itemTR || ''}</td>
         <td>${i.especificacao || ''}</td>
@@ -674,7 +675,7 @@ async function carregarItens() {
         <td>${i.quantMin || ''}</td>
         <td>${i.valorUnit || ''}</td>
         <td>${i.garantia || ''}</td>
-        <td><button class="btn btn-lite">Editar</button></td>
+        <td><button class="btn btn-lite" onclick="editarItem(${idx})">Editar</button></td>
       </tr>
     `).join('');
 
@@ -877,6 +878,89 @@ $$('#filtros .chip').forEach(ch =>
 
   return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 }
+  /* ============================================
+   FECHAR MODAIS (botão FECHAR e clique no fundo)
+============================================ */
+$$('.close').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.close;
+    if (target) hide(target);
+  });
+});
+
+// fechar ao clicar fora do conteúdo
+$$('.modal').forEach(modal => {
+  modal.addEventListener('click', e => {
+    if (e.target === modal) hide('#' + modal.id);
+  });
+});
+
+/* ============================================
+   EDITAR ITEM
+============================================ */
+function editarItem(index) {
+  const it = state.itens[index];
+  if (!it) return;
+
+  // exibe no formulário
+  $('#itTR').value      = it.itemTR || '';
+  $('#itEsp').value     = it.especificacao || '';
+  $('#itMarca').value   = it.marca || '';
+  $('#itModelo').value  = it.modelo || '';
+  $('#itUnid').value    = it.unidade || '';
+  $('#itQmax').value    = it.quantMax || '';
+  $('#itQmin').value    = it.quantMin || '';
+  $('#itVlr').value     = it.valorUnit || '';
+  $('#itGarant').value  = it.garantia || '';
+
+  // guarda qual item está sendo editado
+  state.editIndex = index;
+  toast('Editando item…', '', 'warn');
+}
+
+/* ============================================
+   SALVAR ITEM (ADD OU EDIT)
+============================================ */
+$('#btnSalvarItem').addEventListener('click', async () => {
+
+  const body = {
+    action: state.editIndex != null ? 'updateItem' : 'addItem',
+    codigoLicitacao: state.licAtual,
+    index: state.editIndex,
+    itemTR: $('#itTR').value.trim().toUpperCase(),
+    especificacao: $('#itEsp').value.trim().toUpperCase(),
+    marca: $('#itMarca').value.trim().toUpperCase(),
+    modelo: $('#itModelo').value.trim().toUpperCase(),
+    unidade: $('#itUnid').value.trim().toUpperCase(),
+    quantMax: $('#itQmax').value.trim(),
+    quantMin: $('#itQmin').value.trim(),
+    valorUnit: $('#itVlr').value.trim(),
+    garantia: $('#itGarant').value.trim().toUpperCase()
+  };
+
+  if (!body.itemTR) {
+    toast('Informe o ITEM TR');
+    return;
+  }
+
+  overlay(true);
+
+  try {
+    await apiPost(body);
+    toast('Item salvo!', '', 'ok');
+
+    // limpa form
+    ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant']
+      .forEach(id => $('#' + id).value = '');
+
+    state.editIndex = null;
+
+    await carregarItens();
+
+  } finally {
+    overlay(false);
+  }
+});
 
 </script>
 
