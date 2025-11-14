@@ -195,7 +195,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left} th{backgroun
 /* ==========================
    CONFIG / STATE
 ========================== */
-const API = "https://script.google.com/macros/s/AKfycby0pNZYlsO0_IAn3HVY9ACEls1idce4zFlm-oAVQJY-l2Pe82ly-mfPHVnlLdrv5OZw/exec";
+const API = "https://script.google.com/macros/s/AKfycbyLq13ywmyEqiOrY3Zyrzyives6gLxghvW1rBgqgDtMDA_PyahHUJK98aScUvNHikmu/exec";
 const $ = sel => document.querySelector(sel), $$ = sel => [...document.querySelectorAll(sel)];
 const show = sel => ($(sel).style.display='flex'), hide = sel => ($(sel).style.display='none');
 let state = { filtro:'Todos', busca:'', empresas:[], licitacoes:[], licAtual:null, itens:[], preview:[] };
@@ -208,7 +208,7 @@ function toast(msg, ok=false){
   t.className = 'toast ' + (ok?'ok':'');
   t.innerHTML = `<b>${ok?'Sucesso':'Erro'}</b><small>${msg}</small>`;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 4000);
+  setTimeout(()=>t.remove(), 4200);
 }
 function overlay(on){ $('#overlay').style.display = on?'flex':'none'; }
 function upperizeInputs(){ $$('input,select,textarea').forEach(el=>{
@@ -236,9 +236,9 @@ async function apiGet(qs){
   const url = API + '?' + new URLSearchParams(qs).toString();
   const r = await fetch(url, {method:'GET'});
   if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  const j = await r.json();
-  if(j.error) throw new Error(j.error);
-  return j;
+  const ct = r.headers.get('content-type')||'';
+  if(ct.includes('application/json')){ const j = await r.json(); if(j.error) throw new Error(j.error); return j; }
+  return {};
 }
 async function apiPost(body){
   const r = await fetch(API, {method:'POST', body: JSON.stringify(body)});
@@ -266,7 +266,7 @@ function renderLista(){
       <small>Código: <b>${l.codigo}</b></small>
       <div class="row">
         <div class="kv">Data: ${l.dataSessaoBR||l.dataSessao||'-'}</div>
-        <div class="kv">Valor: ${l.valorBR||l.valor||'-'}</div>
+        <div class="kv">Valor: ${l.valor||l.valorBR||'-'}</div>
         <div class="kv">Critério: ${l.criterio||'-'}</div>
         <div class="kv">Modo: ${l.modo||'-'}</div>
       </div>
@@ -318,7 +318,6 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
     toast('Empresa salva', true);
     hide('#modalEmpresa');
     await carregarEmpresas();
-    // Seleciona a recém criada
     const sel = $('#selInstituicao');
     const novo = (j.codigo||j.instCode);
     if(novo) sel.value = novo;
@@ -329,7 +328,7 @@ $('#btnSalvarEmpresa').addEventListener('click', async ()=>{
 /* ==========================
    LICITAÇÃO (ADD/EDIT/DELETE)
 ========================== */
-$('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); $('#tituloModalLicitacao').innerText='Nova Licitação'; show('#modalLicitacao'); });
+$('#btnNova').addEventListener('click', ()=>{ limpaFormLicit(); state.licAtual=null; $('#tituloModalLicitacao').innerText='Nova Licitação'; show('#modalLicitacao'); });
 $('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
 
 function limpaFormLicit(){ $('#inpData').value=''; $('#inpValor').value=''; $('#inpCriterio').value=''; $('#inpModo').value=''; $('#selStatus').value='Pendente'; }
@@ -344,7 +343,6 @@ function coletaFormLicit(){
     status: $('#selStatus').value
   };
 }
-
 async function salvarLicitacao(){
   const body = coletaFormLicit();
   if(!body.instCode){ toast('Selecione a INSTITUIÇÃO'); return; }
@@ -361,7 +359,6 @@ async function salvarLicitacao(){
   }catch(e){ toast('Erro ao salvar licitação: '+e.message); }
   finally{ overlay(false); }
 }
-
 function editarLicitacao(codigo){
   const l = state.licitacoes.find(x=>x.codigo===codigo);
   if(!l) return;
@@ -369,13 +366,12 @@ function editarLicitacao(codigo){
   $('#tituloModalLicitacao').innerText='Editar Licitação';
   $('#selInstituicao').value = l.instCode;
   $('#inpData').value = (l.dataSessaoBR||l.dataSessao||'');
-  $('#inpValor').value = (l.valorBR||l.valor||'');
+  $('#inpValor').value = (l.valor||l.valorBR||'');
   $('#inpCriterio').value = l.criterio||'';
   $('#inpModo').value = l.modo||'';
   $('#selStatus').value = l.status||'Pendente';
   show('#modalLicitacao');
 }
-
 async function excluirLicitacao(codigo){
   if(!confirm('Deseja excluir esta licitação?')) return;
   overlay(true);
@@ -407,7 +403,7 @@ async function carregarItens(){
         <td>${i.modelo||''}</td><td>${i.unidade||''}</td>
         <td>${i.quantMax||''}</td><td>${i.quantMin||''}</td>
         <td>${i.valorUnit||''}</td><td>${i.garantia||''}</td>
-        <td><button class="btn btn-lite" onclick="editarItem('${i.id||''}')">Editar</button></td>
+        <td></td>
       </tr>
     `).join('');
   }catch(e){ toast('Erro ao carregar itens: '+e.message); }
@@ -428,7 +424,6 @@ $('#btnSalvarItem').addEventListener('click', async ()=>{
   try{
     await apiPost(body);
     toast('Item adicionado', true);
-    // Limpa campos rápidos
     ['itTR','itEsp','itMarca','itModelo','itUnid','itQmax','itQmin','itVlr','itGarant'].forEach(id=>$('#'+id).value='');
     await carregarItens();
   }catch(e){ toast('Erro ao salvar item: '+e.message); }
@@ -443,8 +438,7 @@ $('#inpImport').addEventListener('change', async (ev)=>{
   const wb = XLSX.read(data, {type:'array'});
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-  // Espera colunas padrão do seu modelo (do print):
-  // ITEM TR | ESPECIFICAÇÃO | MARCA | MODELO | UNIDADE | QUANTIDADE MÁXIMA | QUANTIDADE MÍNIMA | VALOR UNITÁRIO | PRAZO/ GARANTIA
+  // Mapeia colunas do seu modelo
   previewRows = rows.map(r=>({
     itemTR: (r['Item do TR']||r['ITEM TR']||r['ITEM']||'').toString(),
     especificacao: (r['Especificação']||r['ESPECIFICAÇÃO']||r['Especificacao']||'').toString(),
@@ -477,20 +471,14 @@ $('#btnConfirmImport').addEventListener('click', async ()=>{
   finally{ overlay(false); }
 });
 
-/* Export / PDF */
-async function exportarItens(codigo){
-  try{
-    const j = await apiGet({action:'exportItens', codigo});
-    const url = j.url||j.link||j.download;
-    if(url) window.open(url, '_blank'); else toast('Exportação indisponível');
-  }catch(e){ toast('Erro ao exportar: '+e.message); }
+/* Export / PDF via GET direto do GAS */
+function exportarItens(codigo){
+  // o seu GAS devolve o CSV diretamente — abrimos a própria rota:
+  window.open(API+'?action=exportItens&codigo='+encodeURIComponent(codigo),'_blank');
 }
-async function gerarPdf(codigo){
-  try{
-    const j = await apiGet({action:'gerarPdf', codigo});
-    const url = j.url||j.link;
-    if(url) window.open(url, '_blank'); else toast('PDF indisponível');
-  }catch(e){ toast('Erro ao gerar PDF: '+e.message); }
+function gerarPdf(codigo){
+  // idem para o PDF
+  window.open(API+'?action=gerarPdf&codigo='+encodeURIComponent(codigo),'_blank');
 }
 
 /* ==========================
@@ -502,6 +490,12 @@ $$('#filtros .chip').forEach(ch=> ch.addEventListener('click', ()=>{
   state.filtro = ch.dataset.status; renderLista();
 }));
 upperizeInputs(); attachMasks();
+
+/* Fechar modais por atributo data-close */
+document.addEventListener('click', (e)=>{
+  const sel = e.target.getAttribute && e.target.getAttribute('data-close');
+  if(sel) hide(sel);
+});
 
 /* ==========================
    Boot
