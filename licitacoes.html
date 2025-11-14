@@ -593,6 +593,21 @@ async function salvarLicitacao() {
 
 /* 👇 ESTA LINHA FALTAVA */
 $('#btnSalvarLicitacao').addEventListener('click', salvarLicitacao);
+function abrirNovaLicitacao() {
+  state.licAtual = null;     // garante que será um cadastro novo
+
+  $('#tituloModalLicitacao').innerText = 'Nova Licitação';
+
+  // limpar todos os campos
+  $('#selInstituicao').value = state.empresas[0]?.codigo || '';
+  $('#inpData').value = '';
+  $('#inpValor').value = '';
+  $('#inpCriterio').value = '';
+  $('#inpModo').value = '';
+  $('#selStatus').value = 'Pendente';
+
+  show('#modalLicitacao');
+}
 
 function editarLicitacao(codigo) {
   const l = state.licitacoes.find(x => x.codigo === codigo);
