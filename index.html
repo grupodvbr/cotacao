@@ -8,21 +8,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* =============================
+/* ======================================================
    PALETA CORPORATIVA PREMIUM
-============================== */
+====================================================== */
 :root {
-  --azul: #0b1e39;
-  --azul-claro: #152c4d;
+  --azul: #0a1a32;
+  --azul2: #112843;
+  --azul3: #1b3554;
   --dourado: #c9a86c;
-  --texto: #e6e6e6;
+  --texto: #f5f7fa;
   --card-bg: #ffffff;
-  --shadow: 0 8px 25px rgba(0,0,0,0.25);
+  --shadow: 0 10px 28px rgba(0,0,0,0.22);
+  --shadow-soft: 0 6px 18px rgba(0,0,0,0.14);
 }
 
-/* =============================
-   RESET + BASE
-============================== */
+/* ======================================================
+   RESET
+====================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -31,15 +33,15 @@
 }
 
 body {
-  background: #f2f4f7;
-  height: 100vh;
+  background: #f1f4f8;
   display: flex;
   overflow: hidden;
+  height: 100vh;
 }
 
-/* =============================
-   TELA DE ABERTURA ANIMADA
-============================== */
+/* ======================================================
+   SPLASH SCREEN — MAIS BONITO
+====================================================== */
 #splash {
   position: fixed;
   top:0; left:0;
@@ -48,37 +50,37 @@ body {
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:999999;
   flex-direction:column;
-  animation: fadeOut 1.2s ease forwards;
-  animation-delay: 2.2s;
+  z-index:999999;
+  animation: fadeOut 1.3s ease forwards;
+  animation-delay: 1.9s;
 }
 
 #splash h1 {
-  font-size: 55px;
+  font-size: 60px;
   color:white;
-  letter-spacing: 6px;
-  position: relative;
-  animation: fadeUp 1s ease forwards;
+  letter-spacing: 7px;
+  opacity:0;
+  animation: fadeUp 1.2s ease forwards;
 }
 
-#splash h1::after {
-  content:"";
+#splash .glow {
+  width:180px; height:180px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
   position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
-  animation: shine 2.5s infinite;
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform:scale(0.8); opacity:0.25; }
+  50% { transform:scale(1.15); opacity:0.35; }
+  100% { transform:scale(0.8); opacity:0.25; }
 }
 
 @keyframes fadeUp {
-  from { opacity:0; transform:translateY(20px); }
+  from { opacity:0; transform:translateY(25px); }
   to { opacity:1; transform:translateY(0); }
-}
-
-@keyframes shine {
-  from { transform:translateX(-150%); }
-  to { transform:translateX(150%); }
 }
 
 @keyframes fadeOut {
@@ -86,105 +88,110 @@ body {
   to { opacity:0; visibility:hidden; }
 }
 
-/* =============================
-   SIDEBAR CORPORATIVA
-============================== */
+/* ======================================================
+   SIDEBAR — MUITO MAIS BONITA
+====================================================== */
 #sidebar {
   width:260px;
-  background: var(--azul);
+  background: linear-gradient(180deg, var(--azul2), var(--azul));
   color:white;
-  padding:25px 15px;
+  padding:25px 18px;
   height:100vh;
-  transition:0.3s;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+  transition:0.28s ease;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.3);
   position:relative;
 }
 
 #sidebar.minimized {
-  width:75px;
+  width:80px;
 }
 
 #toggleSidebar {
   position:absolute;
-  top:20px;
-  right:-15px;
-  width:32px;
-  height:32px;
+  top:25px;
+  right:-18px;
+  width:36px;
+  height:36px;
   background:var(--dourado);
-  color:white;
+  color:#fff;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  box-shadow:var(--shadow);
-  font-weight:bold;
+  font-size:18px;
+  box-shadow: var(--shadow-soft);
 }
 
 .sidebar-title {
-  font-size:22px;
-  margin-bottom:20px;
-  letter-spacing:2px;
+  font-size:26px;
   font-weight:600;
+  letter-spacing:3px;
+  margin-bottom:28px;
 }
 
+/* NAV ITEMS */
 .nav-item {
   padding:14px 12px;
   border-radius:10px;
-  background:var(--azul-claro);
+  background:rgba(255,255,255,0.07);
   margin-bottom:12px;
   cursor:pointer;
   display:flex;
   align-items:center;
-  gap:10px;
-  transition:0.2s;
+  gap:12px;
+  transition:0.18s ease;
 }
 
 .nav-item:hover {
-  background:#1e3a63;
+  background:rgba(255,255,255,0.13);
+  transform:translateX(3px);
 }
 
 #sidebar.minimized .nav-text {
   display:none;
 }
 
-/* =============================
-   CONTEÚDO PRINCIPAL
-============================== */
+/* ======================================================
+   CONTEÚDO PRINCIPAL — SUAVE E PREMIUM
+====================================================== */
 #content {
-  flex: 1;
-  padding:35px;
+  flex:1;
+  padding:40px;
   overflow-y:auto;
 }
 
-h1 {
-  font-size:32px;
+#content h1 {
+  font-size:34px;
+  font-weight:600;
+  color:#222;
   margin-bottom:25px;
-  color:#121212;
 }
 
-/* =============================
-   CARDS CORPORATIVOS
-============================== */
+/* ======================================================
+   CARDS MAIS ELEGANTES
+====================================================== */
 .cards {
   display:flex;
-  gap:25px;
+  gap:30px;
   flex-wrap:wrap;
 }
 
 .card {
-  width:200px;
+  width:220px;
   background:white;
-  border-radius:14px;
-  padding:20px;
+  border-radius:16px;
+  padding:22px;
   text-align:center;
   cursor:pointer;
-  box-shadow:var(--shadow);
-  transition:0.2s ease-in-out;
+  box-shadow:var(--shadow-soft);
+  transition:0.22s ease-in-out;
+  border:1px solid #e8e8e8;
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-7px);
+  box-shadow:var(--shadow);
 }
 
 .card img {
@@ -194,9 +201,9 @@ h1 {
   object-fit:contain;
 }
 
-/* =============================
+/* ======================================================
    IFRAME
-============================== */
+====================================================== */
 #iframePage {
   width:100%;
   height:87vh;
@@ -209,18 +216,15 @@ h1 {
 
 <body>
 
-<!-- =========================
-     SPLASH SCREEN LICITAR
-========================= -->
+<!-- SPLASH -->
 <div id="splash">
+  <div class="glow"></div>
   <h1>LICITAR</h1>
 </div>
 
-<!-- =========================
-     SIDEBAR
-========================= -->
+<!-- SIDEBAR -->
 <div id="sidebar">
-  <div id="toggleSidebar" onclick="toggleMenu()">≡</div>
+  <div id="toggleSidebar" onclick="toggleMenu()">☰</div>
 
   <div class="sidebar-title">LICITAR</div>
 
@@ -245,9 +249,7 @@ h1 {
   </div>
 </div>
 
-<!-- =========================
-     CONTEÚDO PRINCIPAL
-========================= -->
+<!-- CONTEÚDO -->
 <div id="content">
 
   <div id="homeSection">
