@@ -581,10 +581,16 @@ function baixarArquivo(){
    BUSCA
 ===================================================== */
 function pesquisar(){
-  const q = document.getElementById("busca").value.toLowerCase();
+  const q = document.getElementById("busca").value.toLowerCase().trim();
 
+  // Se o campo estiver vazio, volta para a pasta atual
+  if(q === ""){
+    mostrarPasta(pastaAtual);
+    return;
+  }
+
+  // Busca global em todos os itens
   const itens = dados.filter(p =>
-    p.pai===pastaAtual &&
     p.nome.toLowerCase().includes(q)
   );
 
@@ -607,8 +613,12 @@ function pesquisar(){
     }
   });
 
-  document.getElementById("lista").innerHTML = html;
+  document.getElementById("lista").innerHTML =
+    html || "<div style='padding:20px;'>Nenhum resultado encontrado.</div>";
+
+  document.getElementById("breadcrumbs").innerHTML = "🔍 Resultados da busca global";
 }
+
 
 </script>
 
